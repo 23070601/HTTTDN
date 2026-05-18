@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Return - Customer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #f5f1e8; color: #344e41; }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
+    .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .header { margin-bottom: 30px; }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+    .header p { color: #888; }
+
+    .order-info { background: #f9f7f3; padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+    .order-info-item { display: flex; justify-content: space-between; margin-bottom: 8px; }
+    .order-info-item label { font-weight: 600; font-size: 14px; }
+    .order-info-item value { color: #3a5a40; }
+
+    .form-group { margin-bottom: 20px; }
+    label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #344e41; }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #e8e8e8; border-radius: 8px; font-family: inherit; font-size: 14px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #3a5a40; }
+
+    textarea { resize: vertical; min-height: 100px; }
+
+    .radio-group { display: flex; gap: 20px; }
+    .radio-item { display: flex; align-items: center; }
+    input[type="radio"] { width: auto; margin-right: 8px; }
+
+    .channel-rules { background: #e4efe5; padding: 15px; border-radius: 8px; margin-bottom: 25px; font-size: 13px; line-height: 1.6; }
+    .channel-rules strong { display: block; margin-bottom: 8px; }
+
+    .button-group { display: flex; gap: 10px; margin-top: 30px; }
+    button { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 14px; }
+    .btn-submit { background: #3a5a40; color: white; flex: 1; }
+    .btn-submit:hover { background: #2d4630; }
+    .btn-cancel { background: #e8e8e8; color: #344e41; flex: 1; }
+    .btn-cancel:hover { background: #d9d3c7; }
+
+    .error { color: #b5544f; font-size: 12px; margin-top: 5px; }
+    .success { color: #4f7a56; font-size: 12px; margin-top: 5px; }
+
+    .loading { display: none; text-align: center; color: #888; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1>Request Return</h1>
+        <p>We're sorry to hear that. Help us improve by telling us why you want to return this order.</p>
+      </div>
+
+      <div class="order-info" id="orderInfo" style="display: none;">
+        <div class="order-info-item">
+          <label>Order Number</label>
+          <value id="orderNumber"></value>
+        </div>
+        <div class="order-info-item">
+          <label>Total Amount</label>
+          <value id="orderAmount"></value>
+        </div>
+        <div class="order-info-item">
+          <label>Delivery Status</label>
+          <value id="deliveryStatus"></value>
+        </div>
+        <div class="order-info-item">
+          <label>Return Window</label>
+          <value id="returnWindow"></value>
+        </div>
+      </div>
+
+      <div id="errorMessage" class="error" style="display: none;"></div>
+      <div id="loadingInfo" class="loading">Loading order information...</div>
+
+      <form id="returnForm" style="display: none;">
+        <div class="form-group">
+          <label>Return Type</label>
+          <div class="radio-group">
+            <label class="radio-item">
+              <input type="radio" name="return_type" value="partial"> Partial (some items)
+            </label>
+            <label class="radio-item">
+              <input type="radio" name="return_type" value="full" checked> Full (entire order)
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reason">Return Reason *</label>
+          <select id="reason" name="reason" required>
+            <option value="">-- Select a reason --</option>
+            <option value="Product damaged or defective">Product damaged or defective</option>
+            <option value="Wrong product received">Wrong product received</option>
+            <option value="Product not as described">Product not as described</option>
+            <option value="Product quality issue">Product quality issue</option>
+            <option value="Changed mind">Changed mind</option>
+            <option value="Found better price elsewhere">Found better price elsewhere</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="details">Additional Details</label>
+          <textarea id="details" name="details" placeholder="Please provide more information about your return..."></textarea>
+        </div>
+
+        <div class="channel-rules" id="channelRules"></div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-submit">Submit Return Request</button>
+          <button type="button" class="btn-cancel" onclick="history.back()">Cancel</button>
+        </div>
+
+        <div id="submitMessage" style="margin-top: 20px;"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3001/api';
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('order_id');
+
+    async function loadOrderInfo() {
+      try {
+        const response = await fetch(`${API_BASE}/orders/${orderId}`);
+        const data = await response.json();
+        const order = data.data;
+
+        if (order.delivery_status !== 'Delivered') {
+          showError('This order is not eligible for returns. Only Delivered orders can be returned.');
+          return;
+        }
+
+        // Show order info
+        document.getElementById('orderNumber').textContent = order.order_number;
+        document.getElementById('orderAmount').textContent = `${order.total_amount.toLocaleString('vi-VN')}₫`;
+        document.getElementById('deliveryStatus').textContent = order.delivery_status;
+
+        // Get channel return window
+        const channelRules = getChannelRules(order.sales_channel);
+        document.getElementById('returnWindow').textContent = channelRules.windowText;
+        document.getElementById('channelRules').innerHTML = channelRules.rulesHtml;
+
+        document.getElementById('loadingInfo').style.display = 'none';
+        document.getElementById('orderInfo').style.display = 'block';
+        document.getElementById('returnForm').style.display = 'block';
+
+        // Set form data
+        document.querySelector('input[name="return_type"]').value = 'full';
+        document.getElementById('returnForm').dataset.orderId = orderId;
+        document.getElementById('returnForm').dataset.channel = order.sales_channel;
+      } catch (error) {
+        console.error('Error loading order:', error);
+        showError('Could not load order information. Please try again.');
+      }
+    }
+
+    function getChannelRules(channel) {
+      const rules = {
+        in_store: { windowDays: 7, windowText: '7 days from order date', rulesHtml: '<strong>In-Store Return Rules:</strong>• Return window: 7 days<br>• Physical item required<br>• Receipt required<br>• Refund processed within 3-5 days' },
+        online: { windowDays: 14, windowText: '14 days from order date', rulesHtml: '<strong>Online Return Rules:</strong>• Return window: 14 days<br>• Items must be unused and in original packaging<br>• Return shipping arranged by us<br>• Refund processed within 5-7 days' },
+        dealer: { windowDays: 30, windowText: '30 days from order date', rulesHtml: '<strong>Dealer Return Rules:</strong>• Return window: 30 days<br>• Contact your account manager<br>• Return process follows dealer agreement<br>• Refund based on contract terms' },
+        marketplace: { allowed: false, windowText: 'Not allowed', rulesHtml: '<strong>Marketplace orders:</strong> Returns are handled directly by the marketplace. Please contact platform support.' }
+      };
+      return rules[channel] || rules.online;
+    }
+
+    function showError(message) {
+      document.getElementById('loadingInfo').style.display = 'none';
+      document.getElementById('returnForm').style.display = 'none';
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+
+    document.getElementById('returnForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const returnType = document.querySelector('input[name="return_type"]:checked').value;
+      const reason = document.getElementById('reason').value;
+      const details = document.getElementById('details').value;
+      const formOrderId = e.target.dataset.orderId;
+      const channel = e.target.dataset.channel;
+
+      if (!reason) {
+        alert('Please select a return reason');
+        return;
+      }
+
+      const reasonText = reason === 'Other' ? details : reason;
+
+      try {
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        const response = await fetch(`${API_BASE}/returns`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order_id: parseInt(formOrderId),
+            sales_channel: channel,
+            return_type: returnType,
+            reason: reasonText
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const messageDiv = document.getElementById('submitMessage');
+          messageDiv.innerHTML = `<div class="success"><strong>✓ Return request submitted successfully!</strong><br>Your return request #RR${data.data.return_id} has been created. We will review it shortly and contact you with next steps.</div>`;
+          document.getElementById('returnForm').style.display = 'none';
+          setTimeout(() => {
+            location.href = 'My_Orders.html';
+          }, 3000);
+        } else {
+          alert(`Error: ${data.message || 'Could not submit return request'}`);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Return Request';
+        }
+      } catch (error) {
+        console.error('Error submitting return:', error);
+        alert('Error submitting return request. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Return Request';
+      }
+    });
+
+    if (!orderId) {
+      showError('No order specified. Please select an order to return.');
+    } else {
+      loadOrderInfo();
+    }
+  </script>
+</body>
+</html>

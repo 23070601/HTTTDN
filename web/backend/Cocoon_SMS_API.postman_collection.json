@@ -1,0 +1,707 @@
+{
+  "info": {
+    "name": "Cocoon Vietnam — SMS API",
+    "description": "Sales Management System REST API\nBase URL: http://localhost:3000/api\n\nWorkflow:\n1. POST /auth/login → copy access_token\n2. Set Bearer token in Authorization header\n3. All other endpoints require authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url",     "value": "http://localhost:3000/api" },
+    { "key": "access_token", "value": "" },
+    { "key": "order_id",     "value": "1" },
+    { "key": "product_id",   "value": "1" },
+    { "key": "customer_id",  "value": "1" },
+    { "key": "dealer_id",    "value": "1" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "const res = pm.response.json();",
+                "if (res.data && res.data.access_token) {",
+                "  pm.collectionVariables.set('access_token', res.data.access_token);",
+                "  console.log('Token saved');",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@cocoonvietnam.com\",\n  \"password\": \"Cocoon@2024\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth","login"] }
+          }
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth","me"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"PASTE_REFRESH_TOKEN_HERE\"\n}" },
+            "url": { "raw": "{{base_url}}/auth/refresh", "host": ["{{base_url}}"], "path": ["auth","refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{base_url}}/auth/logout", "host": ["{{base_url}}"], "path": ["auth","logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 Users",
+      "item": [
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/users?page=1&limit=20&role=sales&status=active",
+              "host": ["{{base_url}}"], "path": ["users"],
+              "query": [
+                { "key": "page",   "value": "1" },
+                { "key": "limit",  "value": "20" },
+                { "key": "role",   "value": "sales",  "disabled": true },
+                { "key": "status", "value": "active", "disabled": true },
+                { "key": "search", "value": "",       "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/users/1", "host": ["{{base_url}}"], "path": ["users","1"] }
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Nguyễn Thị Test\",\n  \"email\": \"test.user@cocoonvietnam.com\",\n  \"password\": \"Test@1234\",\n  \"role\": \"sales\",\n  \"office\": \"HCM HQ\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/users", "host": ["{{base_url}}"], "path": ["users"] }
+          }
+        },
+        {
+          "name": "Update User Role",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"manager\",\n  \"status\": \"active\"\n}" },
+            "url": { "raw": "{{base_url}}/users/2", "host": ["{{base_url}}"], "path": ["users","2"] }
+          }
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/users/2", "host": ["{{base_url}}"], "path": ["users","2"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📦 Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["products"],
+              "query": [
+                { "key": "page",        "value": "1" },
+                { "key": "limit",       "value": "20" },
+                { "key": "search",      "value": "cà phê",    "disabled": true },
+                { "key": "category_id", "value": "1",         "disabled": true },
+                { "key": "status",      "value": "Available", "disabled": true },
+                { "key": "sort",        "value": "sold_count","disabled": true },
+                { "key": "order",       "value": "DESC",      "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search by Ingredient",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/products?search=niacinamide&limit=10",
+              "host": ["{{base_url}}"], "path": ["products"],
+              "query": [{ "key": "search", "value": "niacinamide" }, { "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/products/{{product_id}}", "host": ["{{base_url}}"], "path": ["products","{{product_id}}"] }
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"category_id\": 1,\n  \"product_name\": \"Toner Bạc Hà Tươi 150ml\",\n  \"sku\": \"CCN-TN-NEW\",\n  \"cost_price\": 75000,\n  \"selling_price\": 165000,\n  \"stock_quantity\": 200,\n  \"ingredients\": \"Tinh dầu bạc hà, nước hoa hồng, glycerin, panthenol\",\n  \"tags\": \"toner,bạc hà,làm mát\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/products", "host": ["{{base_url}}"], "path": ["products"] }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"selling_price\": 175000,\n  \"visibility\": \"Visible\"\n}" },
+            "url": { "raw": "{{base_url}}/products/{{product_id}}", "host": ["{{base_url}}"], "path": ["products","{{product_id}}"] }
+          }
+        },
+        {
+          "name": "Update Product Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"Out of Stock\"\n}" },
+            "url": { "raw": "{{base_url}}/products/{{product_id}}/status", "host": ["{{base_url}}"], "path": ["products","{{product_id}}","status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 Orders",
+      "item": [
+        {
+          "name": "List Orders",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/orders?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["orders"],
+              "query": [
+                { "key": "page",            "value": "1" },
+                { "key": "limit",           "value": "20" },
+                { "key": "delivery_status", "value": "Pending",  "disabled": true },
+                { "key": "payment_status",  "value": "Unpaid",   "disabled": true },
+                { "key": "sales_channel",   "value": "Website",  "disabled": true },
+                { "key": "from",            "value": "2024-01-01","disabled": true },
+                { "key": "to",              "value": "2024-12-31","disabled": true },
+                { "key": "search",          "value": "",         "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}", "host": ["{{base_url}}"], "path": ["orders","{{order_id}}"] }
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": 1,\n  \"sales_channel\": \"Website\",\n  \"payment_method\": \"Momo\",\n  \"shipping_address\": \"123 Nguyễn Huệ, Q1\",\n  \"city\": \"TP. Hồ Chí Minh\",\n  \"shipping_fee\": 25000,\n  \"loyalty_discount\": 0,\n  \"note\": \"Giao giờ hành chính\",\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 2 },\n    { \"product_id\": 4, \"quantity\": 1 }\n  ]\n}"
+            },
+            "url": { "raw": "{{base_url}}/orders", "host": ["{{base_url}}"], "path": ["orders"] }
+          }
+        },
+        {
+          "name": "Update Delivery Status → Delivered",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"delivery_status\": \"Delivered\"\n}" },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/delivery-status", "host": ["{{base_url}}"], "path": ["orders","{{order_id}}","delivery-status"] }
+          }
+        },
+        {
+          "name": "Update Delivery Status → Cancelled",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"delivery_status\": \"Cancelled\"\n}" },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/delivery-status", "host": ["{{base_url}}"], "path": ["orders","{{order_id}}","delivery-status"] }
+          }
+        },
+        {
+          "name": "Update Payment Status → Paid",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"payment_status\": \"Paid\"\n}" },
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/payment-status", "host": ["{{base_url}}"], "path": ["orders","{{order_id}}","payment-status"] }
+          }
+        },
+        {
+          "name": "Get Order Items",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/orders/{{order_id}}/items", "host": ["{{base_url}}"], "path": ["orders","{{order_id}}","items"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/customers?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["customers"],
+              "query": [
+                { "key": "page",    "value": "1" },
+                { "key": "limit",   "value": "20" },
+                { "key": "segment", "value": "VIP",      "disabled": true },
+                { "key": "city",    "value": "Hà Nội",   "disabled": true },
+                { "key": "search",  "value": "",         "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Customer + Stats",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/customers/{{customer_id}}", "host": ["{{base_url}}"], "path": ["customers","{{customer_id}}"] }
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Trần Thị Mới\",\n  \"email\": \"moi.tran@gmail.com\",\n  \"phone_number\": \"0901234567\",\n  \"gender\": \"female\",\n  \"date_of_birth\": \"1995-06-15\",\n  \"address\": \"45 Lê Lợi, Q1\",\n  \"city\": \"TP. Hồ Chí Minh\",\n  \"segment\": \"New\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/customers", "host": ["{{base_url}}"], "path": ["customers"] }
+          }
+        },
+        {
+          "name": "Get Customer Orders",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/customers/{{customer_id}}/orders?page=1&limit=10", "host": ["{{base_url}}"], "path": ["customers","{{customer_id}}","orders"] }
+          }
+        },
+        {
+          "name": "Get Loyalty History",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/customers/{{customer_id}}/loyalty?page=1&limit=20", "host": ["{{base_url}}"], "path": ["customers","{{customer_id}}","loyalty"] }
+          }
+        },
+        {
+          "name": "Redeem Loyalty Points",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"points\": 500,\n  \"order_id\": 1,\n  \"description\": \"Đổi điểm giảm giá đơn hàng\"\n}" },
+            "url": { "raw": "{{base_url}}/customers/{{customer_id}}/redeem-points", "host": ["{{base_url}}"], "path": ["customers","{{customer_id}}","redeem-points"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏭 Inventory",
+      "item": [
+        {
+          "name": "Stock Transaction History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/inventory/transactions?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["inventory","transactions"],
+              "query": [
+                { "key": "page",             "value": "1" },
+                { "key": "limit",            "value": "20" },
+                { "key": "product_id",       "value": "",           "disabled": true },
+                { "key": "transaction_type", "value": "Adjustment", "disabled": true },
+                { "key": "from",             "value": "2024-01-01", "disabled": true },
+                { "key": "to",               "value": "2024-12-31", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Stock In",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 19,\n  \"quantity\": 200,\n  \"warehouse\": \"HCM Warehouse\",\n  \"reference_id\": \"PO-2024-0099\",\n  \"note\": \"Nhập thêm mặt nạ bơ đắk lắk\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/inventory/stock-in", "host": ["{{base_url}}"], "path": ["inventory","stock-in"] }
+          }
+        },
+        {
+          "name": "Manual Adjustment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": 1,\n  \"quantity\": 50,\n  \"new_quantity\": 420,\n  \"note\": \"Kiểm kho định kỳ tháng 5 - lệch -30 đơn vị\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/inventory/adjustment", "host": ["{{base_url}}"], "path": ["inventory","adjustment"] }
+          }
+        },
+        {
+          "name": "Low Stock Alerts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/inventory/alerts?threshold=20",
+              "host": ["{{base_url}}"], "path": ["inventory","alerts"],
+              "query": [{ "key": "threshold", "value": "20" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤝 Dealers",
+      "item": [
+        {
+          "name": "List Dealers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/dealers?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["dealers"],
+              "query": [
+                { "key": "page",           "value": "1" },
+                { "key": "limit",          "value": "20" },
+                { "key": "debt_status",    "value": "Overdue", "disabled": true },
+                { "key": "partner_status", "value": "Active",  "disabled": true },
+                { "key": "region",         "value": "",        "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Dealer",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/dealers/{{dealer_id}}", "host": ["{{base_url}}"], "path": ["dealers","{{dealer_id}}"] }
+          }
+        },
+        {
+          "name": "Create Dealer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealer_name\": \"Chuỗi spa mới Nha Trang\",\n  \"region\": \"Miền Trung\",\n  \"city\": \"Nha Trang\",\n  \"contact_person\": \"Nguyễn Văn A\",\n  \"phone_number\": \"0901999888\",\n  \"email\": \"spa.nhatrang@email.com\",\n  \"credit_limit\": 100000000\n}"
+            },
+            "url": { "raw": "{{base_url}}/dealers", "host": ["{{base_url}}"], "path": ["dealers"] }
+          }
+        },
+        {
+          "name": "Add Invoice (Debt Transaction)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_type\": \"Invoice\",\n  \"amount\": 75000000,\n  \"note\": \"Đơn hàng tháng 5/2024\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/dealers/{{dealer_id}}/debt-transaction", "host": ["{{base_url}}"], "path": ["dealers","{{dealer_id}}","debt-transaction"] }
+          }
+        },
+        {
+          "name": "Record Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_type\": \"Payment Received\",\n  \"amount\": 50000000,\n  \"note\": \"Thanh toán chuyển khoản ngày 15/5\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/dealers/{{dealer_id}}/debt-transaction", "host": ["{{base_url}}"], "path": ["dealers","{{dealer_id}}","debt-transaction"] }
+          }
+        },
+        {
+          "name": "Debt History",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/dealers/{{dealer_id}}/debt-history?page=1&limit=20", "host": ["{{base_url}}"], "path": ["dealers","{{dealer_id}}","debt-history"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎁 Promotions",
+      "item": [
+        {
+          "name": "List Promotions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/promotions?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["promotions"],
+              "query": [
+                { "key": "page",       "value": "1" },
+                { "key": "limit",      "value": "20" },
+                { "key": "status",     "value": "Active", "disabled": true },
+                { "key": "promo_type", "value": "percentage", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Active Promotions",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/promotions/active", "host": ["{{base_url}}"], "path": ["promotions","active"] }
+          }
+        },
+        {
+          "name": "Create Promotion",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"promotion_name\": \"Sale Ngày Môi Trường 5/6\",\n  \"discount_rate\": 20,\n  \"promo_type\": \"percentage\",\n  \"start_date\": \"2024-06-05\",\n  \"end_date\": \"2024-06-07\",\n  \"status\": \"Active\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/promotions", "host": ["{{base_url}}"], "path": ["promotions"] }
+          }
+        },
+        {
+          "name": "Apply Promotion (Calculate Discount)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"promotion_id\": 4,\n  \"order_total\": 500000\n}" },
+            "url": { "raw": "{{base_url}}/promotions/apply", "host": ["{{base_url}}"], "path": ["promotions","apply"] }
+          }
+        },
+        {
+          "name": "Update Promotion Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"Inactive\"\n}" },
+            "url": { "raw": "{{base_url}}/promotions/1/status", "host": ["{{base_url}}"], "path": ["promotions","1","status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌿 Raw Materials",
+      "item": [
+        {
+          "name": "List Raw Materials",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/raw-materials?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["raw-materials"],
+              "query": [
+                { "key": "page",   "value": "1" },
+                { "key": "limit",  "value": "20" },
+                { "key": "status", "value": "Critical", "disabled": true },
+                { "key": "search", "value": "",         "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Raw Material",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"material_name\": \"Chiết xuất nghệ vàng\",\n  \"origin\": \"Hưng Yên\",\n  \"supplier_name\": \"HTX Nghệ Hưng Yên\",\n  \"quantity\": 300,\n  \"unit\": \"kg\",\n  \"status\": \"Stable\",\n  \"import_date\": \"2024-05-01\",\n  \"expiry_date\": \"2025-05-01\"\n}"
+            },
+            "url": { "raw": "{{base_url}}/raw-materials", "host": ["{{base_url}}"], "path": ["raw-materials"] }
+          }
+        },
+        {
+          "name": "Update Raw Material",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"quantity\": 500,\n  \"status\": \"Stable\"\n}" },
+            "url": { "raw": "{{base_url}}/raw-materials/3", "host": ["{{base_url}}"], "path": ["raw-materials","3"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Analytics",
+      "item": [
+        {
+          "name": "Dashboard KPIs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/analytics/dashboard", "host": ["{{base_url}}"], "path": ["analytics","dashboard"] }
+          }
+        },
+        {
+          "name": "Revenue Monthly (12 months)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/analytics/revenue/monthly?months=12",
+              "host": ["{{base_url}}"], "path": ["analytics","revenue","monthly"],
+              "query": [{ "key": "months", "value": "12" }]
+            }
+          }
+        },
+        {
+          "name": "Revenue by Channel",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/analytics/revenue/by-channel?from=2024-01-01&to=2024-12-31",
+              "host": ["{{base_url}}"], "path": ["analytics","revenue","by-channel"],
+              "query": [{ "key": "from", "value": "2024-01-01" }, { "key": "to", "value": "2024-12-31" }]
+            }
+          }
+        },
+        {
+          "name": "Top Products by Revenue",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/analytics/revenue/by-product?limit=10",
+              "host": ["{{base_url}}"], "path": ["analytics","revenue","by-product"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Customer Segments",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/analytics/customers/segments", "host": ["{{base_url}}"], "path": ["analytics","customers","segments"] }
+          }
+        },
+        {
+          "name": "RFM Analysis",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/analytics/customers/rfm?limit=50",
+              "host": ["{{base_url}}"], "path": ["analytics","customers","rfm"],
+              "query": [{ "key": "limit", "value": "50" }]
+            }
+          }
+        },
+        {
+          "name": "Top Customers (90 days)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/analytics/customers/top?limit=10",
+              "host": ["{{base_url}}"], "path": ["analytics","customers","top"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Low Stock Summary",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/analytics/inventory/low-stock", "host": ["{{base_url}}"], "path": ["analytics","inventory","low-stock"] }
+          }
+        },
+        {
+          "name": "Audit Logs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/analytics/audit-logs?page=1&limit=20",
+              "host": ["{{base_url}}"], "path": ["analytics","audit-logs"],
+              "query": [
+                { "key": "page",       "value": "1" },
+                { "key": "limit",      "value": "20" },
+                { "key": "module",     "value": "Finance",  "disabled": true },
+                { "key": "risk_level", "value": "High",     "disabled": true },
+                { "key": "from",       "value": "2024-01-01","disabled": true },
+                { "key": "to",         "value": "2024-12-31","disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🗂 Categories",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/categories", "host": ["{{base_url}}"], "path": ["categories"] }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"category_name\": \"Nước hoa thuần chay\",\n  \"description\": \"Nước hoa không thử nghiệm trên động vật\"\n}" },
+            "url": { "raw": "{{base_url}}/categories", "host": ["{{base_url}}"], "path": ["categories"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "❤️ Health Check",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "http://localhost:3000/health", "host": ["http://localhost:3000"], "path": ["health"] }
+          }
+        }
+      ]
+    }
+  ]
+}

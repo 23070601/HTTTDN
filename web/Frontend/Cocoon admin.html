@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cocoon SMS — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ── DESIGN TOKENS ── */
+:root {
+  --bg:#f5f1e8;--bg-light:#faf8f3;--fg:#344e41;--border:#e8e8e8;--border-strong:#d9d3c7;
+  --surface:#f9f7f3;--primary:#3a5a40;--primary-fg:#fff;--secondary:#588157;
+  --accent-soft:#e3ecd9;--leaf:#a3b18a;
+  --danger-soft:#f5e6e3;--danger:#b5544f;
+  --warning-soft:#f4e8cc;--warning:#a97a1f;
+  --success-soft:#e4efe5;--success:#4f7a56;
+  --info-soft:#e6eef2;--info:#5d7c88;
+  --card:#faf8f3;--paper:#f2ebdd;--sidebar:#314436;
+  --muted:#888;--gold:#a68643;--gold-soft:#efe4c8;
+  --font-body:'DM Sans',sans-serif;--font-heading:'PT Serif',serif;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+  --shadow:0 2px 8px rgba(0,0,0,.06);--shadow-md:0 4px 16px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--fg);font-size:14px;min-height:100vh;}
+
+/* ── LAYOUT ── */
+#app{display:flex;min-height:100vh;}
+#sidebar{width:240px;min-height:100vh;background:var(--sidebar);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:100;}
+#main{margin-left:240px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+#topbar{height:60px;background:var(--bg-light);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:50;}
+#content{flex:1;padding:24px;}
+
+/* ── SIDEBAR ── */
+.sb-logo{padding:20px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;}
+.sb-icon{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.sb-brand{color:#fff;font-family:var(--font-heading);font-size:15px;font-weight:700;}
+.sb-sub{color:rgba(255,255,255,.45);font-size:10px;}
+.sb-scroll{flex:1;overflow-y:auto;padding:8px;}
+.sb-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:12px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);color:rgba(255,255,255,.65);cursor:pointer;font-size:13px;font-weight:500;text-decoration:none;margin-bottom:1px;transition:all .15s;}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:var(--primary);color:#fff;}
+.nav-item svg{flex-shrink:0;width:16px;height:16px;}
+/* role badge on nav */
+.role-gate{display:none;}
+.role-gate.show{display:flex;}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.08);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--r-sm);cursor:pointer;}
+.sb-user:hover{background:rgba(255,255,255,.05);}
+.u-av{width:32px;height:32px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--primary);flex-shrink:0;}
+.u-name{color:#fff;font-size:13px;font-weight:500;}
+.u-role{color:rgba(255,255,255,.45);font-size:11px;}
+.role-chip{display:inline-block;padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-left:auto;}
+.role-admin{background:#f5e6e3;color:#b5544f;}
+.role-manager{background:#efe4c8;color:#a68643;}
+.role-sales{background:#e3ecd9;color:#3a5a40;}
+.role-warehouse{background:#e6eef2;color:#5d7c88;}
+.role-finance{background:#f4e8cc;color:#a97a1f;}
+
+/* ── TOPBAR ── */
+.tb-title{font-family:var(--font-heading);font-size:18px;flex:1;}
+.tb-actions{display:flex;align-items:center;gap:8px;}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;}
+.card-sm{padding:14px;}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;}
+.stat-label{font-size:12px;color:var(--muted);margin-bottom:6px;}
+.stat-value{font-family:var(--font-heading);font-size:26px;color:var(--fg);margin-bottom:4px;}
+.stat-sub{font-size:12px;color:var(--success);}
+.stat-sub.warn{color:var(--warning);}
+.stat-sub.danger{color:var(--danger);}
+.stat-icon{width:36px;height:36px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.si-green{background:var(--accent-soft);color:var(--primary);}
+.si-gold{background:var(--gold-soft);color:var(--gold);}
+.si-danger{background:var(--danger-soft);color:var(--danger);}
+.si-info{background:var(--info-soft);color:var(--info);}
+.section-title{font-family:var(--font-heading);font-size:16px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.mb-4{margin-bottom:16px;}.mb-6{margin-bottom:24px;}.mt-4{margin-top:16px;}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px;border-bottom:1px solid var(--border);background:var(--surface);}
+tbody td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--fg);font-size:13px;vertical-align:middle;}
+tbody tr:hover{background:var(--surface);}
+tbody tr:last-child td{border-bottom:none;}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;}
+.b-green{background:var(--success-soft);color:var(--success);}
+.b-red{background:var(--danger-soft);color:var(--danger);}
+.b-yellow{background:var(--warning-soft);color:var(--warning);}
+.b-blue{background:var(--info-soft);color:var(--info);}
+.b-gray{background:var(--border);color:var(--muted);}
+.b-gold{background:var(--gold-soft);color:var(--gold);}
+.b-primary{background:var(--accent-soft);color:var(--primary);}
+
+/* ── FORMS ── */
+.fg{margin-bottom:16px;}
+label{display:block;font-size:13px;font-weight:500;margin-bottom:6px;}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg-light);color:var(--fg);font-family:var(--font-body);font-size:14px;outline:none;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);}
+textarea{resize:vertical;min-height:80px;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;text-decoration:none;}
+.btn-primary{background:var(--primary);color:#fff;}.btn-primary:hover{background:#2d4832;}
+.btn-secondary{background:var(--surface);color:var(--fg);border:1px solid var(--border);}.btn-secondary:hover{background:var(--border);}
+.btn-danger{background:var(--danger-soft);color:var(--danger);}.btn-danger:hover{background:#f0cfc7;}
+.btn-sm{padding:6px 12px;font-size:12px;}.btn-xs{padding:4px 8px;font-size:11px;}
+
+/* ── FILTER BAR ── */
+.filter-bar{display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap;}
+.sw{position:relative;flex:1;min-width:200px;}
+.sw svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);width:14px;height:14px;}
+.sw input{padding-left:32px;}
+.fs{width:auto;min-width:130px;flex-shrink:0;}
+
+/* ── PAGINATION ── */
+.pager{display:flex;align-items:center;gap:6px;margin-top:16px;justify-content:flex-end;}
+.pg-btn{width:32px;height:32px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg-light);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--fg);}
+.pg-btn:hover{background:var(--border);}
+.pg-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.pg-info{color:var(--muted);font-size:13px;}
+
+/* ── MODAL ── */
+.modal-bd{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--card);border-radius:var(--r-lg);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+.modal-lg{max-width:800px;}
+.modal-hd{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:var(--font-heading);font-size:16px;}
+.modal-close{width:30px;height:30px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);}
+.modal-body{padding:20px 24px;}
+.modal-ft{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+
+/* ── TOAST ── */
+#toast-wrap{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px;}
+.toast{padding:12px 16px;border-radius:var(--r);background:var(--sidebar);color:#fff;font-size:13px;box-shadow:var(--shadow-md);animation:tsIn .3s ease;max-width:320px;}
+.toast.success{background:var(--success);}
+.toast.error{background:var(--danger);}
+.toast.warning{background:var(--warning);}
+@keyframes tsIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:40px;width:100%;max-width:420px;box-shadow:var(--shadow-md);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo-icon{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px;}
+.login-logo h1{font-family:var(--font-heading);font-size:22px;}
+.login-logo p{color:var(--muted);font-size:13px;margin-top:4px;}
+
+/* ── MISC ── */
+.loading{display:flex;align-items:center;justify-content:center;padding:40px;}
+.spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted);}
+.chart-wrap{position:relative;height:240px;}
+.detail-hd{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px;}
+.detail-av{width:56px;height:56px;border-radius:var(--r);background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--primary);font-family:var(--font-heading);font-weight:700;flex-shrink:0;}
+.detail-title{font-family:var(--font-heading);font-size:20px;}
+.detail-meta{color:var(--muted);font-size:13px;margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.info-item label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;display:block;}
+.info-item span{font-size:14px;}
+.alert{padding:12px 16px;border-radius:var(--r-sm);font-size:13px;margin-bottom:12px;}
+.alert.info{background:var(--info-soft);color:var(--info);border-left:3px solid var(--info);}
+.alert.danger{background:var(--danger-soft);color:var(--danger);border-left:3px solid var(--danger);}
+.alert.success{background:var(--success-soft);color:var(--success);border-left:3px solid var(--success);}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;}
+.tab{padding:10px 18px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.text-muted{color:var(--muted);}
+.text-success{color:var(--success);}
+.text-danger{color:var(--danger);}
+.text-warning{color:var(--warning);}
+.text-primary{color:var(--primary);}
+.fw-600{font-weight:600;}
+.f-head{font-family:var(--font-heading);}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+hr{border:none;border-top:1px solid var(--border);margin:16px 0;}
+a{color:var(--secondary);text-decoration:none;}
+
+/* ── RBAC GUARD ── */
+[data-roles]{display:none;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🌿</div>
+      <h1>Cocoon Vietnam</h1>
+      <p>Sales Management System — Nhân viên nội bộ</p>
+    </div>
+    <div id="login-err" class="alert danger" style="display:none"></div>
+    <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="staff@cocoon.vn"></div>
+    <div class="fg"><label>Mật khẩu</label><input type="password" id="l-pass" placeholder="••••••••"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="doLogin()" id="l-btn">Đăng nhập</button>
+    <div style="margin-top:16px;padding:12px;background:var(--info-soft);border-radius:var(--r-sm);font-size:12px;color:var(--info)">
+      <strong>Dành cho:</strong> Sales · Warehouse · Finance · Manager · Admin<br>
+      <span style="margin-top:4px;display:block;opacity:.8">Phân quyền RBAC theo vai trò</span>
+    </div>
+    <div class="fg" style="margin-top:10px">
+      <label style="font-size:12px;color:var(--muted)">API Base URL</label>
+      <input id="api-url" value="http://localhost:3000" style="margin-top:4px;font-size:13px">
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-icon">🌿</div>
+      <div><div class="sb-brand">Cocoon SMS</div><div class="sb-sub">Internal Admin</div></div>
+    </div>
+    <div class="sb-scroll">
+      <div class="sb-label">Dashboard</div>
+      <a class="nav-item active" data-page="dashboard" data-roles="admin,manager,finance,sales,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Tổng quan
+      </a>
+      <a class="nav-item" data-page="analytics" data-roles="admin,manager,finance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Phân tích doanh thu
+      </a>
+      <div class="sb-label">Bán hàng</div>
+      <a class="nav-item" data-page="orders" data-roles="admin,manager,sales,finance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>Đơn hàng
+      </a>
+      <a class="nav-item" data-page="customers" data-roles="admin,manager,sales">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Khách hàng (CRM)
+      </a>
+      <a class="nav-item" data-page="crm-insights" data-roles="admin,manager">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Customer Insights / RFM
+      </a>
+      <div class="sb-label">Kho hàng</div>
+      <a class="nav-item" data-page="products" data-roles="admin,manager,sales,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Sản phẩm
+      </a>
+      <a class="nav-item" data-page="stock-in" data-roles="admin,manager,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>Nhập / Xuất kho
+      </a>
+      <a class="nav-item" data-page="inv-alerts" data-roles="admin,manager,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Cảnh báo tồn kho
+      </a>
+      <a class="nav-item" data-page="raw-materials" data-roles="admin,manager,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Nguyên liệu thô
+      </a>
+      <div class="sb-label">Đại lý & Tài chính</div>
+      <a class="nav-item" data-page="dealers" data-roles="admin,manager,sales,finance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Đại lý (B2B)
+      </a>
+      <div class="sb-label" id="admin-section" style="display:none">Quản trị</div>
+      <a class="nav-item role-gate" data-page="users" data-roles="admin,manager">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>Người dùng
+      </a>
+      <a class="nav-item role-gate" data-page="audit-logs" data-roles="admin,manager">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Audit Logs
+      </a>
+    </div>
+    <div class="sb-foot">
+      <div class="sb-user" onclick="showPage('profile')">
+        <div class="u-av" id="sb-av">?</div>
+        <div><div class="u-name" id="sb-name">...</div><div class="u-role" id="sb-role">...</div></div>
+        <span class="role-chip" id="sb-chip"></span>
+      </div>
+      <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center;margin-top:8px" onclick="doLogout()">Đăng xuất</button>
+    </div>
+  </nav>
+
+  <div id="main">
+    <div id="topbar">
+      <div class="tb-title" id="page-title">Tổng quan</div>
+      <div class="tb-actions" id="tb-actions"></div>
+    </div>
+    <div id="content"><div class="loading"><div class="spinner"></div></div></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bd" id="modal" style="display:none" onclick="closeModal(event)">
+  <div class="modal" id="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-hd">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-ft" id="modal-ft"></div>
+  </div>
+</div>
+<div id="toast-wrap"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let API = 'http://localhost:3000';
+let token = localStorage.getItem('cocoon_admin_token');
+let me = null; // { user_id, full_name, email, role, office }
+let charts = {};
+
+// RBAC — which pages each role can access
+const ROLE_PAGES = {
+  admin:     ['dashboard','analytics','orders','customers','crm-insights','products','stock-in','inv-alerts','raw-materials','dealers','users','audit-logs','profile'],
+  manager:   ['dashboard','analytics','orders','customers','crm-insights','products','stock-in','inv-alerts','raw-materials','dealers','users','audit-logs','profile'],
+  finance:   ['dashboard','analytics','orders','dealers','profile'],
+  sales:     ['dashboard','orders','customers','products','dealers','profile'],
+  warehouse: ['dashboard','products','stock-in','inv-alerts','raw-materials','profile'],
+};
+
+// ═══════════════════════════════════════════════════════════
+//  API
+// ═══════════════════════════════════════════════════════════
+async function apiFetch(path, opts = {}) {
+  API = document.getElementById('api-url')?.value || 'http://localhost:3000';
+  const h = { 'Content-Type':'application/json' };
+  if (token) h['Authorization'] = `Bearer ${token}`;
+  try {
+    const r = await fetch(`${API}/api${path}`, { ...opts, headers: { ...h, ...opts.headers } });
+    const d = await r.json();
+    if (r.status === 401) { doLogout(); return null; }
+    return { ok: r.ok, status: r.status, data: d };
+  } catch(e) { toast('Lỗi kết nối server', 'error'); return null; }
+}
+const GET    = (p, q={}) => { const qs=new URLSearchParams(q).toString(); return apiFetch(p+(qs?'?'+qs:'')); };
+const POST   = (p,b) => apiFetch(p,{method:'POST',body:JSON.stringify(b)});
+const PUT    = (p,b) => apiFetch(p,{method:'PUT',body:JSON.stringify(b)});
+const PATCH  = (p,b) => apiFetch(p,{method:'PATCH',body:JSON.stringify(b)});
+const DELETE = (p)   => apiFetch(p,{method:'DELETE'});
+
+// ═══════════════════════════════════════════════════════════
+//  UTILS
+// ═══════════════════════════════════════════════════════════
+function toast(msg, type='success') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-wrap').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+const fmtN = (n,d=0) => n==null ? '—' : Number(n).toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtVND = n => fmtN(n) + ' ₫';
+const fmtDate = d => d ? new Date(d).toLocaleDateString('vi-VN') : '—';
+const fmtDT = d => d ? new Date(d).toLocaleString('vi-VN') : '—';
+const initials = n => n ? n.split(' ').slice(-2).map(w=>w[0]).join('').toUpperCase() : '?';
+
+function dBadge(s) {
+  const m={Pending:'b-yellow',Processing:'b-blue',Shipped:'b-blue',Delivered:'b-green',Cancelled:'b-red',Returned:'b-red'};
+  return `<span class="badge ${m[s]||'b-gray'}">${s||'—'}</span>`;
+}
+function pBadge(s) {
+  const m={Paid:'b-green',Unpaid:'b-yellow',Refunded:'b-red'};
+  return `<span class="badge ${m[s]||'b-gray'}">${s||'—'}</span>`;
+}
+function sBadge(s) {
+  const m={Available:'b-green','Low Stock':'b-yellow','Out of Stock':'b-red',Discontinued:'b-gray',active:'b-green',inactive:'b-red',Active:'b-green',Inactive:'b-gray',Overdue:'b-red',Settled:'b-green',Pending:'b-yellow',Stable:'b-green',Warning:'b-yellow'};
+  return `<span class="badge ${m[s]||'b-gray'}">${s||'—'}</span>`;
+}
+function segBadge(s) {
+  const m={VIP:'b-gold',Loyal:'b-green',Regular:'b-blue',New:'b-primary',Churned:'b-red','At-risk':'b-yellow',Wholesale:'b-gray'};
+  return `<span class="badge ${m[s]||'b-gray'}">${s||'—'}</span>`;
+}
+function typeBadge(s) {
+  const m={retail:'b-green',dealer:'b-gold',guest:'b-blue',marketplace:'b-gray'};
+  return `<span class="badge ${m[s]||'b-gray'}">${s||'—'}</span>`;
+}
+function channelLabel(s) {
+  const m={in_store:'In-store',online:'Online',dealer:'Dealer',marketplace:'Marketplace'};
+  return m[s] || s || '—';
+}
+function platformLabel(s) {
+  const m={website:'Website',shopee:'Shopee',tiktok:'TikTok',lazada:'Lazada',physical_store:'Physical store',dealer_portal:'Dealer portal'};
+  return m[s] || s || '—';
+}
+function roleBadge(r) {
+  const m={admin:'role-admin',manager:'role-manager',sales:'role-sales',warehouse:'role-warehouse',finance:'role-finance'};
+  return `<span class="role-chip ${m[r]||''}">${r||'—'}</span>`;
+}
+
+function setContent(html) { document.getElementById('content').innerHTML = html; }
+function setActions(html) { document.getElementById('tb-actions').innerHTML = html; }
+function openModal(title, body, footer='', large=false) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  document.getElementById('modal-ft').innerHTML = footer;
+  document.getElementById('modal-box').className = large ? 'modal modal-lg' : 'modal';
+  document.getElementById('modal').style.display = 'flex';
+}
+function closeModal(e) { if (!e || e.target===document.getElementById('modal')) document.getElementById('modal').style.display='none'; }
+
+function pgHTML(pagination, fn) {
+  if (!pagination || pagination.pages<=1) return '';
+  const {page,pages,total} = pagination;
+  let b = `<span class="pg-info">${total} kết quả</span>`;
+  for (let i=1;i<=pages;i++) {
+    if (i===1||i===pages||Math.abs(i-page)<=2) b+=`<button class="pg-btn ${i===page?'active':''}" onclick="${fn}(${i})">${i}</button>`;
+    else if (Math.abs(i-page)===3) b+=`<span class="pg-info">…</span>`;
+  }
+  return `<div class="pager">${b}</div>`;
+}
+function destroyCharts() { Object.values(charts).forEach(c=>{if(c)c.destroy();}); charts={}; }
+
+// ═══════════════════════════════════════════════════════════
+//  AUTH & RBAC
+// ═══════════════════════════════════════════════════════════
+async function doLogin() {
+  const email = document.getElementById('l-email').value;
+  const pass  = document.getElementById('l-pass').value;
+  const errEl = document.getElementById('login-err');
+  const btn   = document.getElementById('l-btn');
+  btn.textContent = 'Đang đăng nhập...'; btn.disabled = true;
+  errEl.style.display = 'none';
+  API = document.getElementById('api-url').value || 'http://localhost:3000';
+
+  const r = await POST('/auth/login', { email, password: pass });
+  btn.textContent = 'Đăng nhập'; btn.disabled = false;
+  if (!r?.ok) { errEl.textContent = r?.data?.message || 'Đăng nhập thất bại'; errEl.style.display = 'block'; return; }
+
+  token = r.data.data.access_token;
+  me    = r.data.data.user;
+  localStorage.setItem('cocoon_admin_token', token);
+
+  // Validate role — must be internal staff
+  if (!ROLE_PAGES[me.role]) {
+    errEl.textContent = `Vai trò "${me.role}" không được phép truy cập hệ thống nội bộ. Vui lòng dùng cổng dành cho khách hàng.`;
+    errEl.style.display = 'block';
+    token = null; me = null;
+    localStorage.removeItem('cocoon_admin_token');
+    return;
+  }
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  initApp();
+}
+
+function doLogout() {
+  if (token) POST('/auth/logout', {}).catch(()=>{});
+  token = null; me = null;
+  localStorage.removeItem('cocoon_admin_token');
+  location.reload();
+}
+
+async function initApp() {
+  if (!me) {
+    const r = await GET('/auth/me');
+    if (!r?.ok || !ROLE_PAGES[r.data?.data?.role]) { doLogout(); return; }
+    me = r.data.data;
+    token = localStorage.getItem('cocoon_admin_token');
+  }
+
+  // Update sidebar user info
+  document.getElementById('sb-av').textContent   = initials(me.full_name);
+  document.getElementById('sb-name').textContent = me.full_name;
+  document.getElementById('sb-role').textContent = me.role;
+  const chipMap = {admin:'role-admin',manager:'role-manager',sales:'role-sales',warehouse:'role-warehouse',finance:'role-finance'};
+  const chip = document.getElementById('sb-chip');
+  chip.textContent = me.role; chip.className = `role-chip ${chipMap[me.role]||''}`;
+
+  // Apply RBAC to sidebar
+  const allowed = ROLE_PAGES[me.role] || [];
+  document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+    const page = el.dataset.page;
+    const roles = (el.dataset.roles||'').split(',');
+    const visible = roles.includes(me.role);
+    el.style.display = visible ? 'flex' : 'none';
+  });
+
+  // Show admin section label if applicable
+  if (['admin','manager'].includes(me.role)) {
+    document.getElementById('admin-section').style.display = 'block';
+    document.querySelectorAll('.nav-item.role-gate').forEach(el => el.style.display='flex');
+  }
+
+  // Nav click handlers
+  document.querySelectorAll('.nav-item[data-page]').forEach(el => {
+    el.addEventListener('click', () => {
+      const page = el.dataset.page;
+      if (!allowed.includes(page)) { toast('Bạn không có quyền truy cập trang này', 'error'); return; }
+      showPage(page);
+    });
+  });
+
+  showPage('dashboard');
+}
+
+function showPage(page) {
+  const allowed = ROLE_PAGES[me?.role] || [];
+  if (!allowed.includes(page)) { toast('Không có quyền', 'error'); return; }
+
+  document.querySelectorAll('.nav-item[data-page]').forEach(el => el.classList.toggle('active', el.dataset.page===page));
+  destroyCharts();
+
+  const titles = {
+    dashboard:'Tổng quan',analytics:'Phân tích doanh thu',orders:'Đơn hàng',customers:'Khách hàng (CRM)',
+    'crm-insights':'Customer Insights / RFM',products:'Sản phẩm','stock-in':'Nhập / Xuất kho',
+    'inv-alerts':'Cảnh báo tồn kho','raw-materials':'Nguyên liệu thô',dealers:'Đại lý (B2B)',
+    users:'Quản lý người dùng','audit-logs':'Audit Logs',profile:'Hồ sơ cá nhân',
+  };
+  document.getElementById('page-title').textContent = titles[page] || page;
+  setActions('');
+  setContent('<div class="loading"><div class="spinner"></div></div>');
+
+  const map = {
+    dashboard: pageDashboard, analytics: pageAnalytics, orders: pageOrders,
+    customers: pageCustomers, 'crm-insights': pageCRMInsights, products: pageProducts,
+    'stock-in': pageStockIn, 'inv-alerts': pageInvAlerts, 'raw-materials': pageRawMaterials,
+    dealers: pageDealers, users: pageUsers, 'audit-logs': pageAuditLogs, profile: pageProfile,
+  };
+  if (map[page]) map[page]();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DASHBOARD
+// ═══════════════════════════════════════════════════════════
+async function pageDashboard() {
+  const r = await GET('/analytics/dashboard');
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi tải dashboard</div>'); return; }
+  const d = r.data.data;
+
+  setContent(`
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-icon si-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="stat-label">Doanh thu hôm nay</div><div class="stat-value">${fmtVND(d.revenue_today)}</div><div class="stat-sub">${d.orders_today} đơn hàng</div>
+      </div>
+      <div class="stat-card"><div class="stat-icon si-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="stat-label">Doanh thu tháng này</div><div class="stat-value">${fmtVND(d.revenue_month)}</div><div class="stat-sub">${d.orders_month} đơn hàng</div>
+      </div>
+      <div class="stat-card"><div class="stat-icon si-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="stat-label">Tổng khách hàng</div><div class="stat-value">${fmtN(d.total_customers)}</div><div class="stat-sub">+${d.new_customers_today} hôm nay</div>
+      </div>
+      <div class="stat-card"><div class="stat-icon si-danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
+        <div class="stat-label">Đơn đang chờ</div><div class="stat-value">${fmtN(d.pending_orders)}</div><div class="stat-sub warn">${d.low_stock_products} sản phẩm sắp hết</div>
+      </div>
+    </div>
+    <div class="g2 mb-6">
+      <div class="card"><div class="section-title">Doanh thu 12 tháng</div><div class="chart-wrap"><canvas id="ch-rev"></canvas></div></div>
+      <div class="card"><div class="section-title">Theo kênh bán hàng</div><div class="chart-wrap"><canvas id="ch-ch"></canvas></div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="section-title">Đơn hàng gần nhất</div><div id="d-orders"></div></div>
+      <div class="card"><div class="section-title">Sản phẩm tồn kho thấp</div><div id="d-lowstock"></div></div>
+    </div>
+  `);
+
+  const [rv, ch] = await Promise.all([GET('/analytics/revenue/monthly',{months:12}), GET('/analytics/revenue/by-channel')]);
+  if (rv?.ok) {
+    const rows = rv.data.data;
+    charts.rev = new Chart(document.getElementById('ch-rev'), { type:'line', data:{ labels:rows.map(r=>r.month), datasets:[{label:'Doanh thu',data:rows.map(r=>r.revenue),borderColor:'#3a5a40',backgroundColor:'rgba(58,90,64,.08)',fill:true,tension:.4,pointRadius:3}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtN(v/1e6)+'M'}}}}});
+  }
+  if (ch?.ok) {
+    const rows = ch.data.data;
+    charts.ch = new Chart(document.getElementById('ch-ch'), { type:'doughnut', data:{labels:rows.map(r=>r.sales_channel),datasets:[{data:rows.map(r=>r.revenue),backgroundColor:['#3a5a40','#588157','#a3b18a','#dad7cd','#b5544f']}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+  }
+
+  const [ord, ls] = await Promise.all([GET('/orders',{limit:5}), GET('/analytics/inventory/low-stock')]);
+  if (ord?.ok) {
+    document.getElementById('d-orders').innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>Đơn hàng</th><th>Khách hàng</th><th>Tổng tiền</th><th>TT</th></tr></thead><tbody>${ord.data.data.map(o=>`<tr><td><a href="#" onclick="openOrderModal(${o.order_id})">${o.order_number}</a></td><td>${o.customer_name||'—'}</td><td>${fmtVND(o.total_amount)}</td><td>${dBadge(o.delivery_status)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  if (ls?.ok) {
+    const rows = ls.data.data||[];
+    document.getElementById('d-lowstock').innerHTML = rows.length===0
+      ? '<div class="empty-state" style="padding:24px">✅ Không có sản phẩm cảnh báo</div>'
+      : `<div class="tbl-wrap"><table><thead><tr><th>Sản phẩm</th><th>Tồn kho</th></tr></thead><tbody>${rows.slice(0,6).map(p=>`<tr><td class="truncate" style="max-width:200px">${p.product_name}</td><td class="text-danger fw-600">${fmtN(p.stock_quantity)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+
+  setActions(`<div style="font-size:12px;color:var(--muted)">Công nợ đại lý: <strong class="text-warning">${fmtVND(d.total_dealer_debt)}</strong> • ${d.overdue_dealers} quá hạn</div>`);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ANALYTICS
+// ═══════════════════════════════════════════════════════════
+async function pageAnalytics() {
+  setContent(`
+    <div class="g2 mb-6">
+      <div class="card"><div class="section-title">Doanh thu & Đơn hàng theo tháng</div><div class="chart-wrap"><canvas id="a-rev"></canvas></div></div>
+      <div class="card"><div class="section-title">Top sản phẩm (doanh thu)</div><div class="chart-wrap"><canvas id="a-prod"></canvas></div></div>
+    </div>
+    <div class="card"><div class="section-title">Chi tiết sản phẩm bán chạy</div><div id="a-tbl"><div class="loading"><div class="spinner"></div></div></div></div>
+  `);
+  const [rv, pr] = await Promise.all([GET('/analytics/revenue/monthly',{months:12}), GET('/analytics/revenue/by-product',{limit:10})]);
+  if (rv?.ok) {
+    const rows = rv.data.data;
+    charts.ar = new Chart(document.getElementById('a-rev'), { type:'bar', data:{ labels:rows.map(r=>r.month), datasets:[{label:'Doanh thu',data:rows.map(r=>r.revenue),backgroundColor:'rgba(58,90,64,.8)',yAxisID:'y'},{label:'Đơn hàng',data:rows.map(r=>r.orders),type:'line',borderColor:'#a97a1f',backgroundColor:'transparent',yAxisID:'y1',tension:.4}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:v=>fmtN(v/1e6)+'M'}},y1:{position:'right',grid:{drawOnChartArea:false}}}}});
+  }
+  if (pr?.ok) {
+    const rows = pr.data.data||[];
+    charts.ap = new Chart(document.getElementById('a-prod'), { type:'bar', data:{ labels:rows.slice(0,8).map(r=>r.product_name?.slice(0,18)||'?'), datasets:[{label:'Doanh thu',data:rows.slice(0,8).map(r=>r.revenue),backgroundColor:['#3a5a40','#588157','#a3b18a','#dad7cd','#a97a1f','#b5544f','#5d7c88','#4f7a56']}]}, options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>fmtN(v/1e6)+'M'}}}}});
+    document.getElementById('a-tbl').innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Sản phẩm</th><th>SKU</th><th>Số lượng bán</th><th>Doanh thu</th></tr></thead><tbody>${rows.map((p,i)=>`<tr><td class="text-muted">${i+1}</td><td>${p.product_name}</td><td><code>${p.sku||'—'}</code></td><td>${fmtN(p.qty_sold)}</td><td class="fw-600">${fmtVND(p.revenue)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ORDERS
+// ═══════════════════════════════════════════════════════════
+let ordPage=1, ordF={};
+async function pageOrders(page=1) {
+  ordPage=page;
+  const r = await GET('/orders', { page, limit:20, ...ordF });
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const data = r.data.data||[];
+  const pagination = r.data.pagination||{};
+
+  setContent(`
+    <div class="filter-bar">
+      <div class="sw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Mã đơn, tên khách, đại lý..." oninput="ordF.search=this.value;schedulePageOrders()" value="${ordF.search||''}">
+      </div>
+      <select class="fs" onchange="ordF.customer_type=this.value;schedulePageOrders()">
+        <option value="">Tất cả loại</option>
+        ${['retail','guest','dealer','marketplace'].map(s=>`<option ${ordF.customer_type===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select class="fs" onchange="ordF.sales_channel=this.value;schedulePageOrders()">
+        <option value="">Sales channel</option>
+        ${['in_store','online','dealer','marketplace'].map(s=>`<option value="${s}" ${ordF.sales_channel===s?'selected':''}>${channelLabel(s)}</option>`).join('')}
+      </select>
+      <select class="fs" onchange="ordF.platform=this.value;schedulePageOrders()">
+        <option value="">Platform</option>
+        ${['website','physical_store','dealer_portal','shopee','tiktok','lazada'].map(s=>`<option value="${s}" ${ordF.platform===s?'selected':''}>${platformLabel(s)}</option>`).join('')}
+      </select>
+      <select class="fs" onchange="ordF.delivery_status=this.value;schedulePageOrders()">
+        <option value="">Tất cả trạng thái giao hàng</option>
+        ${['Pending','Processing','Shipped','Delivered','Cancelled'].map(s=>`<option ${ordF.delivery_status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select class="fs" onchange="ordF.payment_status=this.value;schedulePageOrders()">
+        <option value="">Thanh toán</option>
+        ${['Paid','Unpaid','Refunded'].map(s=>`<option ${ordF.payment_status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="card card-sm">
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>Order code</th><th>Customer / Dealer</th><th>Customer type</th><th>Sales channel</th><th>Payment status</th><th>Fulfillment status</th><th>Total amount</th><th>Created date</th><th></th></tr></thead>
+        <tbody>${data.map(o=>`<tr>
+          <td><a href="#" onclick="openOrderModal(${o.order_id})" class="fw-600">${o.order_number}</a></td>
+          <td>${o.customer_name||'—'}</td>
+          <td>${typeBadge(o.customer_type)}</td>
+          <td><span class="badge b-gray">${channelLabel(o.sales_channel)}</span><div class="text-muted" style="font-size:11px">${platformLabel(o.platform)}</div></td>
+          <td>${pBadge(o.payment_status)}</td>
+          <td>${dBadge(o.delivery_status)}</td>
+          <td class="fw-600">${fmtVND(o.total_amount)}</td>
+          <td class="text-muted">${fmtDate(o.ordered_at)}</td>
+          <td><button class="btn btn-secondary btn-xs" onclick="openOrderModal(${o.order_id})">View</button></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+      ${pgHTML(pagination,'pageOrders')}
+    </div>
+  `);
+
+  if (['admin','manager','sales'].includes(me?.role)) {
+    setActions(`<button class="btn btn-primary btn-sm" onclick="openCreateOrderModal()">+ Tạo đơn hàng hợp nhất</button>`);
+  }
+}
+
+async function openOrderModal(id) {
+  const r = await GET(`/orders/${id}`);
+  if (!r?.ok) { toast('Không tìm thấy đơn hàng','error'); return; }
+  const o = r.data.data;
+  window._orderEditPayload = o;
+  const canUpdate = ['admin','manager','sales','warehouse'].includes(me?.role);
+  const canEditOrder = ['Pending','Confirmed','Processing'].includes(o.delivery_status) && o.sales_channel !== 'marketplace';
+
+  openModal(`#${o.order_number}`, `
+    <div class="detail-hd">
+      <div class="detail-av">#</div>
+      <div><div class="detail-title">${o.order_number}</div>
+        <div class="detail-meta">${dBadge(o.delivery_status)} ${pBadge(o.payment_status)} <span class="badge b-gray">${channelLabel(o.sales_channel)}</span> <span class="badge b-gray">${platformLabel(o.platform)}</span></div>
+      </div>
+    </div>
+    <div class="info-grid mb-4">
+      <div class="info-item"><label>Khách hàng</label><span>${o.customer_name||'—'}</span></div>
+      <div class="info-item"><label>Điện thoại</label><span>${o.customer_phone||'—'}</span></div>
+      <div class="info-item"><label>Nhân viên</label><span>${o.staff_name||'—'}</span></div>
+      <div class="info-item"><label>Ngày đặt</label><span>${fmtDT(o.ordered_at)}</span></div>
+      <div class="info-item"><label>Sales channel</label><span>${channelLabel(o.sales_channel)}</span></div>
+      <div class="info-item"><label>Platform</label><span>${platformLabel(o.platform)}</span></div>
+      <div class="info-item"><label>Phí ship</label><span>${fmtVND(o.shipping_fee)}</span></div>
+      <div class="info-item"><label>Loyalty giảm</label><span>${fmtVND(o.loyalty_discount)}</span></div>
+      <div class="info-item"><label>Tổng tiền</label><span class="fw-600 text-primary" style="font-size:16px">${fmtVND(o.total_amount)}</span></div>
+      <div class="info-item"><label>Địa chỉ</label><span>${o.shipping_address||'—'}</span></div>
+    </div>
+    <div class="section-title">Sản phẩm trong đơn</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Sản phẩm</th><th>SKU</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+      <tbody>${(o.items||[]).map(i=>`<tr><td>${i.product_name}</td><td><code>${i.sku}</code></td><td>${i.quantity}</td><td>${fmtVND(i.unit_price)}</td><td class="fw-600">${fmtVND(i.subtotal)}</td></tr>`).join('')}</tbody>
+    </table></div>
+    ${o.note?`<div class="alert info mt-4"><strong>Ghi chú:</strong> ${o.note}</div>`:''}
+  `,
+  canUpdate ? `
+    ${canEditOrder ? `<button class="btn btn-secondary btn-sm" onclick="openCreateOrderModal(window._orderEditPayload)">Chỉnh sửa</button>` : ''}
+    ${canEditOrder ? `<button class="btn btn-danger btn-sm" onclick="removeOrder(${o.order_id})">Hủy/Xóa</button>` : ''}
+    <select id="ds-sel" style="width:auto">${['Pending','Processing','Shipping','Delivered','Cancelled','Returned'].map(s=>`<option ${o.delivery_status===s?'selected':''}>${s}</option>`).join('')}</select>
+    <button class="btn btn-primary btn-sm" onclick="updateDelivery(${o.order_id})">Cập nhật</button>
+    <button class="btn btn-secondary btn-sm" onclick="closeModal()">Đóng</button>
+  ` : `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Đóng</button>`);
+}
+
+async function updateDelivery(id) {
+  const status = document.getElementById('ds-sel').value;
+  const r = await PATCH(`/orders/${id}/delivery-status`, { delivery_status: status });
+  if (r?.ok) { toast('Cập nhật thành công'); closeModal(); pageOrders(ordPage); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+async function removeOrder(id) {
+  if (!confirm('Xác nhận hủy/xóa đơn hàng?')) return;
+  const r = await DELETE(`/orders/${id}`);
+  if (r?.ok) { toast('Đã xử lý đơn hàng'); closeModal(); pageOrders(ordPage); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+async function openCreateOrderModal(order = null) {
+  const [custR, dealerR, prodR] = await Promise.all([
+    GET('/customers',{limit:500}),
+    GET('/dealers',{limit:500}),
+    GET('/products',{limit:100,status:'Available'})
+  ]);
+  const custs = custR?.data?.data||[];
+  const dealers = dealerR?.data?.data||[];
+  const prods = prodR?.data?.data||[];
+  window._ocEditOrder = order || null;
+  window._ocEditOrderId = order?.order_id || null;
+  window._ocItems = (order?.items || []).map(item => ({
+    id: item.product_id,
+    name: item.product_name,
+    price: parseFloat(item.unit_price),
+    qty: parseInt(item.quantity, 10),
+  }));
+
+  const channelOptions = [
+    ['in_store','In-store'],
+    ['online','Online'],
+    ['dealer','Dealer'],
+  ];
+  if (order?.sales_channel === 'marketplace') channelOptions.push(['marketplace','Marketplace']);
+
+  openModal(order ? `Chỉnh sửa ${order.order_number}` : 'Tạo đơn hàng hợp nhất', `
+    <div class="g2">
+      <div class="fg"><label>STEP 1 - Sales channel</label>
+        <select id="oc-ch" onchange="toggleOcOrderMode()">
+          ${channelOptions.map(([value,label])=>`<option value="${value}" ${value==='online'?'selected':''}>${label}</option>`).join('')}
+        </select>
+      </div>
+      <div class="fg"><label>Payment method</label>
+        <select id="oc-pay" style="display:none">
+          <!-- Options will be populated dynamically by toggleOcOrderMode() -->
+        </select>
+        <div id="oc-pay-marketplace" style="display:none;padding:8px;background:var(--bg-light);border-radius:var(--r-sm);color:var(--muted);font-size:13px">Payment handled by platform (read-only)</div>
+      </div>
+    </div>
+
+    <div class="fg"><label>STEP 2 - Platform</label>
+      <select id="oc-platform"></select>
+      <div class="text-muted" style="font-size:12px;margin-top:6px">Platform tự động map theo sales channel.</div>
+    </div>
+
+    <div id="oc-dealer-box" class="card card-sm mb-4" style="display:none;padding:16px;border:1px solid var(--border)">
+      <div class="g2">
+        <div class="fg" style="grid-column:1/-1"><label>Select dealer</label>
+          <select id="oc-dealer" onchange="renderOcDealerInfo()">
+            <option value="">Choose dealer</option>
+            ${dealers.map(d=>`<option value="${d.dealer_id}" data-name="${d.dealer_name}" data-credit="${d.credit_limit}" data-debt="${d.debt_amount}" data-terms="${d.payment_terms||''}" data-tier="${d.wholesale_tier||''}">${d.dealer_name} — ${d.region||'No region'} (${fmtVND(d.debt_amount)} / ${fmtVND(d.credit_limit)})</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div id="oc-dealer-info" class="alert info mt-3">Select a dealer to see credit and debt information.</div>
+    </div>
+
+    <div id="oc-retail-box" class="card card-sm mb-4" style="padding:16px;border:1px solid var(--border)">
+      <div class="g2">
+        <div class="fg" style="grid-column:1/-1"><label>Customer flow</label>
+          <select id="oc-cust-mode" onchange="toggleRetailCustomerMode()">
+            ${['existing','new','guest'].map(s=>`<option ${s==='existing'?'selected':''}>${s}</option>`).join('')}
+          </select>
+        </div>
+        <div id="oc-existing-box" class="fg" style="grid-column:1/-1">
+          <label>Search existing customer</label>
+          <div style="position:relative">
+            <input id="oc-cust-search" type="text" placeholder="Tìm theo SĐT hoặc tên..." oninput="ocSearchCustomers(this.value)" style="width:100%">
+            <div id="oc-search-results" style="position:absolute;top:100%;left:0;right:0;background:white;border:1px solid var(--border);border-top:none;max-height:200px;overflow-y:auto;z-index:10;display:none"></div>
+          </div>
+          <input id="oc-cust-id" type="hidden">
+          <div id="oc-selected-cust" style="margin-top:8px;padding:8px;background:var(--bg-light);border-radius:var(--r-sm);display:none"><span id="oc-selected-cust-text"></span><button type="button" class="btn btn-danger btn-xs" style="margin-left:8px" onclick="ocClearCustomer()">Xóa</button></div>
+        </div>
+        <div id="oc-new-box" class="g2" style="display:none;grid-column:1/-1">
+          <div class="fg"><label>Customer name</label><input id="oc-new-name" placeholder="New customer name"></div>
+          <div class="fg"><label>Email</label><input id="oc-new-email" type="email" placeholder="email@example.com"></div>
+          <div class="fg"><label>Phone</label><input id="oc-new-phone" placeholder="Phone number"></div>
+        </div>
+        <div id="oc-guest-box" class="g2" style="display:none;grid-column:1/-1">
+          <div class="fg"><label>Guest name</label><input id="oc-guest-name" placeholder="Guest customer (optional)"></div>
+          <div class="fg"><label>Guest phone</label><input id="oc-guest-phone" placeholder="Phone number (optional)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="oc-addr-box" class="fg"><label>Shipping address</label><input id="oc-addr" placeholder="Shipping address"></div>
+    <div class="fg"><label>Thêm sản phẩm</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <select id="oc-prod" style="flex:1" onchange="window._ocSel=this.options[this.selectedIndex]">
+          <option value="">Chọn sản phẩm</option>${prods.map(p=>`<option value="${p.product_id}" data-price="${p.selling_price}" data-name="${p.product_name}">${p.product_name} (Tồn: ${p.stock_quantity})</option>`).join('')}
+        </select>
+        <input type="number" id="oc-qty" value="1" min="1" style="width:70px">
+        <button class="btn btn-secondary btn-sm" onclick="addOcItem()">Thêm</button>
+      </div>
+      <div id="oc-item-list" style="border:1px solid var(--border);border-radius:var(--r-sm);min-height:36px"></div>
+    </div>
+    <div class="fg"><label>Ghi chú</label><textarea id="oc-note" rows="2"></textarea></div>
+  `, `
+    <div id="oc-total" class="fw-600 text-primary" style="flex:1"></div>
+    <button class="btn btn-secondary btn-sm" onclick="closeModal()">Hủy</button>
+    <button class="btn btn-primary btn-sm" onclick="submitCreateOrder()">${order ? 'Lưu thay đổi' : 'Tạo đơn hàng'}</button>
+  `);
+  toggleOcOrderMode();
+  if (order) {
+    const channelSelect = document.getElementById('oc-ch');
+    if (channelSelect) channelSelect.value = order.sales_channel || 'online';
+    toggleOcOrderMode();
+    const platformSelect = document.getElementById('oc-platform');
+    if (platformSelect) platformSelect.value = order.platform || platformSelect.value;
+
+    const paySelect = document.getElementById('oc-pay');
+    if (paySelect && order.payment_method) paySelect.value = order.payment_method;
+    const addr = document.getElementById('oc-addr');
+    if (addr) addr.value = order.shipping_address || '';
+    const note = document.getElementById('oc-note');
+    if (note) note.value = order.note || '';
+
+    if (order.customer_type === 'dealer') {
+      const dealerSel = document.getElementById('oc-dealer');
+      if (dealerSel && order.dealer_id) dealerSel.value = String(order.dealer_id);
+      renderOcDealerInfo();
+    } else {
+      const custMode = document.getElementById('oc-cust-mode');
+      if (custMode) custMode.value = 'existing';
+      toggleRetailCustomerMode();
+      if (order.customer_id) {
+        ocSelectCustomer(order.customer_id, order.customer_name || 'Customer', order.customer_phone || '');
+      }
+    }
+
+    const channelLock = document.getElementById('oc-ch');
+    if (channelLock) channelLock.disabled = true;
+  }
+  renderOcItems();
+}
+
+function toggleRetailCustomerMode() {
+  const mode = document.getElementById('oc-cust-mode')?.value || 'existing';
+  const existingBox = document.getElementById('oc-existing-box');
+  const newBox = document.getElementById('oc-new-box');
+  const guestBox = document.getElementById('oc-guest-box');
+  if (existingBox) existingBox.style.display = mode === 'existing' ? '' : 'none';
+  if (newBox) newBox.style.display = mode === 'new' ? '' : 'none';
+  if (guestBox) guestBox.style.display = mode === 'guest' ? '' : 'none';
+}
+
+function renderOcDealerInfo() {
+  const sel = document.getElementById('oc-dealer');
+  const info = document.getElementById('oc-dealer-info');
+  if (!sel || !info) return;
+  const opt = sel.options[sel.selectedIndex];
+  if (!sel.value) {
+    info.innerHTML = 'Select a dealer to see credit and debt information.';
+    return;
+  }
+  const debt = Number(opt.dataset.debt || 0);
+  const credit = Number(opt.dataset.credit || 0);
+  const remaining = credit - debt;
+  info.innerHTML = `
+    <div class="g2">
+      <div><strong>${opt.dataset.name}</strong><div class="text-muted">Tier: ${opt.dataset.tier || '—'}</div></div>
+      <div><div>Payment terms: <strong>${opt.dataset.terms || '—'}</strong></div><div>Available credit: <strong>${fmtVND(Math.max(remaining, 0))}</strong></div></div>
+    </div>
+    <div class="mt-2">Outstanding debt: <strong class="text-warning">${fmtVND(debt)}</strong> / ${fmtVND(credit)}</div>`;
+}
+
+function toggleOcOrderMode() {
+  const channel = document.getElementById('oc-ch')?.value || 'online';
+  const dealerBox = document.getElementById('oc-dealer-box');
+  const retailBox = document.getElementById('oc-retail-box');
+  const addrBox = document.getElementById('oc-addr-box');
+  const paySelect = document.getElementById('oc-pay');
+  const payMarketplace = document.getElementById('oc-pay-marketplace');
+  const platform = document.getElementById('oc-platform');
+  
+  const platformByChannel = {
+    in_store: [['physical_store','Physical store']],
+    online: [['website','Website']],
+    dealer: [['dealer_portal','Dealer portal']],
+  };
+  
+  const paymentMethodsByChannel = {
+    in_store: ['Cash', 'Card'],
+    online: ['COD', 'Bank Transfer', 'Card', 'Momo', 'VNPay'],
+    dealer: ['Invoice', 'Credit Terms', 'Bank Transfer'],
+  };
+
+  if (dealerBox) dealerBox.style.display = channel === 'dealer' ? '' : 'none';
+  if (retailBox) retailBox.style.display = channel === 'dealer' ? 'none' : '';
+  if (addrBox) addrBox.style.display = channel === 'in_store' ? 'none' : '';
+  
+  // Handle payment method dropdown
+  if (channel === 'marketplace') {
+    if (paySelect) paySelect.style.display = 'none';
+    if (payMarketplace) payMarketplace.style.display = '';
+  } else {
+    if (paySelect) {
+      const methods = paymentMethodsByChannel[channel] || paymentMethodsByChannel.online;
+      paySelect.innerHTML = methods.map(m => `<option value="${m}">${m}</option>`).join('');
+      paySelect.value = methods[0];
+      paySelect.style.display = '';
+    }
+    if (payMarketplace) payMarketplace.style.display = 'none';
+  }
+  
+  if (platform) {
+    const options = platformByChannel[channel] || platformByChannel.online;
+    platform.innerHTML = options.map(([value,label]) => `<option value="${value}">${label}</option>`).join('');
+    platform.value = options[0][0];
+    platform.disabled = true;
+  }
+  if (channel !== 'dealer') toggleRetailCustomerMode();
+  renderOcDealerInfo();
+}
+
+async function ocSearchCustomers(query) {
+  const resultsDiv = document.getElementById('oc-search-results');
+  if (!resultsDiv) return;
+  
+  if (!query || query.trim().length < 1) {
+    resultsDiv.style.display = 'none';
+    return;
+  }
+  
+  try {
+    const r = await GET('/customers/search', { q: query.trim() });
+    console.log('[ocSearch] Full response:', r);
+    console.log('[ocSearch] Response ok:', r?.ok);
+    console.log('[ocSearch] Response data:', r?.data);
+    
+    if (!r?.ok) {
+      console.error('[ocSearch] Response not ok, status:', r?.status);
+      resultsDiv.innerHTML = '<div style="padding:8px;color:var(--muted);font-size:13px">Lỗi kết nối (status: ' + (r?.status || 'unknown') + ')</div>';
+      resultsDiv.style.display = '';
+      return;
+    }
+    
+    // Response structure: { success: true, data: [...results...] }
+    const results = r?.data?.data || [];
+    console.log('[ocSearch] Results array:', results, 'length:', results.length);
+    
+    if (!Array.isArray(results) || !results.length) {
+      resultsDiv.innerHTML = '<div style="padding:8px;color:var(--muted);font-size:13px">Không tìm thấy khách hàng</div>';
+      resultsDiv.style.display = '';
+      return;
+    }
+    
+    resultsDiv.innerHTML = results.map(c => {
+      const cid = c.customer_id || '?';
+      const name = (c.full_name || 'Unknown').replace(/'/g, "\\'");
+      const phone = (c.phone_number || '').replace(/'/g, "\\'");
+      return `<div style="padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer" onmouseover="this.style.backgroundColor='var(--bg-light)'" onmouseout="this.style.backgroundColor=''" onclick="ocSelectCustomer(${cid}, '${name}', '${phone}')">
+        <div style="font-weight:600;font-size:14px">${c.full_name}</div>
+        <div style="font-size:12px;color:var(--muted)">${c.phone_number||'—'} ${c.email ? '| ' + c.email : ''}</div>
+      </div>`;
+    }).join('');
+    resultsDiv.style.display = '';
+  } catch (err) {
+    console.error('[ocSearch] Exception:', err);
+    resultsDiv.innerHTML = '<div style="padding:8px;color:var(--muted);font-size:13px">Lỗi: ' + err.message + '</div>';
+    resultsDiv.style.display = '';
+  }
+}
+
+function ocSelectCustomer(customerId, fullName, phone) {
+  document.getElementById('oc-cust-id').value = customerId;
+  document.getElementById('oc-cust-search').value = fullName;
+  document.getElementById('oc-selected-cust-text').textContent = `${fullName}${phone ? ' (' + phone + ')' : ''}`;
+  document.getElementById('oc-selected-cust').style.display = '';
+  document.getElementById('oc-search-results').style.display = 'none';
+}
+
+function ocClearCustomer() {
+  document.getElementById('oc-cust-id').value = '';
+  document.getElementById('oc-cust-search').value = '';
+  document.getElementById('oc-selected-cust').style.display = 'none';
+  document.getElementById('oc-search-results').style.display = 'none';
+}
+
+function addOcItem() {
+  const sel = document.getElementById('oc-prod');
+  if (!sel.value) return;
+  const opt = sel.options[sel.selectedIndex];
+  const qty = parseInt(document.getElementById('oc-qty').value)||1;
+  const id  = parseInt(sel.value);
+  const ex  = window._ocItems.findIndex(i=>i.id===id);
+  if (ex>=0) window._ocItems[ex].qty+=qty;
+  else window._ocItems.push({id,name:opt.dataset.name,price:parseFloat(opt.dataset.price),qty});
+  renderOcItems();
+}
+function removeOcItem(i) { window._ocItems.splice(i,1); renderOcItems(); }
+function renderOcItems() {
+  const el = document.getElementById('oc-item-list');
+  if (!el) return;
+  el.innerHTML = !window._ocItems?.length
+    ? '<div style="padding:10px;text-align:center;color:var(--muted);font-size:13px">Chưa có sản phẩm</div>'
+    : window._ocItems.map((item,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border)"><span style="flex:1;font-size:13px">${item.name}</span><span class="text-muted">×${item.qty}</span><span class="fw-600">${fmtVND(item.price*item.qty)}</span><button class="btn btn-danger btn-xs" onclick="removeOcItem(${i})">✕</button></div>`).join('');
+  const total = (window._ocItems||[]).reduce((s,i)=>s+i.price*i.qty,0);
+  const el2 = document.getElementById('oc-total');
+  if (el2) el2.textContent = 'Tổng: ' + fmtVND(total);
+}
+
+// Debounce helper for pageOrders to avoid flooding the API while typing
+function schedulePageOrders(delay = 350) {
+  if (window._pageOrdersTimer) clearTimeout(window._pageOrdersTimer);
+  window._pageOrdersTimer = setTimeout(() => pageOrders(1), delay);
+}
+async function submitCreateOrder() {
+  if (!window._ocItems?.length) { toast('Thêm ít nhất một sản phẩm','warning'); return; }
+  const channel = document.getElementById('oc-ch').value;
+  const editingOrderId = window._ocEditOrderId || null;
+  
+  // Get payment method (or use system-determined for marketplace)
+  let paymentMethod = null;
+  const paySelect = document.getElementById('oc-pay');
+  if (channel === 'marketplace') {
+    paymentMethod = 'Handled_by_Platform';
+  } else if (paySelect) {
+    paymentMethod = paySelect.value;
+  }
+  const paymentConfirmed = editingOrderId ? Boolean(window._ocEditOrder?.payment_confirmed) : false;
+  
+  const body = {
+    payment_method: paymentMethod,
+    payment_confirmed: paymentConfirmed,
+    note: document.getElementById('oc-note').value||null,
+    items: window._ocItems.map(i=>({product_id:i.id,quantity:i.qty,unit_price:i.price})),
+  };
+  if (!editingOrderId) {
+    body.sales_channel = channel;
+    body.platform = document.getElementById('oc-platform').value;
+  }
+  
+  // Only include shipping_address if not in_store
+  if (channel !== 'in_store') {
+    body.shipping_address = document.getElementById('oc-addr').value||null;
+  }
+  
+  if (channel === 'dealer') {
+    const dealerId = parseInt(document.getElementById('oc-dealer').value);
+    if (!dealerId) { toast('Chọn đại lý','warning'); return; }
+    body.customer_type = 'dealer';
+    body.dealer_id = dealerId;
+  } else {
+    const mode = document.getElementById('oc-cust-mode').value;
+    if (mode === 'existing') {
+      const cid = parseInt(document.getElementById('oc-cust-id').value);
+      if (!cid) { toast('Chọn khách hàng','warning'); return; }
+      body.customer_type = 'retail';
+      body.customer_id = cid;
+    } else if (mode === 'new') {
+      body.customer_type = 'retail';
+      body.customer_name = document.getElementById('oc-new-name').value || null;
+      body.customer_email = document.getElementById('oc-new-email').value || null;
+      body.customer_phone = document.getElementById('oc-new-phone').value || null;
+      if (!body.customer_name && !body.customer_email && !body.customer_phone) {
+        toast('Nhập thông tin khách hàng mới','warning');
+        return;
+      }
+    } else {
+      body.customer_type = 'guest';
+      body.customer_name = document.getElementById('oc-guest-name').value || null;
+      body.customer_phone = document.getElementById('oc-guest-phone').value || null;
+    }
+  }
+  const r = editingOrderId ? await PATCH(`/orders/${editingOrderId}`, body) : await POST('/orders', body);
+  if (r?.ok) {
+    toast((editingOrderId ? 'Cập nhật thành công! ' : 'Tạo đơn thành công! ') + r.data.data.order_number);
+    window._ocEditOrder = null;
+    window._ocEditOrderId = null;
+    closeModal();
+    pageOrders();
+  }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CUSTOMERS (CRM)
+// ═══════════════════════════════════════════════════════════
+let custPage=1, custF={};
+async function pageCustomers(page=1) {
+  custPage=page;
+  const r = await GET('/customers',{page,limit:20,...custF});
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const {data,pagination} = r.data;
+
+  setContent(`
+    <div class="filter-bar">
+      <div class="sw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Tên, email, SĐT..." oninput="custF.search=this.value;pageCustomers()" value="${custF.search||''}">
+      </div>
+      <select class="fs" onchange="custF.segment=this.value;pageCustomers()">
+        <option value="">Tất cả phân khúc</option>
+        ${['VIP','Loyal','Regular','New','At-risk','Wholesale','Churned'].map(s=>`<option ${custF.segment===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="card card-sm"><div class="tbl-wrap"><table>
+      <thead><tr><th>Khách hàng</th><th>Email</th><th>SĐT</th><th>Phân khúc</th><th>Loyalty</th><th>Ngày tạo</th><th></th></tr></thead>
+      <tbody>${data.map(c=>`<tr>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="u-av" style="width:28px;height:28px;font-size:11px">${initials(c.full_name)}</div><span class="fw-600">${c.full_name}</span></div></td>
+        <td class="text-muted">${c.email||'—'}</td>
+        <td>${c.phone_number||'—'}</td>
+        <td>${segBadge(c.segment)}</td>
+        <td class="fw-600 text-primary">${fmtN(c.loyalty_points_balance)} pts</td>
+        <td class="text-muted">${fmtDate(c.created_at)}</td>
+        <td><button class="btn btn-secondary btn-xs" onclick="openCustModal(${c.customer_id})">Xem</button></td>
+      </tr>`).join('')}</tbody>
+    </table></div>${pgHTML(pagination,'pageCustomers')}</div>
+  `);
+  setActions(`<button class="btn btn-primary btn-sm" onclick="openAddCustModal()">+ Thêm khách hàng</button>`);
+}
+
+async function openCustModal(id) {
+  const r = await GET(`/customers/${id}`);
+  if (!r?.ok) return;
+  const c = r.data.data; const s = c.stats||{};
+  openModal(`Khách hàng: ${c.full_name}`, `
+    <div class="detail-hd">
+      <div class="detail-av">${initials(c.full_name)}</div>
+      <div><div class="detail-title">${c.full_name}</div><div class="detail-meta">${segBadge(c.segment)} ${c.city||''}</div></div>
+    </div>
+    <div class="g3 mb-4">
+      <div class="stat-card card-sm"><div class="stat-label">Tổng đơn</div><div class="stat-value" style="font-size:20px">${fmtN(s.total_orders)}</div></div>
+      <div class="stat-card card-sm"><div class="stat-label">Tổng chi tiêu</div><div class="stat-value" style="font-size:20px">${fmtVND(s.total_spent)}</div></div>
+      <div class="stat-card card-sm"><div class="stat-label">Loyalty điểm</div><div class="stat-value" style="font-size:20px">${fmtN(c.loyalty_points_balance)}</div></div>
+    </div>
+    <div class="info-grid">
+      <div class="info-item"><label>Email</label><span>${c.email||'—'}</span></div>
+      <div class="info-item"><label>Điện thoại</label><span>${c.phone_number||'—'}</span></div>
+      <div class="info-item"><label>Giới tính</label><span>${c.gender||'—'}</span></div>
+      <div class="info-item"><label>Ngày sinh</label><span>${fmtDate(c.date_of_birth)}</span></div>
+      <div class="info-item"><label>Thành phố</label><span>${c.city||'—'}</span></div>
+      <div class="info-item"><label>Đơn cuối</label><span>${fmtDate(s.last_order_at)}</span></div>
+      <div class="info-item" style="grid-column:1/-1"><label>Địa chỉ</label><span>${c.address||'—'}</span></div>
+    </div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Đóng</button><button class="btn btn-primary btn-sm" onclick="closeModal();ordF={customer_id:${id}};pageOrders()">Xem đơn hàng</button>`);
+}
+
+async function openAddCustModal() {
+  openModal('Thêm khách hàng mới', `
+    <div class="g2"><div class="fg" style="grid-column:1/-1"><label>Họ tên *</label><input id="nc-n"></div>
+    <div class="fg"><label>Email *</label><input type="email" id="nc-e"></div>
+    <div class="fg"><label>SĐT</label><input id="nc-p"></div>
+    <div class="fg"><label>Giới tính</label><select id="nc-g"><option value="Female">Nữ</option><option value="Male">Nam</option><option value="Other">Khác</option></select></div>
+    <div class="fg"><label>Thành phố</label><input id="nc-c" placeholder="TP.HCM"></div></div>
+    <div class="fg"><label>Phân khúc</label><select id="nc-s"><option value="New">New</option><option value="Regular">Regular</option><option value="Loyal">Loyal</option><option value="VIP">VIP</option><option value="Wholesale">Wholesale</option></select></div>
+    <div class="fg"><label>Địa chỉ</label><input id="nc-a"></div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-primary btn-sm" onclick="submitAddCust()">Lưu</button>`);
+}
+async function submitAddCust() {
+  const body={full_name:document.getElementById('nc-n').value,email:document.getElementById('nc-e').value,phone_number:document.getElementById('nc-p').value,gender:document.getElementById('nc-g').value,city:document.getElementById('nc-c').value,address:document.getElementById('nc-a').value,segment:document.getElementById('nc-s').value};
+  if (!body.full_name||!body.email) { toast('Điền đầy đủ họ tên và email','warning'); return; }
+  const r = await POST('/customers', body);
+  if (r?.ok) { toast('Thêm khách hàng thành công'); closeModal(); pageCustomers(); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CRM INSIGHTS
+// ═══════════════════════════════════════════════════════════
+async function pageCRMInsights() {
+  setContent(`
+    <div class="alert info mb-4">📊 Phân tích RFM và phân khúc khách hàng — dựa trên dữ liệu mua hàng thực tế</div>
+    <div class="g2 mb-6">
+      <div class="card"><div class="section-title">Phân khúc khách hàng</div><div class="chart-wrap"><canvas id="ci-seg"></canvas></div></div>
+      <div class="card"><div class="section-title">RFM — Top khách hàng</div><div id="ci-rfm"><div class="loading"><div class="spinner"></div></div></div></div>
+    </div>
+    <div class="card"><div class="section-title">Top khách hàng theo chi tiêu</div><div id="ci-top"><div class="loading"><div class="spinner"></div></div></div></div>
+  `);
+  const [sg, rfm, top] = await Promise.all([GET('/analytics/customers/segments'), GET('/analytics/customers/rfm',{limit:10}), GET('/analytics/customers/top',{limit:10})]);
+  if (sg?.ok) {
+    const rows = sg.data.data;
+    charts.cis = new Chart(document.getElementById('ci-seg'), {type:'pie',data:{labels:rows.map(r=>r.segment),datasets:[{data:rows.map(r=>r.count),backgroundColor:['#a68643','#3a5a40','#588157','#5d7c88','#b5544f','#a97a1f','#888']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right'}}}});
+  }
+  if (rfm?.ok) {
+    document.getElementById('ci-rfm').innerHTML = `<div class="tbl-wrap" style="max-height:240px;overflow-y:auto"><table><thead><tr><th>Khách hàng</th><th>RFM</th><th>Phân khúc</th></tr></thead><tbody>${(rfm.data.data||[]).map(r=>`<tr><td>${r.full_name}</td><td><code>${r.rfm_score||'—'}</code></td><td>${segBadge(r.segment)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  if (top?.ok) {
+    document.getElementById('ci-top').innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Khách hàng</th><th>Email</th><th>Đơn hàng</th><th>Chi tiêu</th><th>Loyalty</th><th>Phân khúc</th></tr></thead><tbody>${(top.data.data||[]).map((c,i)=>`<tr><td class="text-muted">${i+1}</td><td class="fw-600">${c.full_name}</td><td class="text-muted">${c.email||'—'}</td><td>${fmtN(c.total_orders)}</td><td class="fw-600">${fmtVND(c.total_spent)}</td><td class="text-primary">${fmtN(c.loyalty_points_balance)} pts</td><td>${segBadge(c.segment)}</td></tr>`).join('')}</tbody></table></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PRODUCTS
+// ═══════════════════════════════════════════════════════════
+let prodPage=1, prodF={};
+async function pageProducts(page=1) {
+  prodPage=page;
+  const r = await GET('/products',{page,limit:20,...prodF});
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const {data,pagination} = r.data;
+  setContent(`
+    <div class="filter-bar">
+      <div class="sw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Tên, SKU..." oninput="prodF.search=this.value;pageProducts()" value="${prodF.search||''}">
+      </div>
+      <select class="fs" onchange="prodF.status=this.value;pageProducts()">
+        <option value="">Tất cả trạng thái</option>
+        ${['Available','Low Stock','Out of Stock','Discontinued'].map(s=>`<option ${prodF.status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="card card-sm"><div class="tbl-wrap"><table>
+      <thead><tr><th>Sản phẩm</th><th>SKU</th><th>Danh mục</th><th>Giá bán</th><th>Tồn kho</th><th>Đã bán</th><th>Trạng thái</th><th></th></tr></thead>
+      <tbody>${data.map(p=>`<tr>
+        <td class="fw-600">${p.product_name}</td>
+        <td><code style="font-size:11px">${p.sku}</code></td>
+        <td class="text-muted">${p.category_name||'—'}</td>
+        <td>${fmtVND(p.selling_price)}</td>
+        <td class="${p.stock_quantity<=20?'text-danger fw-600':''}">${fmtN(p.stock_quantity)}</td>
+        <td class="text-muted">${fmtN(p.sold_count)}</td>
+        <td>${sBadge(p.status)}</td>
+        <td><button class="btn btn-secondary btn-xs" onclick="openProdModal(${p.product_id})">Xem</button></td>
+      </tr>`).join('')}</tbody>
+    </table></div>${pgHTML(pagination,'pageProducts')}</div>
+  `);
+  if (['admin','manager'].includes(me?.role)) {
+    setActions(`<button class="btn btn-primary btn-sm" onclick="openAddProdModal()">+ Thêm sản phẩm</button>`);
+  }
+}
+
+async function openProdModal(id) {
+  const r = await GET(`/products/${id}`);
+  if (!r?.ok) return;
+  const p = r.data.data;
+  const canEdit = ['admin','manager','warehouse'].includes(me?.role);
+  openModal(p.product_name, `
+    <div class="info-grid mb-4">
+      <div class="info-item"><label>SKU</label><span><code>${p.sku}</code></span></div>
+      <div class="info-item"><label>Danh mục</label><span>${p.category_name||'—'}</span></div>
+      <div class="info-item"><label>Giá vốn</label><span>${fmtVND(p.cost_price)}</span></div>
+      <div class="info-item"><label>Giá bán</label><span class="fw-600 text-primary">${fmtVND(p.selling_price)}</span></div>
+      <div class="info-item"><label>Tồn kho</label><span class="${p.stock_quantity<=20?'text-danger':''} fw-600">${fmtN(p.stock_quantity)}</span></div>
+      <div class="info-item"><label>Đã bán</label><span>${fmtN(p.sold_count)}</span></div>
+      <div class="info-item"><label>Trạng thái</label><span>${sBadge(p.status)}</span></div>
+      <div class="info-item"><label>Hiển thị</label><span>${sBadge(p.visibility)}</span></div>
+      ${p.ingredients?`<div class="info-item" style="grid-column:1/-1"><label>Thành phần</label><span style="font-size:13px;color:var(--muted)">${p.ingredients}</span></div>`:''}
+    </div>
+  `,
+  canEdit ? `
+    <select id="ps-sel" style="width:auto">${['Available','Low Stock','Out of Stock','Discontinued'].map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}</select>
+    <button class="btn btn-primary btn-sm" onclick="updateProdStatus(${p.product_id})">Cập nhật</button>
+    <button class="btn btn-secondary btn-sm" onclick="closeModal()">Đóng</button>
+  ` : `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Đóng</button>`);
+}
+async function updateProdStatus(id) {
+  const status = document.getElementById('ps-sel').value;
+  const r = await PATCH(`/products/${id}/status`, {status});
+  if (r?.ok) { toast('Cập nhật thành công'); closeModal(); pageProducts(prodPage); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+async function openAddProdModal() {
+  const catR = await GET('/categories');
+  const cats = catR?.data?.data||[];
+  openModal('Thêm sản phẩm mới', `
+    <div class="g2">
+      <div class="fg" style="grid-column:1/-1"><label>Tên sản phẩm *</label><input id="np-n"></div>
+      <div class="fg"><label>SKU *</label><input id="np-s" placeholder="CCN-001"></div>
+      <div class="fg"><label>Danh mục *</label><select id="np-c"><option value="">Chọn...</option>${cats.map(c=>`<option value="${c.category_id}">${c.category_name}</option>`).join('')}</select></div>
+      <div class="fg"><label>Giá vốn (₫)</label><input type="number" id="np-cp" min="0" value="0"></div>
+      <div class="fg"><label>Giá bán (₫) *</label><input type="number" id="np-sp" min="0"></div>
+      <div class="fg"><label>Tồn kho ban đầu</label><input type="number" id="np-q" min="0" value="0"></div>
+      <div class="fg"><label>Trạng thái</label><select id="np-st"><option value="Available">Available</option><option value="Discontinued">Discontinued</option></select></div>
+    </div>
+    <div class="fg"><label>Thành phần</label><textarea id="np-ing" rows="2"></textarea></div>
+    <div class="fg"><label>Mô tả</label><textarea id="np-desc" rows="2"></textarea></div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-primary btn-sm" onclick="submitAddProd()">Lưu</button>`);
+}
+async function submitAddProd() {
+  const body={product_name:document.getElementById('np-n').value,sku:document.getElementById('np-s').value,category_id:parseInt(document.getElementById('np-c').value),cost_price:parseFloat(document.getElementById('np-cp').value)||0,selling_price:parseFloat(document.getElementById('np-sp').value),stock_quantity:parseInt(document.getElementById('np-q').value)||0,status:document.getElementById('np-st').value,ingredients:document.getElementById('np-ing').value||null,description:document.getElementById('np-desc').value||null};
+  if (!body.product_name||!body.sku||!body.category_id||!body.selling_price) { toast('Điền đầy đủ trường bắt buộc','warning'); return; }
+  const r = await POST('/products', body);
+  if (r?.ok) { toast('Thêm sản phẩm thành công'); closeModal(); pageProducts(); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  STOCK IN / OUT
+// ═══════════════════════════════════════════════════════════
+let siPage=1, siF={};
+async function pageStockIn(page=1) {
+  siPage=page;
+  const r = await GET('/inventory/transactions',{page,limit:20,...siF});
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const {data,pagination} = r.data;
+  const typeColor = {'Stock In':'b-green','Stock Out':'b-red',Adjustment:'b-yellow',Return:'b-blue'};
+
+  setContent(`
+    <div class="filter-bar">
+      <select class="fs" onchange="siF.transaction_type=this.value;pageStockIn()">
+        <option value="">Tất cả loại</option>
+        ${['Stock In','Stock Out','Adjustment','Return'].map(s=>`<option ${siF.transaction_type===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select class="fs" onchange="siF.warehouse=this.value;pageStockIn()">
+        <option value="">Tất cả kho</option>
+        <option value="HCM Warehouse">HCM</option><option value="HN Warehouse">HN</option>
+      </select>
+    </div>
+    <div class="card card-sm"><div class="tbl-wrap"><table>
+      <thead><tr><th>Sản phẩm</th><th>SKU</th><th>Loại</th><th>Số lượng</th><th>Kho</th><th>Nhân viên</th><th>Ghi chú</th><th>Thời gian</th></tr></thead>
+      <tbody>${data.map(t=>`<tr>
+        <td class="fw-600">${t.product_name}</td>
+        <td><code style="font-size:11px">${t.sku}</code></td>
+        <td><span class="badge ${typeColor[t.transaction_type]||'b-gray'}">${t.transaction_type}</span></td>
+        <td class="${['Stock In','Return'].includes(t.transaction_type)?'text-success':'text-danger'} fw-600">
+          ${['Stock In','Return'].includes(t.transaction_type)?'+':'-'}${fmtN(t.quantity)}</td>
+        <td class="text-muted">${t.warehouse||'—'}</td>
+        <td>${t.staff_name||'—'}</td>
+        <td class="text-muted truncate" style="max-width:140px">${t.note||'—'}</td>
+        <td class="text-muted">${fmtDT(t.created_at)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>${pgHTML(pagination,'pageStockIn')}</div>
+  `);
+  setActions(`<button class="btn btn-primary btn-sm" onclick="openStockInModal()">+ Nhập/Điều chỉnh kho</button>`);
+}
+
+async function openStockInModal() {
+  const pr = await GET('/products',{limit:200});
+  const prods = pr?.data?.data||[];
+  openModal('Nhập kho / Điều chỉnh', `
+    <div class="fg"><label>Sản phẩm *</label>
+      <select id="si-p"><option value="">Chọn sản phẩm</option>${prods.map(p=>`<option value="${p.product_id}">${p.product_name} (Tồn: ${p.stock_quantity})</option>`).join('')}</select>
+    </div>
+    <div class="g2">
+      <div class="fg"><label>Số lượng *</label><input type="number" id="si-q" min="1" value="1"></div>
+      <div class="fg"><label>Kho</label><select id="si-w"><option value="HCM Warehouse">HCM Warehouse</option><option value="HN Warehouse">HN Warehouse</option></select></div>
+    </div>
+    <div class="fg"><label>Loại giao dịch</label>
+      <select id="si-t"><option value="Stock In">Stock In</option><option value="Adjustment">Adjustment</option><option value="Return">Return</option></select>
+    </div>
+    <div class="fg"><label>Ghi chú</label><textarea id="si-n" rows="2"></textarea></div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-primary btn-sm" onclick="submitStockIn()">Xác nhận</button>`);
+}
+async function submitStockIn() {
+  const body={product_id:parseInt(document.getElementById('si-p').value),quantity:parseInt(document.getElementById('si-q').value),warehouse:document.getElementById('si-w').value,transaction_type:document.getElementById('si-t').value,note:document.getElementById('si-n').value||null};
+  if (!body.product_id||!body.quantity) { toast('Điền đầy đủ thông tin','warning'); return; }
+  const r = await POST('/inventory/stock-in', body);
+  if (r?.ok) { toast('Nhập kho thành công'); closeModal(); pageStockIn(); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INVENTORY ALERTS
+// ═══════════════════════════════════════════════════════════
+async function pageInvAlerts() {
+  const r = await GET('/inventory/alerts');
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const data = r.data.data||[];
+  setContent(`
+    <div class="alert info mb-4">⚠️ Sản phẩm có tồn kho ≤ 20 đơn vị. Cần bổ sung hàng sớm.</div>
+    <div class="card card-sm"><div class="tbl-wrap"><table>
+      <thead><tr><th>Sản phẩm</th><th>SKU</th><th>Danh mục</th><th>Tồn kho</th><th>Đã bán</th><th>Trạng thái</th><th></th></tr></thead>
+      <tbody>${data.length===0
+        ? '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">✅ Không có sản phẩm cảnh báo</td></tr>'
+        : data.map(p=>`<tr>
+          <td class="fw-600">${p.product_name}</td>
+          <td><code style="font-size:11px">${p.sku}</code></td>
+          <td class="text-muted">${p.category_name||'—'}</td>
+          <td class="${p.stock_quantity===0?'text-danger':'text-warning'} fw-600">${fmtN(p.stock_quantity)}</td>
+          <td>${fmtN(p.sold_count)}</td>
+          <td>${sBadge(p.status)}</td>
+          <td><button class="btn btn-primary btn-xs" onclick="openStockInModal()">Nhập kho</button></td>
+        </tr>`).join('')
+      }</tbody>
+    </table></div></div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  RAW MATERIALS
+// ═══════════════════════════════════════════════════════════
+let rmPage=1;
+async function pageRawMaterials(page=1) {
+  rmPage=page;
+  const r = await GET('/raw-materials',{page,limit:20});
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const {data,pagination} = r.data;
+  setContent(`
+    <div class="card card-sm"><div class="tbl-wrap"><table>
+      <thead><tr><th>Nguyên liệu</th><th>Đơn vị</th><th>Tồn kho</th><th>Giá/đơn vị</th><th>Nhà cung cấp</th><th>Ngưỡng tối thiểu</th><th>Trạng thái</th></tr></thead>
+      <tbody>${data.length===0
+        ? '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Chưa có dữ liệu</td></tr>'
+        : data.map(r=>`<tr>
+          <td class="fw-600">${r.material_name}</td>
+          <td>${r.unit||'—'}</td>
+          <td class="${r.stock_quantity<=(r.min_stock_threshold||0)?'text-danger fw-600':''}">${fmtN(r.stock_quantity,2)}</td>
+          <td>${fmtVND(r.unit_price)}</td>
+          <td class="text-muted">${r.supplier_name||'—'}</td>
+          <td class="text-muted">${fmtN(r.min_stock_threshold)}</td>
+          <td>${r.stock_quantity<=(r.min_stock_threshold||0)?'<span class="badge b-red">Thấp</span>':'<span class="badge b-green">Đủ</span>'}</td>
+        </tr>`).join('')
+      }</tbody>
+    </table></div>${pgHTML(pagination,'pageRawMaterials')}</div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DEALERS
+// ═══════════════════════════════════════════════════════════
+let dealPage=1, dealF={};
+async function pageDealers(page=1) {
+  dealPage=page;
+  const r = await GET('/dealers',{page,limit:20,...dealF});
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const data = r.data.data||[];
+  const pagination = r.data.pagination||{};
+  setContent(`
+    <div class="filter-bar">
+      <div class="sw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Tên đại lý, liên hệ..." oninput="dealF.search=this.value;schedulePageDealers()" value="${dealF.search||''}">
+      </div>
+      <select class="fs" onchange="dealF.partner_status=this.value;pageDealers()">
+        <option value="">Tất cả</option>
+        ${['Active','Inactive','Suspended'].map(s=>`<option ${dealF.partner_status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select class="fs" onchange="dealF.debt_status=this.value;pageDealers()">
+        <option value="">Tất cả công nợ</option>
+        ${['Stable','Warning','Overdue'].map(s=>`<option ${dealF.debt_status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select class="fs" onchange="dealF.wholesale_tier=this.value;pageDealers()">
+        <option value="">Wholesale tier</option>
+        ${['Tier 1','Tier 2','Tier 3'].map(s=>`<option ${dealF.wholesale_tier===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="card card-sm">
+      <div class="section-title mb-3">B2B Dealer Account Management</div>
+      <div class="tbl-wrap"><table>
+      <thead><tr><th>Dealer profile</th><th>Region</th><th>Contact</th><th>Wholesale tier</th><th>Credit limit</th><th>Outstanding debt</th><th>Payment terms</th><th>Status</th></tr></thead>
+      <tbody>${data.map(d=>`<tr>
+        <td class="fw-600"><a href="#" onclick="openDealerDetailModal(${d.dealer_id})">${d.dealer_name}</a></td>
+        <td class="text-muted">${d.region||'—'} ${d.city?'/ '+d.city:''}</td>
+        <td>${d.contact_person||'—'} ${d.phone_number?'· '+d.phone_number:''}</td>
+        <td>${d.wholesale_tier||'—'}</td>
+        <td>${fmtVND(d.credit_limit)}</td>
+        <td class="${d.debt_status==='Overdue'?'text-danger':''} fw-600">${fmtVND(d.outstanding_debt ?? d.debt_amount)}</td>
+        <td>${d.payment_terms||'—'}</td>
+        <td>${sBadge(d.debt_status)} ${sBadge(d.partner_status)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>${pgHTML(pagination,'pageDealers')}</div>
+  `);
+  if (['admin','manager','finance'].includes(me?.role)) {
+    setActions(`<button class="btn btn-primary btn-sm" onclick="openAddDealerModal()">+ Thêm đại lý B2B</button>`);
+  }
+}
+
+function schedulePageDealers(delay = 350) {
+  if (window._pageDealersTimer) clearTimeout(window._pageDealersTimer);
+  window._pageDealersTimer = setTimeout(() => pageDealers(1), delay);
+}
+
+async function openDealerDetailModal(id) {
+  const r = await GET(`/dealers/${id}`);
+  if (!r?.ok) { toast('Không tìm thấy đại lý','error'); return; }
+  const dealer = r.data.data || r.data;
+  window._dealerDetail = dealer;
+  window._dealerDetailId = id;
+  openModal(`Đại lý: ${dealer.dealer_name}`, `
+    <div class="detail-hd mb-4">
+      <div class="detail-av">D</div>
+      <div>
+        <div class="detail-title">${dealer.dealer_name}</div>
+        <div class="detail-meta">${sBadge(dealer.partner_status)} ${sBadge(dealer.debt_status)} <span class="badge b-gray">${dealer.wholesale_tier||'—'}</span></div>
+      </div>
+    </div>
+    <div class="tab-bar mb-3">
+      <button class="btn btn-secondary btn-sm" id="dealer-tab-profile" onclick="loadDealerTab(${id}, 'profile')">Profile</button>
+      <button class="btn btn-secondary btn-sm" id="dealer-tab-financial" onclick="loadDealerTab(${id}, 'financial')">Financial</button>
+      <button class="btn btn-secondary btn-sm" id="dealer-tab-orders" onclick="loadDealerTab(${id}, 'orders')">Orders</button>
+      <button class="btn btn-secondary btn-sm" id="dealer-tab-invoices" onclick="loadDealerTab(${id}, 'invoices')">Invoices</button>
+    </div>
+    <div id="dealer-tab-content"><div class="loading"><div class="spinner"></div></div></div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Đóng</button>`, true);
+  await loadDealerTab(id, 'profile');
+}
+
+async function loadDealerTab(id, tab) {
+  window._dealerActiveTab = tab;
+  const body = document.getElementById('dealer-tab-content');
+  const setActive = () => {
+    ['profile','financial','orders','invoices'].forEach(t => {
+      const btn = document.getElementById(`dealer-tab-${t}`);
+      if (btn) btn.className = `btn btn-${t===tab?'primary':'secondary'} btn-sm`;
+    });
+  };
+  setActive();
+  if (!body) return;
+  body.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+  if (tab === 'profile' || tab === 'financial') {
+    const dealer = window._dealerDetail || (await GET(`/dealers/${id}`))?.data?.data;
+    window._dealerDetail = dealer;
+    body.innerHTML = tab === 'profile'
+      ? `<div class="info-grid">
+          <div class="info-item"><label>Dealer profile</label><span>${dealer.dealer_name}</span></div>
+          <div class="info-item"><label>Contact person</label><span>${dealer.contact_person||'—'}</span></div>
+          <div class="info-item"><label>Phone</label><span>${dealer.phone_number||'—'}</span></div>
+          <div class="info-item"><label>Email</label><span>${dealer.email||'—'}</span></div>
+          <div class="info-item"><label>Region</label><span>${dealer.region||'—'}</span></div>
+          <div class="info-item"><label>City</label><span>${dealer.city||'—'}</span></div>
+          <div class="info-item"><label>Wholesale tier</label><span>${dealer.wholesale_tier||'—'}</span></div>
+          <div class="info-item"><label>Payment terms</label><span>${dealer.payment_terms||'—'}</span></div>
+        </div>`
+      : `<div class="info-grid">
+          <div class="info-item"><label>Credit limit</label><span>${fmtVND(dealer.credit_limit)}</span></div>
+          <div class="info-item"><label>Outstanding debt</label><span class="text-warning fw-600">${fmtVND(dealer.debt_amount)}</span></div>
+          <div class="info-item"><label>Total revenue</label><span>${fmtVND(dealer.total_revenue)}</span></div>
+          <div class="info-item"><label>Debt status</label><span>${sBadge(dealer.debt_status)}</span></div>
+          <div class="info-item"><label>Partner status</label><span>${sBadge(dealer.partner_status)}</span></div>
+          <div class="info-item"><label>Created</label><span>${fmtDT(dealer.created_at)}</span></div>
+          <div class="info-item"><label>Updated</label><span>${fmtDT(dealer.updated_at)}</span></div>
+        </div>`;
+    return;
+  }
+
+  if (tab === 'orders') {
+    const r = await GET(`/dealers/${id}/orders`, { limit: 100 });
+    const rows = r?.data?.data || [];
+    body.innerHTML = rows.length
+      ? `<div class="tbl-wrap"><table>
+          <thead><tr><th>Order code</th><th>Customer</th><th>Customer type</th><th>Sales channel</th><th>Payment</th><th>Status</th><th>Total</th><th>Date</th></tr></thead>
+          <tbody>${rows.map(o=>`<tr><td><a href="#" onclick="openOrderModal(${o.order_id})">${o.order_number}</a></td><td>${o.customer_name||'—'}</td><td>${typeBadge(o.customer_type)}</td><td>${channelLabel(o.sales_channel)}<div class="text-muted" style="font-size:11px">${platformLabel(o.platform)}</div></td><td>${pBadge(o.payment_status)}</td><td>${dBadge(o.delivery_status)}</td><td class="fw-600">${fmtVND(o.total_amount)}</td><td class="text-muted">${fmtDate(o.ordered_at)}</td></tr>`).join('')}</tbody>
+        </table></div>`
+      : '<div class="empty-state" style="padding:24px">Chưa có đơn hàng dealer</div>';
+    return;
+  }
+
+  const r = await GET(`/dealers/${id}/invoices`, { limit: 100 });
+  const rows = r?.data?.data || [];
+  body.innerHTML = rows.length
+    ? `<div class="tbl-wrap"><table>
+        <thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Status</th><th>Note</th></tr></thead>
+        <tbody>${rows.map(t=>`<tr><td class="text-muted">${fmtDT(t.created_at)}</td><td>${t.transaction_type}</td><td class="fw-600">${fmtVND(t.amount)}</td><td>${sBadge(t.status)}</td><td>${t.note||'—'}</td></tr>`).join('')}</tbody>
+      </table></div>`
+    : '<div class="empty-state" style="padding:24px">Chưa có hóa đơn hoặc giao dịch công nợ</div>';
+}
+
+async function openAddDealerModal() {
+  openModal('Thêm đại lý mới', `
+    <div class="g2">
+      <div class="fg" style="grid-column:1/-1"><label>Tên đại lý *</label><input id="nd-n"></div>
+      <div class="fg"><label>Khu vực</label><input id="nd-r" placeholder="Miền Nam"></div>
+      <div class="fg"><label>Thành phố</label><input id="nd-ci" placeholder="TP.HCM"></div>
+      <div class="fg"><label>Người liên hệ</label><input id="nd-c"></div>
+      <div class="fg"><label>SĐT</label><input id="nd-p"></div>
+      <div class="fg"><label>Email</label><input type="email" id="nd-e"></div>
+      <div class="fg"><label>Wholesale tier</label><select id="nd-t"><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select></div>
+      <div class="fg"><label>Payment terms</label><input id="nd-pt" placeholder="Net 30" value="Net 30"></div>
+      <div class="fg"><label>Hạn mức tín dụng (₫)</label><input type="number" id="nd-cr" min="0" value="0"></div>
+    </div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-primary btn-sm" onclick="submitAddDealer()">Lưu</button>`);
+}
+async function submitAddDealer() {
+  const body={dealer_name:document.getElementById('nd-n').value,region:document.getElementById('nd-r').value,city:document.getElementById('nd-ci').value,contact_person:document.getElementById('nd-c').value,phone_number:document.getElementById('nd-p').value,email:document.getElementById('nd-e').value,wholesale_tier:document.getElementById('nd-t').value,payment_terms:document.getElementById('nd-pt').value,credit_limit:parseFloat(document.getElementById('nd-cr').value)||0};
+  if (!body.dealer_name) { toast('Điền tên đại lý','warning'); return; }
+  const r = await POST('/dealers', body);
+  if (r?.ok) { toast('Thêm đại lý thành công'); closeModal(); pageDealers(); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  USERS — Admin + Manager only
+// ═══════════════════════════════════════════════════════════
+async function pageUsers() {
+  const r = await GET('/users');
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi — Bạn cần quyền admin/manager</div>'); return; }
+  const data = r.data.data||[];
+  const chipC = {admin:'role-admin',manager:'role-manager',sales:'role-sales',warehouse:'role-warehouse',finance:'role-finance'};
+
+  setContent(`
+    <div class="alert info mb-4">🔐 Quản lý tài khoản nhân viên nội bộ. Phân quyền RBAC theo vai trò (role).</div>
+    <div class="card card-sm"><div class="tbl-wrap"><table>
+      <thead><tr><th>Nhân viên</th><th>Email</th><th>Vai trò</th><th>Văn phòng</th><th>Trạng thái</th><th>Đăng nhập cuối</th><th></th></tr></thead>
+      <tbody>${data.map(u=>`<tr>
+        <td><div style="display:flex;align-items:center;gap:8px"><div class="u-av" style="width:28px;height:28px;font-size:11px">${initials(u.full_name)}</div><span class="fw-600">${u.full_name}</span></div></td>
+        <td class="text-muted">${u.email}</td>
+        <td><span class="role-chip ${chipC[u.role]||''}">${u.role}</span></td>
+        <td class="text-muted">${u.office||'—'}</td>
+        <td>${sBadge(u.status)}</td>
+        <td class="text-muted">${fmtDT(u.last_login_at)}</td>
+        <td>${me?.role==='admin'?`<button class="btn btn-secondary btn-xs" onclick='openEditUserModal(${JSON.stringify(u)})'>Sửa</button>`:''}
+        </td>
+      </tr>`).join('')}</tbody>
+    </table></div></div>
+  `);
+  if (me?.role==='admin') setActions(`<button class="btn btn-primary btn-sm" onclick="openAddUserModal()">+ Thêm người dùng</button>`);
+}
+
+async function openAddUserModal() {
+  openModal('Thêm người dùng nội bộ', `
+    <div class="alert info mb-4">Tài khoản này chỉ dành cho nhân viên nội bộ. Vai trò phải là: sales, warehouse, finance, manager, admin.</div>
+    <div class="g2">
+      <div class="fg" style="grid-column:1/-1"><label>Họ tên *</label><input id="nu-n"></div>
+      <div class="fg"><label>Email *</label><input type="email" id="nu-e"></div>
+      <div class="fg"><label>Mật khẩu *</label><input type="password" id="nu-p" placeholder="Ít nhất 6 ký tự"></div>
+      <div class="fg"><label>Vai trò *</label>
+        <select id="nu-r"><option value="sales">Sales</option><option value="warehouse">Warehouse</option><option value="finance">Finance</option><option value="manager">Manager</option><option value="admin">Admin</option></select>
+      </div>
+      <div class="fg"><label>Văn phòng</label><input id="nu-o" placeholder="HCM"></div>
+    </div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-primary btn-sm" onclick="submitAddUser()">Tạo tài khoản</button>`);
+}
+async function submitAddUser() {
+  const body={full_name:document.getElementById('nu-n').value,email:document.getElementById('nu-e').value,password:document.getElementById('nu-p').value,role:document.getElementById('nu-r').value,office:document.getElementById('nu-o').value};
+  if (!body.full_name||!body.email||!body.password) { toast('Điền đầy đủ thông tin bắt buộc','warning'); return; }
+  const r = await POST('/users', body);
+  if (r?.ok) { toast('Tạo tài khoản thành công'); closeModal(); pageUsers(); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+function openEditUserModal(user) {
+  openModal(`Sửa: ${user.full_name}`, `
+    <div class="alert info mb-4">Thay đổi vai trò có hiệu lực ngay lập tức. Mọi thay đổi được ghi vào audit log.</div>
+    <div class="g2">
+      <div class="fg"><label>Vai trò</label>
+        <select id="eu-r">${['sales','warehouse','finance','manager','admin'].map(s=>`<option ${user.role===s?'selected':''}>${s}</option>`).join('')}</select>
+      </div>
+      <div class="fg"><label>Trạng thái</label>
+        <select id="eu-s"><option value="active" ${user.status==='active'?'selected':''}>Active</option><option value="inactive" ${user.status==='inactive'?'selected':''}>Inactive</option></select>
+      </div>
+    </div>
+  `, `<button class="btn btn-secondary btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-primary btn-sm" onclick="submitEditUser(${user.user_id})">Lưu</button>`);
+}
+async function submitEditUser(id) {
+  const body={role:document.getElementById('eu-r').value,status:document.getElementById('eu-s').value};
+  const r = await PUT(`/users/${id}`, body);
+  if (r?.ok) { toast('Cập nhật thành công'); closeModal(); pageUsers(); }
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  AUDIT LOGS
+// ═══════════════════════════════════════════════════════════
+let auditPage=1;
+async function pageAuditLogs(page=1) {
+  auditPage=page;
+  const r = await GET('/analytics/audit-logs',{page,limit:30});
+  if (!r?.ok) { setContent('<div class="alert danger">Lỗi</div>'); return; }
+  const {data,pagination} = r.data;
+  const riskC={Normal:'b-gray',Low:'b-blue',Medium:'b-yellow',High:'b-red',Critical:'b-red'};
+  setContent(`
+    <div class="card card-sm"><div class="tbl-wrap"><table>
+      <thead><tr><th>Thời gian</th><th>Người dùng</th><th>Hành động</th><th>Module</th><th>Rủi ro</th><th>Chi tiết</th></tr></thead>
+      <tbody>${data.map(l=>`<tr>
+        <td class="text-muted" style="white-space:nowrap">${fmtDT(l.created_at)}</td>
+        <td>${l.full_name||'System'}</td>
+        <td class="fw-600">${l.action}</td>
+        <td><span class="badge b-primary">${l.module}</span></td>
+        <td><span class="badge ${riskC[l.risk_level]||'b-gray'}">${l.risk_level}</span></td>
+        <td class="text-muted truncate" style="max-width:200px">${l.details||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>${pgHTML(pagination,'pageAuditLogs')}</div>
+  `);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PROFILE
+// ═══════════════════════════════════════════════════════════
+async function pageProfile() {
+  const r = await GET('/auth/me');
+  if (!r?.ok) return;
+  const u = r.data.data;
+  const chipC = {admin:'role-admin',manager:'role-manager',sales:'role-sales',warehouse:'role-warehouse',finance:'role-finance'};
+  const pages = ROLE_PAGES[u.role]||[];
+
+  setContent(`
+    <div style="max-width:600px">
+      <div class="card mb-4">
+        <div class="detail-hd">
+          <div class="detail-av" style="width:64px;height:64px;font-size:24px">${initials(u.full_name)}</div>
+          <div><div class="detail-title">${u.full_name}</div>
+            <div class="detail-meta"><span class="role-chip ${chipC[u.role]||''}">${u.role}</span> ${sBadge(u.status)} ${u.office?`<span class="badge b-gray">${u.office}</span>`:''}</div>
+          </div>
+        </div>
+        <div class="info-grid">
+          <div class="info-item"><label>Email</label><span>${u.email}</span></div>
+          <div class="info-item"><label>Đăng nhập cuối</label><span>${fmtDT(u.last_login_at)}</span></div>
+          <div class="info-item"><label>Tạo tài khoản</label><span>${fmtDate(u.created_at)}</span></div>
+          <div class="info-item"><label>Văn phòng</label><span>${u.office||'—'}</span></div>
+        </div>
+        <hr>
+        <div class="section-title" style="font-size:13px;margin-bottom:10px">Quyền truy cập theo vai trò <span class="role-chip ${chipC[u.role]||''}">${u.role}</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${pages.map(p=>`<span class="badge b-primary">${p}</span>`).join('')}</div>
+      </div>
+      <div class="card">
+        <div class="section-title">Đổi mật khẩu</div>
+        <div class="fg"><label>Mật khẩu mới</label><input type="password" id="np-pw"></div>
+        <div class="fg"><label>Xác nhận</label><input type="password" id="np-cpw"></div>
+        <button class="btn btn-primary btn-sm" onclick="changeMyPW(${u.user_id})">Cập nhật</button>
+      </div>
+    </div>
+  `);
+}
+async function changeMyPW(id) {
+  const pw = document.getElementById('np-pw').value;
+  const cpw = document.getElementById('np-cpw').value;
+  if (!pw || pw.length<6) { toast('Mật khẩu ít nhất 6 ký tự','warning'); return; }
+  if (pw!==cpw) { toast('Mật khẩu xác nhận không khớp','warning'); return; }
+  const r = await PUT(`/users/${id}`, {password:pw});
+  if (r?.ok) toast('Đổi mật khẩu thành công');
+  else toast(r?.data?.message||'Thất bại','error');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+document.getElementById('l-pass').addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
+
+if (token) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  initApp();
+}
+</script>
+</body>
+</html>
