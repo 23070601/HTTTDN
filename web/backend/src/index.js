@@ -24,7 +24,10 @@ const rawMaterialsRouter = require('./modules/raw-materials/raw-materials.router
 const dealersRouter      = require('./modules/dealers/dealers.router');
 const promotionsRouter   = require('./modules/promotions/promotions.router');
 const analyticsRouter    = require('./modules/analytics/analytics.router');
+<<<<<<< HEAD
 const returnsRouter      = require('./modules/returns/returns.router');
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -46,8 +49,13 @@ const limiter = rateLimit({
   max:      parseInt(process.env.RATE_LIMIT_MAX       || '100'),
   message:  { success: false, message: 'Too many requests, please try again later.' },
 });
+<<<<<<< HEAD
 // Stricter limit on auth endpoints — don't count successful requests (e.g. polling)
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, skipSuccessfulRequests: true });
+=======
+// Stricter limit on auth endpoints
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
 app.use('/api/auth', authLimiter);
 app.use('/api', limiter);
@@ -64,7 +72,10 @@ app.use(`${API}/users`,         usersRouter);
 app.use(`${API}/categories`,    categoriesRouter);
 app.use(`${API}/products`,      productsRouter);
 app.use(`${API}/orders`,        ordersRouter);
+<<<<<<< HEAD
 app.use(`${API}/returns`,       returnsRouter);
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 app.use(`${API}/customers`,     customersRouter);
 app.use(`${API}/inventory`,     inventoryRouter);
 app.use(`${API}/raw-materials`, rawMaterialsRouter);

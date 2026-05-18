@@ -68,7 +68,10 @@ CREATE TABLE customers (
     full_name               VARCHAR(100)    NOT NULL,
     email                   VARCHAR(100)    NOT NULL,
     phone_number            VARCHAR(20)         NULL,
+<<<<<<< HEAD
     customer_type           VARCHAR(20)     NOT NULL    DEFAULT 'retail',
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     gender                  VARCHAR(10)         NULL,
     date_of_birth           DATE                NULL,
     address                 TEXT                NULL,
@@ -79,7 +82,10 @@ CREATE TABLE customers (
 
     CONSTRAINT PK_customers             PRIMARY KEY (customer_id),
     CONSTRAINT UQ_customers_email       UNIQUE (email),
+<<<<<<< HEAD
     CONSTRAINT CK_customers_type        CHECK (customer_type IN ('retail','dealer','guest','marketplace')),
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     CONSTRAINT CK_customers_segment     CHECK (segment IN ('New','Loyal','VIP','Whale','At-risk','Wholesale')),
     CONSTRAINT CK_customers_loyalty_pts CHECK (loyalty_points_balance >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -170,8 +176,11 @@ CREATE TABLE dealers (
     contact_person  VARCHAR(100)        NULL,
     phone_number    VARCHAR(20)         NULL,
     email           VARCHAR(100)        NULL,
+<<<<<<< HEAD
     wholesale_tier  VARCHAR(30)     NOT NULL    DEFAULT 'Tier 1',
     payment_terms   VARCHAR(50)     NOT NULL    DEFAULT 'Net 30',
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     total_revenue   DECIMAL(18,2)   NOT NULL    DEFAULT 0,
     debt_amount     DECIMAL(18,2)   NOT NULL    DEFAULT 0,
     credit_limit    DECIMAL(18,2)   NOT NULL    DEFAULT 0,
@@ -185,8 +194,11 @@ CREATE TABLE dealers (
     CONSTRAINT CK_dealers_debt          CHECK (debt_amount    >= 0),
     CONSTRAINT CK_dealers_credit        CHECK (credit_limit   >= 0),
     CONSTRAINT CK_dealers_debt_status   CHECK (debt_status    IN ('Stable','Warning','Overdue')),
+<<<<<<< HEAD
     CONSTRAINT CK_dealers_tier          CHECK (wholesale_tier IS NOT NULL),
     CONSTRAINT CK_dealers_terms         CHECK (payment_terms IS NOT NULL),
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     CONSTRAINT CK_dealers_partner_status CHECK (partner_status IN ('Active','Inactive','Suspended'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -197,6 +209,7 @@ CREATE TABLE dealers (
 CREATE TABLE orders (
     order_id            INT             NOT NULL    AUTO_INCREMENT,
     customer_id         INT             NOT NULL,
+<<<<<<< HEAD
     dealer_id           INT                 NULL,
     user_id             INT                 NULL,
     order_number        VARCHAR(30)     NOT NULL,
@@ -209,6 +222,14 @@ CREATE TABLE orders (
     payment_confirmed   BOOLEAN         NOT NULL    DEFAULT FALSE,
     invoice_number      VARCHAR(50)         NULL,
     invoice_status      VARCHAR(20)     NOT NULL    DEFAULT 'Not Generated',
+=======
+    user_id             INT                 NULL,
+    order_number        VARCHAR(30)     NOT NULL,
+    sales_channel       VARCHAR(50)     NOT NULL    DEFAULT 'Website',
+    delivery_status     VARCHAR(20)     NOT NULL    DEFAULT 'Pending',
+    payment_status      VARCHAR(20)     NOT NULL    DEFAULT 'Unpaid',
+    payment_method      VARCHAR(30)         NULL,
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     shipping_carrier    VARCHAR(50)         NULL,
     tracking_code       VARCHAR(100)        NULL,
     shipping_address    TEXT                NULL,
@@ -223,6 +244,7 @@ CREATE TABLE orders (
     CONSTRAINT PK_orders                PRIMARY KEY (order_id),
     CONSTRAINT UQ_orders_number         UNIQUE (order_number),
     CONSTRAINT FK_orders_customer       FOREIGN KEY (customer_id) REFERENCES customers (customer_id),
+<<<<<<< HEAD
     CONSTRAINT FK_orders_dealer         FOREIGN KEY (dealer_id)   REFERENCES dealers (dealer_id),
     CONSTRAINT FK_orders_user           FOREIGN KEY (user_id)     REFERENCES users (user_id),
     CONSTRAINT CK_orders_customer_type  CHECK (customer_type IN ('retail','dealer','guest','marketplace')),
@@ -232,6 +254,13 @@ CREATE TABLE orders (
     CONSTRAINT CK_orders_payment_status CHECK (payment_status  IN ('Paid','Unpaid','Pending','Credit','Handled_by_Platform','Refunded')),
     CONSTRAINT CK_orders_payment_method CHECK (payment_method  IN ('Cash','Card','COD','Bank Transfer','Momo','VNPay','Invoice','Credit Terms','Handled_by_Platform') OR payment_method IS NULL),
     CONSTRAINT CK_orders_invoice_status CHECK (invoice_status  IN ('Not Generated','Generated','Issued','Paid','Void')),
+=======
+    CONSTRAINT FK_orders_user           FOREIGN KEY (user_id)     REFERENCES users (user_id),
+    CONSTRAINT CK_orders_channel        CHECK (sales_channel   IN ('Website','Shopee','TikTok Shop','Lazada','In-store')),
+    CONSTRAINT CK_orders_delivery       CHECK (delivery_status IN ('Pending','Confirmed','Processing','Shipping','Delivered','Cancelled','Returned')),
+    CONSTRAINT CK_orders_payment_status CHECK (payment_status  IN ('Unpaid','Paid','Refunded')),
+    CONSTRAINT CK_orders_payment_method CHECK (payment_method  IN ('COD','Momo','VNPay','Bank Transfer','Card') OR payment_method IS NULL),
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     CONSTRAINT CK_orders_total          CHECK (total_amount     >= 0),
     CONSTRAINT CK_orders_shipping_fee   CHECK (shipping_fee     >= 0),
     CONSTRAINT CK_orders_loyalty_disc   CHECK (loyalty_discount >= 0)
@@ -347,9 +376,12 @@ CREATE TABLE audit_logs (
 --  INDEXES
 -- ============================================================
 CREATE INDEX IX_orders_customer        ON orders (customer_id);
+<<<<<<< HEAD
 CREATE INDEX IX_orders_dealer          ON orders (dealer_id);
 CREATE INDEX IX_orders_customer_type   ON orders (customer_type);
 CREATE INDEX IX_orders_platform        ON orders (platform);
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 CREATE INDEX IX_orders_delivery_status ON orders (delivery_status);
 CREATE INDEX IX_orders_channel         ON orders (sales_channel);
 CREATE INDEX IX_orders_ordered_at      ON orders (ordered_at DESC);
@@ -445,6 +477,7 @@ END$$
 
 
 -- ============================================================
+<<<<<<< HEAD
 --  TRIGGER 1b: trg_inventory_restore
 --  Fires AFTER DELETE on order_items.
 --  Restores stock when an item is removed from an editable order.
@@ -487,6 +520,8 @@ END$$
 
 
 -- ============================================================
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 --  TRIGGER 2: trg_loyalty_accrual
 --  Fires AFTER UPDATE on orders.
 --  Awards points when delivery_status transitions to 'Delivered'.

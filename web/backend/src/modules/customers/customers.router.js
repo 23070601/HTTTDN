@@ -5,6 +5,7 @@ const { body }   = require('express-validator');
 const controller = require('./customers.controller');
 const { authenticate, authorize } = require('../../common/middleware/auth');
 
+<<<<<<< HEAD
 // Public debug endpoints (no auth required) - MUST be before authenticate middleware
 router.get('/test/all', async (req, res) => {
   try {
@@ -41,6 +42,14 @@ router.get('/search', controller.search);
 router.get('/:id/orders',      controller.getOrders);
 router.get('/:id/loyalty',     controller.getLoyaltyHistory);
 router.get('/:id', controller.getOne);
+=======
+router.use(authenticate);
+
+router.get('/',    controller.list);
+router.get('/:id', controller.getOne);
+router.get('/:id/orders',      controller.getOrders);
+router.get('/:id/loyalty',     controller.getLoyaltyHistory);
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
 router.post(
   '/',
@@ -49,7 +58,10 @@ router.post(
     body('full_name').notEmpty(),
     body('email').isEmail(),
     body('phone_number').optional(),
+<<<<<<< HEAD
     body('customer_type').optional().isIn(['retail','dealer','guest','marketplace']),
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     body('segment').optional().isIn(['New','Loyal','VIP','Whale','At-risk','Wholesale']),
   ],
   controller.create

@@ -6,23 +6,37 @@ const { getPagination } = require('../../common/utils/paginate');
 
 async function list(req, res) {
   const { page, limit, offset } = getPagination(req.query);
+<<<<<<< HEAD
   const { debt_status, partner_status, region, wholesale_tier, search } = req.query;
+=======
+  const { debt_status, partner_status, region, search } = req.query;
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
   let where = 'WHERE 1=1';
   const params = [];
   if (debt_status)    { where += ' AND debt_status = ?';    params.push(debt_status); }
   if (partner_status) { where += ' AND partner_status = ?'; params.push(partner_status); }
   if (region)         { where += ' AND region = ?';         params.push(region); }
+<<<<<<< HEAD
   if (wholesale_tier) { where += ' AND wholesale_tier = ?'; params.push(wholesale_tier); }
   if (search)         {
     where += ' AND (dealer_name LIKE ? OR contact_person LIKE ? OR email LIKE ? OR phone_number LIKE ?)';
     params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
+=======
+  if (search)         {
+    where += ' AND (dealer_name LIKE ? OR contact_person LIKE ? OR email LIKE ?)';
+    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   }
 
   try {
     const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM dealers ${where}`, params);
     const [rows] = await pool.query(
+<<<<<<< HEAD
       `SELECT *, debt_amount AS outstanding_debt FROM dealers ${where} ORDER BY dealer_name ASC LIMIT ? OFFSET ?`,
+=======
+      `SELECT * FROM dealers ${where} ORDER BY dealer_name ASC LIMIT ? OFFSET ?`,
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
       [...params, limit, offset]
     );
     return R.paginated(res, { rows, total, page, limit });
@@ -33,7 +47,11 @@ async function list(req, res) {
 
 async function getOne(req, res) {
   try {
+<<<<<<< HEAD
     const [rows] = await pool.query('SELECT *, debt_amount AS outstanding_debt FROM dealers WHERE dealer_id = ?', [req.params.id]);
+=======
+    const [rows] = await pool.query('SELECT * FROM dealers WHERE dealer_id = ?', [req.params.id]);
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     if (!rows.length) return R.notFound(res, 'Dealer not found.');
     return R.ok(res, rows[0]);
   } catch (err) {
@@ -45,6 +63,7 @@ async function create(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return R.badRequest(res, 'Validation failed', errors.array());
 
+<<<<<<< HEAD
   const { dealer_name, region, city, contact_person, phone_number, email, wholesale_tier = 'Tier 1', payment_terms = 'Net 30', credit_limit = 0 } = req.body;
   try {
     const [result] = await pool.query(
@@ -52,6 +71,15 @@ async function create(req, res) {
       [dealer_name, region || null, city || null, contact_person || null, phone_number || null, email || null, wholesale_tier, payment_terms, credit_limit]
     );
     const [rows] = await pool.query('SELECT *, debt_amount AS outstanding_debt FROM dealers WHERE dealer_id = ?', [result.insertId]);
+=======
+  const { dealer_name, region, city, contact_person, phone_number, email, credit_limit = 0 } = req.body;
+  try {
+    const [result] = await pool.query(
+      'INSERT INTO dealers (dealer_name, region, city, contact_person, phone_number, email, credit_limit) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [dealer_name, region || null, city || null, contact_person || null, phone_number || null, email || null, credit_limit]
+    );
+    const [rows] = await pool.query('SELECT * FROM dealers WHERE dealer_id = ?', [result.insertId]);
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     return R.created(res, rows[0]);
   } catch (err) {
     return R.serverError(res, err);
@@ -59,7 +87,11 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
+<<<<<<< HEAD
   const { dealer_name, region, city, contact_person, phone_number, email, wholesale_tier, payment_terms, credit_limit, partner_status } = req.body;
+=======
+  const { dealer_name, region, city, contact_person, phone_number, email, credit_limit, partner_status } = req.body;
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   const fields = []; const params = [];
 
   if (dealer_name    !== undefined) { fields.push('dealer_name = ?');    params.push(dealer_name); }
@@ -68,8 +100,11 @@ async function update(req, res) {
   if (contact_person !== undefined) { fields.push('contact_person = ?'); params.push(contact_person); }
   if (phone_number   !== undefined) { fields.push('phone_number = ?');   params.push(phone_number); }
   if (email          !== undefined) { fields.push('email = ?');          params.push(email); }
+<<<<<<< HEAD
   if (wholesale_tier !== undefined) { fields.push('wholesale_tier = ?'); params.push(wholesale_tier); }
   if (payment_terms  !== undefined) { fields.push('payment_terms = ?');  params.push(payment_terms); }
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   if (credit_limit   !== undefined) { fields.push('credit_limit = ?');   params.push(credit_limit); }
   if (partner_status !== undefined) { fields.push('partner_status = ?'); params.push(partner_status); }
 
@@ -79,13 +114,18 @@ async function update(req, res) {
   try {
     const [result] = await pool.query(`UPDATE dealers SET ${fields.join(', ')}, updated_at = NOW() WHERE dealer_id = ?`, params);
     if (!result.affectedRows) return R.notFound(res, 'Dealer not found.');
+<<<<<<< HEAD
     const [rows] = await pool.query('SELECT *, debt_amount AS outstanding_debt FROM dealers WHERE dealer_id = ?', [req.params.id]);
+=======
+    const [rows] = await pool.query('SELECT * FROM dealers WHERE dealer_id = ?', [req.params.id]);
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     return R.ok(res, rows[0], 'Dealer updated.');
   } catch (err) {
     return R.serverError(res, err);
   }
 }
 
+<<<<<<< HEAD
 async function getOrders(req, res) {
   const { page, limit, offset } = getPagination(req.query);
   try {
@@ -109,6 +149,8 @@ async function getOrders(req, res) {
   }
 }
 
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 async function getDebtHistory(req, res) {
   const { page, limit, offset } = getPagination(req.query);
   try {
@@ -159,4 +201,8 @@ async function addDebtTransaction(req, res) {
   }
 }
 
+<<<<<<< HEAD
 module.exports = { list, getOne, create, update, getDebtHistory, addDebtTransaction, getOrders };
+=======
+module.exports = { list, getOne, create, update, getDebtHistory, addDebtTransaction };
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f

@@ -1,0 +1,3078 @@
+<div
+  class="export-wrapper"
+  style="
+    width: 1440px;
+    min-height: 812px;
+    position: relative;
+    font-family: var(--font-family-body);
+    background-color: var(--background);
+  "
+>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&family=Geist:wght@100;200;300;400;500;600;700;800;900&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:wght@200;300;400;500;600;700;800;900&family=PT+Serif:wght@400;700&family=Roboto+Slab:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&family=Shantell+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <html>
+    <head>
+      <style>
+        /*! tailwindcss v4.2.4 | MIT License | https://tailwindcss.com */
+        @layer properties;
+        :root,
+        :root {
+          --color-background: #f5f1e8;
+          --color-background-light: #faf8f3;
+          --color-foreground: #344e41;
+          --color-border: #e8e8e8;
+          --color-border-strong: #d9d3c7;
+          --color-input: #ffffff;
+          --color-surface: #f9f7f3;
+          --color-primary: #3a5a40;
+          --color-primary-foreground: #ffffff;
+          --color-secondary: #588157;
+          --color-accent-soft: #e3ecd9;
+          --color-leaf: #a3b18a;
+          --color-danger-soft: #f5e6e3;
+          --color-danger: #b5544f;
+          --color-warning-soft: #f4e8cc;
+          --color-warning: #a97a1f;
+          --color-success-soft: #e4efe5;
+          --color-success: #4f7a56;
+          --color-info-soft: #e6eef2;
+          --color-info: #5d7c88;
+          --color-muted-foreground: #888888;
+          --radius-sm: 8px;
+          --radius-md: 12px;
+          --radius-lg: 16px;
+          --radius-xl: 24px;
+          --font-body: DM Sans;
+          --font-headings: PT Serif;
+          --text-xs: 12px;
+          --text-sm: 14px;
+          --text-base: 16px;
+          --text-lg: 18px;
+          --text-xl: 20px;
+          --text-2xl: 24px;
+          --text-3xl: 30px;
+          --text-4xl: 36px;
+          --font-sans:
+            ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+            "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+          --font-mono:
+            ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+            "Liberation Mono", "Courier New", monospace;
+          --color-red-400: oklch(70.4% 0.191 22.216);
+          --color-orange-100: oklch(95.4% 0.038 75.164);
+          --color-orange-700: oklch(55.3% 0.195 38.402);
+          --color-green-100: oklch(96.2% 0.044 156.743);
+          --color-white: #fff;
+          --spacing: 0.25rem;
+          --text-xs--line-height: calc(1 / 0.75);
+          --text-sm--line-height: calc(1.25 / 0.875);
+          --text-base--line-height: calc(1.5 / 1);
+          --text-lg--line-height: calc(1.75 / 1.125);
+          --text-xl--line-height: calc(1.75 / 1.25);
+          --text-2xl--line-height: calc(2 / 1.5);
+          --text-3xl--line-height: calc(2.25 / 1.875);
+          --text-4xl--line-height: calc(2.5 / 2.25);
+          --font-weight-medium: 500;
+          --font-weight-bold: 700;
+          --tracking-widest: 0.1em;
+          --blur-sm: 8px;
+          --blur-md: 12px;
+          --default-transition-duration: 150ms;
+          --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+          --default-font-family: var(--font-sans);
+          --default-mono-font-family: var(--font-mono);
+        }
+        @layer theme, base, components, utilities;
+        @layer theme;
+        @layer base {
+          *,
+          ::after,
+          ::before,
+          ::backdrop,
+          ::file-selector-button {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border: 0 solid;
+          }
+          html,
+          :root {
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            tab-size: 4;
+            font-family: var(
+              --default-font-family,
+              ui-sans-serif,
+              system-ui,
+              sans-serif,
+              "Apple Color Emoji",
+              "Segoe UI Emoji",
+              "Segoe UI Symbol",
+              "Noto Color Emoji"
+            );
+            font-feature-settings: var(--default-font-feature-settings, normal);
+            font-variation-settings: var(
+              --default-font-variation-settings,
+              normal
+            );
+            -webkit-tap-highlight-color: transparent;
+          }
+          hr {
+            height: 0;
+            color: inherit;
+            border-top-width: 1px;
+          }
+          abbr:where([title]) {
+            -webkit-text-decoration: underline dotted;
+            text-decoration: underline dotted;
+          }
+          h1,
+          h2,
+          h3,
+          h4,
+          h5,
+          h6 {
+            font-size: inherit;
+            font-weight: inherit;
+          }
+          a {
+            color: inherit;
+            -webkit-text-decoration: inherit;
+            text-decoration: inherit;
+          }
+          b,
+          strong {
+            font-weight: bolder;
+          }
+          code,
+          kbd,
+          samp,
+          pre {
+            font-family: var(
+              --default-mono-font-family,
+              ui-monospace,
+              SFMono-Regular,
+              Menlo,
+              Monaco,
+              Consolas,
+              "Liberation Mono",
+              "Courier New",
+              monospace
+            );
+            font-feature-settings: var(
+              --default-mono-font-feature-settings,
+              normal
+            );
+            font-variation-settings: var(
+              --default-mono-font-variation-settings,
+              normal
+            );
+            font-size: 1em;
+          }
+          small {
+            font-size: 80%;
+          }
+          sub,
+          sup {
+            font-size: 75%;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+          }
+          sub {
+            bottom: -0.25em;
+          }
+          sup {
+            top: -0.5em;
+          }
+          table {
+            text-indent: 0;
+            border-color: inherit;
+            border-collapse: collapse;
+          }
+          :-moz-focusring {
+            outline: auto;
+          }
+          progress {
+            vertical-align: baseline;
+          }
+          summary {
+            display: list-item;
+          }
+          ol,
+          ul,
+          menu {
+            list-style: none;
+          }
+          img,
+          svg,
+          video,
+          canvas,
+          audio,
+          iframe,
+          embed,
+          object {
+            display: block;
+            vertical-align: middle;
+          }
+          img,
+          video {
+            max-width: 100%;
+            height: auto;
+          }
+          button,
+          input,
+          select,
+          optgroup,
+          textarea,
+          ::file-selector-button {
+            font: inherit;
+            font-feature-settings: inherit;
+            font-variation-settings: inherit;
+            letter-spacing: inherit;
+            color: inherit;
+            border-radius: 0;
+            background-color: transparent;
+            opacity: 1;
+          }
+          :where(select:is([multiple], [size])) optgroup {
+            font-weight: bolder;
+          }
+          :where(select:is([multiple], [size])) optgroup option {
+            padding-inline-start: 20px;
+          }
+          ::file-selector-button {
+            margin-inline-end: 4px;
+          }
+          ::placeholder {
+            opacity: 1;
+          }
+          @supports (not (-webkit-appearance: -apple-pay-button)) or
+            (contain-intrinsic-size: 1px) {
+            ::placeholder {
+              color: currentcolor;
+              @supports (color: color-mix(in lab, red, red)) {
+                color: color-mix(in oklab, currentcolor 50%, transparent);
+              }
+            }
+          }
+          textarea {
+            resize: vertical;
+          }
+          ::-webkit-search-decoration {
+            -webkit-appearance: none;
+          }
+          ::-webkit-date-and-time-value {
+            min-height: 1lh;
+            text-align: inherit;
+          }
+          ::-webkit-datetime-edit {
+            display: inline-flex;
+          }
+          ::-webkit-datetime-edit-fields-wrapper {
+            padding: 0;
+          }
+          ::-webkit-datetime-edit,
+          ::-webkit-datetime-edit-year-field,
+          ::-webkit-datetime-edit-month-field,
+          ::-webkit-datetime-edit-day-field,
+          ::-webkit-datetime-edit-hour-field,
+          ::-webkit-datetime-edit-minute-field,
+          ::-webkit-datetime-edit-second-field,
+          ::-webkit-datetime-edit-millisecond-field,
+          ::-webkit-datetime-edit-meridiem-field {
+            padding-block: 0;
+          }
+          ::-webkit-calendar-picker-indicator {
+            line-height: 1;
+          }
+          :-moz-ui-invalid {
+            box-shadow: none;
+          }
+          button,
+          input:where([type="button"], [type="reset"], [type="submit"]),
+          ::file-selector-button {
+            appearance: button;
+          }
+          ::-webkit-inner-spin-button,
+          ::-webkit-outer-spin-button {
+            height: auto;
+          }
+          [hidden]:where(:not([hidden="until-found"])) {
+            display: none !important;
+          }
+        }
+        @layer utilities {
+          .pointer-events-none {
+            pointer-events: none;
+          }
+          .absolute {
+            position: absolute;
+          }
+          .relative {
+            position: relative;
+          }
+          .-top-6 {
+            top: calc(var(--spacing) * -6);
+          }
+          .top-0 {
+            top: calc(var(--spacing) * 0);
+          }
+          .top-4 {
+            top: calc(var(--spacing) * 4);
+          }
+          .top-6 {
+            top: calc(var(--spacing) * 6);
+          }
+          .top-8 {
+            top: calc(var(--spacing) * 8);
+          }
+          .top-10 {
+            top: calc(var(--spacing) * 10);
+          }
+          .top-12 {
+            top: calc(var(--spacing) * 12);
+          }
+          .top-\[220px\] {
+            top: 220px;
+          }
+          .top-\[260px\] {
+            top: 260px;
+          }
+          .top-\[280px\] {
+            top: 280px;
+          }
+          .top-\[520px\] {
+            top: 520px;
+          }
+          .top-\[560px\] {
+            top: 560px;
+          }
+          .right-0 {
+            right: calc(var(--spacing) * 0);
+          }
+          .right-4 {
+            right: calc(var(--spacing) * 4);
+          }
+          .right-6 {
+            right: calc(var(--spacing) * 6);
+          }
+          .right-8 {
+            right: calc(var(--spacing) * 8);
+          }
+          .bottom-0 {
+            bottom: calc(var(--spacing) * 0);
+          }
+          .bottom-10 {
+            bottom: calc(var(--spacing) * 10);
+          }
+          .-left-4 {
+            left: calc(var(--spacing) * -4);
+          }
+          .left-0 {
+            left: calc(var(--spacing) * 0);
+          }
+          .left-4 {
+            left: calc(var(--spacing) * 4);
+          }
+          .left-8 {
+            left: calc(var(--spacing) * 8);
+          }
+          .left-\[120px\] {
+            left: 120px;
+          }
+          .z-0 {
+            z-index: 0;
+          }
+          .z-10 {
+            z-index: 10;
+          }
+          .mx-8 {
+            margin-inline: calc(var(--spacing) * 8);
+          }
+          .mx-16 {
+            margin-inline: calc(var(--spacing) * 16);
+          }
+          .mx-auto {
+            margin-inline: auto;
+          }
+          .mt-0\.5 {
+            margin-top: calc(var(--spacing) * 0.5);
+          }
+          .mt-1 {
+            margin-top: calc(var(--spacing) * 1);
+          }
+          .mt-4 {
+            margin-top: calc(var(--spacing) * 4);
+          }
+          .mt-12 {
+            margin-top: calc(var(--spacing) * 12);
+          }
+          .mr-3 {
+            margin-right: calc(var(--spacing) * 3);
+          }
+          .mb-2 {
+            margin-bottom: calc(var(--spacing) * 2);
+          }
+          .mb-3 {
+            margin-bottom: calc(var(--spacing) * 3);
+          }
+          .mb-6 {
+            margin-bottom: calc(var(--spacing) * 6);
+          }
+          .ml-3 {
+            margin-left: calc(var(--spacing) * 3);
+          }
+          .ml-auto {
+            margin-left: auto;
+          }
+          .block {
+            display: block;
+          }
+          .flex {
+            display: flex;
+          }
+          .grid {
+            display: grid;
+          }
+          .inline-flex {
+            display: inline-flex;
+          }
+          .size-\[12px\] {
+            width: 12px;
+            height: 12px;
+          }
+          .size-\[14px\] {
+            width: 14px;
+            height: 14px;
+          }
+          .size-\[15px\] {
+            width: 15px;
+            height: 15px;
+          }
+          .size-\[16px\] {
+            width: 16px;
+            height: 16px;
+          }
+          .size-\[18px\] {
+            width: 18px;
+            height: 18px;
+          }
+          .size-\[20px\] {
+            width: 20px;
+            height: 20px;
+          }
+          .h-1 {
+            height: calc(var(--spacing) * 1);
+          }
+          .h-3 {
+            height: calc(var(--spacing) * 3);
+          }
+          .h-4 {
+            height: calc(var(--spacing) * 4);
+          }
+          .h-5 {
+            height: calc(var(--spacing) * 5);
+          }
+          .h-6 {
+            height: calc(var(--spacing) * 6);
+          }
+          .h-7 {
+            height: calc(var(--spacing) * 7);
+          }
+          .h-8 {
+            height: calc(var(--spacing) * 8);
+          }
+          .h-9 {
+            height: calc(var(--spacing) * 9);
+          }
+          .h-10 {
+            height: calc(var(--spacing) * 10);
+          }
+          .h-11 {
+            height: calc(var(--spacing) * 11);
+          }
+          .h-12 {
+            height: calc(var(--spacing) * 12);
+          }
+          .h-16 {
+            height: calc(var(--spacing) * 16);
+          }
+          .h-20 {
+            height: calc(var(--spacing) * 20);
+          }
+          .h-24 {
+            height: calc(var(--spacing) * 24);
+          }
+          .h-28 {
+            height: calc(var(--spacing) * 28);
+          }
+          .h-32 {
+            height: calc(var(--spacing) * 32);
+          }
+          .h-40 {
+            height: calc(var(--spacing) * 40);
+          }
+          .h-48 {
+            height: calc(var(--spacing) * 48);
+          }
+          .h-\[48px\] {
+            height: 48px;
+          }
+          .h-\[72px\] {
+            height: 72px;
+          }
+          .h-\[80px\] {
+            height: 80px;
+          }
+          .h-\[96px\] {
+            height: 96px;
+          }
+          .h-\[140px\] {
+            height: 140px;
+          }
+          .h-\[160px\] {
+            height: 160px;
+          }
+          .h-\[180px\] {
+            height: 180px;
+          }
+          .h-\[280px\] {
+            height: 280px;
+          }
+          .h-\[360px\] {
+            height: 360px;
+          }
+          .h-\[420px\] {
+            height: 420px;
+          }
+          .h-\[460px\] {
+            height: 460px;
+          }
+          .h-\[520px\] {
+            height: 520px;
+          }
+          .h-\[600px\] {
+            height: 600px;
+          }
+          .h-\[800px\] {
+            height: 800px;
+          }
+          .h-full {
+            height: 100%;
+          }
+          .h-px {
+            height: 1px;
+          }
+          .min-h-\[120px\] {
+            min-height: 120px;
+          }
+          .min-h-\[140px\] {
+            min-height: 140px;
+          }
+          .min-h-\[148px\] {
+            min-height: 148px;
+          }
+          .min-h-\[600px\] {
+            min-height: 600px;
+          }
+          .w-1 {
+            width: calc(var(--spacing) * 1);
+          }
+          .w-3 {
+            width: calc(var(--spacing) * 3);
+          }
+          .w-4 {
+            width: calc(var(--spacing) * 4);
+          }
+          .w-5 {
+            width: calc(var(--spacing) * 5);
+          }
+          .w-8 {
+            width: calc(var(--spacing) * 8);
+          }
+          .w-9 {
+            width: calc(var(--spacing) * 9);
+          }
+          .w-10 {
+            width: calc(var(--spacing) * 10);
+          }
+          .w-12 {
+            width: calc(var(--spacing) * 12);
+          }
+          .w-16 {
+            width: calc(var(--spacing) * 16);
+          }
+          .w-20 {
+            width: calc(var(--spacing) * 20);
+          }
+          .w-24 {
+            width: calc(var(--spacing) * 24);
+          }
+          .w-28 {
+            width: calc(var(--spacing) * 28);
+          }
+          .w-32 {
+            width: calc(var(--spacing) * 32);
+          }
+          .w-40 {
+            width: calc(var(--spacing) * 40);
+          }
+          .w-48 {
+            width: calc(var(--spacing) * 48);
+          }
+          .w-\[120px\] {
+            width: 120px;
+          }
+          .w-\[140px\] {
+            width: 140px;
+          }
+          .w-\[360px\] {
+            width: 360px;
+          }
+          .w-\[420px\] {
+            width: 420px;
+          }
+          .w-\[460px\] {
+            width: 460px;
+          }
+          .w-\[520px\] {
+            width: 520px;
+          }
+          .w-\[600px\] {
+            width: 600px;
+          }
+          .w-\[800px\] {
+            width: 800px;
+          }
+          .w-full {
+            width: 100%;
+          }
+          .w-px {
+            width: 1px;
+          }
+          .max-w-\[520px\] {
+            max-width: 520px;
+          }
+          .max-w-\[1440px\] {
+            max-width: 1440px;
+          }
+          .min-w-0 {
+            min-width: calc(var(--spacing) * 0);
+          }
+          .min-w-\[180px\] {
+            min-width: 180px;
+          }
+          .flex-1 {
+            flex: 1;
+          }
+          .shrink-0 {
+            flex-shrink: 0;
+          }
+          .-translate-x-1\/2 {
+            --tw-translate-x: calc(calc(1 / 2 * 100%) * -1);
+            translate: var(--tw-translate-x) var(--tw-translate-y);
+          }
+          .-translate-x-1\/3 {
+            --tw-translate-x: calc(calc(1 / 3 * 100%) * -1);
+            translate: var(--tw-translate-x) var(--tw-translate-y);
+          }
+          .translate-x-1\/3 {
+            --tw-translate-x: calc(1 / 3 * 100%);
+            translate: var(--tw-translate-x) var(--tw-translate-y);
+          }
+          .translate-x-1\/4 {
+            --tw-translate-x: calc(1 / 4 * 100%);
+            translate: var(--tw-translate-x) var(--tw-translate-y);
+          }
+          .-translate-y-1\/2 {
+            --tw-translate-y: calc(calc(1 / 2 * 100%) * -1);
+            translate: var(--tw-translate-x) var(--tw-translate-y);
+          }
+          .translate-y-1\/3 {
+            --tw-translate-y: calc(1 / 3 * 100%);
+            translate: var(--tw-translate-x) var(--tw-translate-y);
+          }
+          .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+          .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+          .grid-cols-4 {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+          }
+          .grid-cols-\[0\.95fr_1\.25fr\] {
+            grid-template-columns: 0.95fr 1.25fr;
+          }
+          .grid-cols-\[1\.2fr_1fr_0\.7fr_1fr\] {
+            grid-template-columns: 1.2fr 1fr 0.7fr 1fr;
+          }
+          .grid-cols-\[1\.8fr_1fr\] {
+            grid-template-columns: 1.8fr 1fr;
+          }
+          .grid-cols-\[1\.15fr_0\.75fr_0\.7fr_0\.65fr\] {
+            grid-template-columns: 1.15fr 0.75fr 0.7fr 0.65fr;
+          }
+          .grid-cols-\[1fr_0\.9fr_0\.8fr_0\.8fr\] {
+            grid-template-columns: 1fr 0.9fr 0.8fr 0.8fr;
+          }
+          .grid-cols-\[44px_1\.15fr_1\.2fr_0\.9fr_0\.9fr_0\.8fr_52px\] {
+            grid-template-columns: 44px 1.15fr 1.2fr 0.9fr 0.9fr 0.8fr 52px;
+          }
+          .grid-cols-\[44px_1\.45fr_0\.8fr_0\.8fr_0\.8fr_88px\] {
+            grid-template-columns: 44px 1.45fr 0.8fr 0.8fr 0.8fr 88px;
+          }
+          .flex-col {
+            flex-direction: column;
+          }
+          .flex-wrap {
+            flex-wrap: wrap;
+          }
+          .items-center {
+            align-items: center;
+          }
+          .items-end {
+            align-items: flex-end;
+          }
+          .items-start {
+            align-items: flex-start;
+          }
+          .justify-between {
+            justify-content: space-between;
+          }
+          .justify-center {
+            justify-content: center;
+          }
+          .justify-end {
+            justify-content: flex-end;
+          }
+          .gap-1 {
+            gap: calc(var(--spacing) * 1);
+          }
+          .gap-2 {
+            gap: calc(var(--spacing) * 2);
+          }
+          .gap-3 {
+            gap: calc(var(--spacing) * 3);
+          }
+          .gap-4 {
+            gap: calc(var(--spacing) * 4);
+          }
+          .gap-5 {
+            gap: calc(var(--spacing) * 5);
+          }
+          .gap-6 {
+            gap: calc(var(--spacing) * 6);
+          }
+          .gap-10 {
+            gap: calc(var(--spacing) * 10);
+          }
+          .gap-12 {
+            gap: calc(var(--spacing) * 12);
+          }
+          .overflow-hidden {
+            overflow: hidden;
+          }
+          .rounded-\[16px\] {
+            border-radius: 16px;
+          }
+          .rounded-\[24px\] {
+            border-radius: 24px;
+          }
+          .rounded-full {
+            border-radius: calc(infinity * 1px);
+          }
+          .rounded-lg {
+            border-radius: var(--radius-lg);
+          }
+          .rounded-md {
+            border-radius: var(--radius-md);
+          }
+          .rounded-xl {
+            border-radius: var(--radius-xl);
+          }
+          .rounded-t-\[40px\] {
+            border-top-left-radius: 40px;
+            border-top-right-radius: 40px;
+          }
+          .border {
+            border-style: var(--tw-border-style);
+            border-width: 1px;
+          }
+          .border-2 {
+            border-style: var(--tw-border-style);
+            border-width: 2px;
+          }
+          .border-b {
+            border-bottom-style: var(--tw-border-style);
+            border-bottom-width: 1px;
+          }
+          .border-dashed {
+            --tw-border-style: dashed;
+            border-style: dashed;
+          }
+          .border-background {
+            border-color: var(--color-background);
+          }
+          .border-border {
+            border-color: var(--color-border);
+          }
+          .border-border-strong {
+            border-color: var(--color-border-strong);
+          }
+          .border-danger-soft {
+            border-color: var(--color-danger-soft);
+          }
+          .border-foreground\/5 {
+            border-color: color-mix(in srgb, #344e41 5%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              border-color: color-mix(
+                in oklab,
+                var(--color-foreground) 5%,
+                transparent
+              );
+            }
+          }
+          .border-secondary {
+            border-color: var(--color-secondary);
+          }
+          .border-white {
+            border-color: var(--color-white);
+          }
+          .bg-\[\#EBE7DF\] {
+            background-color: #ebe7df;
+          }
+          .bg-\[\#FAF8F3\] {
+            background-color: #faf8f3;
+          }
+          .bg-accent-soft {
+            background-color: var(--color-accent-soft);
+          }
+          .bg-background {
+            background-color: var(--color-background);
+          }
+          .bg-background-light {
+            background-color: var(--color-background-light);
+          }
+          .bg-border {
+            background-color: var(--color-border);
+          }
+          .bg-danger-soft {
+            background-color: var(--color-danger-soft);
+          }
+          .bg-foreground\/5 {
+            background-color: color-mix(in srgb, #344e41 5%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-foreground) 5%,
+                transparent
+              );
+            }
+          }
+          .bg-foreground\/10 {
+            background-color: color-mix(in srgb, #344e41 10%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-foreground) 10%,
+                transparent
+              );
+            }
+          }
+          .bg-foreground\/20 {
+            background-color: color-mix(in srgb, #344e41 20%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-foreground) 20%,
+                transparent
+              );
+            }
+          }
+          .bg-green-100 {
+            background-color: var(--color-green-100);
+          }
+          .bg-info-soft {
+            background-color: var(--color-info-soft);
+          }
+          .bg-input {
+            background-color: var(--color-input);
+          }
+          .bg-leaf {
+            background-color: var(--color-leaf);
+          }
+          .bg-orange-100 {
+            background-color: var(--color-orange-100);
+          }
+          .bg-primary {
+            background-color: var(--color-primary);
+          }
+          .bg-primary-foreground {
+            background-color: var(--color-primary-foreground);
+          }
+          .bg-secondary {
+            background-color: var(--color-secondary);
+          }
+          .bg-success-soft {
+            background-color: var(--color-success-soft);
+          }
+          .bg-surface {
+            background-color: var(--color-surface);
+          }
+          .bg-transparent {
+            background-color: transparent;
+          }
+          .bg-warning-soft {
+            background-color: var(--color-warning-soft);
+          }
+          .bg-white {
+            background-color: var(--color-white);
+          }
+          .bg-white\/40 {
+            background-color: color-mix(in srgb, #fff 40%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-white) 40%,
+                transparent
+              );
+            }
+          }
+          .bg-white\/60 {
+            background-color: color-mix(in srgb, #fff 60%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-white) 60%,
+                transparent
+              );
+            }
+          }
+          .bg-white\/80 {
+            background-color: color-mix(in srgb, #fff 80%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              background-color: color-mix(
+                in oklab,
+                var(--color-white) 80%,
+                transparent
+              );
+            }
+          }
+          .object-cover {
+            object-fit: cover;
+          }
+          .p-1 {
+            padding: calc(var(--spacing) * 1);
+          }
+          .p-3 {
+            padding: calc(var(--spacing) * 3);
+          }
+          .p-4 {
+            padding: calc(var(--spacing) * 4);
+          }
+          .p-5 {
+            padding: calc(var(--spacing) * 5);
+          }
+          .p-6 {
+            padding: calc(var(--spacing) * 6);
+          }
+          .p-8 {
+            padding: calc(var(--spacing) * 8);
+          }
+          .px-1 {
+            padding-inline: calc(var(--spacing) * 1);
+          }
+          .px-2 {
+            padding-inline: calc(var(--spacing) * 2);
+          }
+          .px-3 {
+            padding-inline: calc(var(--spacing) * 3);
+          }
+          .px-4 {
+            padding-inline: calc(var(--spacing) * 4);
+          }
+          .px-5 {
+            padding-inline: calc(var(--spacing) * 5);
+          }
+          .px-6 {
+            padding-inline: calc(var(--spacing) * 6);
+          }
+          .px-12 {
+            padding-inline: calc(var(--spacing) * 12);
+          }
+          .px-16 {
+            padding-inline: calc(var(--spacing) * 16);
+          }
+          .px-20 {
+            padding-inline: calc(var(--spacing) * 20);
+          }
+          .py-1 {
+            padding-block: calc(var(--spacing) * 1);
+          }
+          .py-2 {
+            padding-block: calc(var(--spacing) * 2);
+          }
+          .py-3 {
+            padding-block: calc(var(--spacing) * 3);
+          }
+          .py-4 {
+            padding-block: calc(var(--spacing) * 4);
+          }
+          .pt-6 {
+            padding-top: calc(var(--spacing) * 6);
+          }
+          .pt-8 {
+            padding-top: calc(var(--spacing) * 8);
+          }
+          .pt-10 {
+            padding-top: calc(var(--spacing) * 10);
+          }
+          .pb-1 {
+            padding-bottom: calc(var(--spacing) * 1);
+          }
+          .pb-3 {
+            padding-bottom: calc(var(--spacing) * 3);
+          }
+          .pb-6 {
+            padding-bottom: calc(var(--spacing) * 6);
+          }
+          .pb-8 {
+            padding-bottom: calc(var(--spacing) * 8);
+          }
+          .pb-16 {
+            padding-bottom: calc(var(--spacing) * 16);
+          }
+          .pb-20 {
+            padding-bottom: calc(var(--spacing) * 20);
+          }
+          .text-center {
+            text-align: center;
+          }
+          .text-right {
+            text-align: right;
+          }
+          .font-body {
+            font-family: var(--font-body);
+          }
+          .font-headings {
+            font-family: var(--font-headings);
+          }
+          .font-mono {
+            font-family: var(--font-mono);
+          }
+          .text-2xl {
+            font-size: var(--text-2xl);
+            line-height: var(--tw-leading, var(--text-2xl--line-height));
+          }
+          .text-3xl {
+            font-size: var(--text-3xl);
+            line-height: var(--tw-leading, var(--text-3xl--line-height));
+          }
+          .text-4xl {
+            font-size: var(--text-4xl);
+            line-height: var(--tw-leading, var(--text-4xl--line-height));
+          }
+          .text-base {
+            font-size: var(--text-base);
+            line-height: var(--tw-leading, var(--text-base--line-height));
+          }
+          .text-lg {
+            font-size: var(--text-lg);
+            line-height: var(--tw-leading, var(--text-lg--line-height));
+          }
+          .text-sm {
+            font-size: var(--text-sm);
+            line-height: var(--tw-leading, var(--text-sm--line-height));
+          }
+          .text-xl {
+            font-size: var(--text-xl);
+            line-height: var(--tw-leading, var(--text-xl--line-height));
+          }
+          .text-xs {
+            font-size: var(--text-xs);
+            line-height: var(--tw-leading, var(--text-xs--line-height));
+          }
+          .leading-6 {
+            --tw-leading: calc(var(--spacing) * 6);
+            line-height: calc(var(--spacing) * 6);
+          }
+          .font-bold {
+            --tw-font-weight: var(--font-weight-bold);
+            font-weight: var(--font-weight-bold);
+          }
+          .font-medium {
+            --tw-font-weight: var(--font-weight-medium);
+            font-weight: var(--font-weight-medium);
+          }
+          .tracking-widest {
+            --tw-tracking: var(--tracking-widest);
+            letter-spacing: var(--tracking-widest);
+          }
+          .text-danger {
+            color: var(--color-danger);
+          }
+          .text-foreground {
+            color: var(--color-foreground);
+          }
+          .text-foreground\/20 {
+            color: color-mix(in srgb, #344e41 20%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(
+                in oklab,
+                var(--color-foreground) 20%,
+                transparent
+              );
+            }
+          }
+          .text-foreground\/40 {
+            color: color-mix(in srgb, #344e41 40%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(
+                in oklab,
+                var(--color-foreground) 40%,
+                transparent
+              );
+            }
+          }
+          .text-foreground\/50 {
+            color: color-mix(in srgb, #344e41 50%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(
+                in oklab,
+                var(--color-foreground) 50%,
+                transparent
+              );
+            }
+          }
+          .text-foreground\/60 {
+            color: color-mix(in srgb, #344e41 60%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(
+                in oklab,
+                var(--color-foreground) 60%,
+                transparent
+              );
+            }
+          }
+          .text-foreground\/70 {
+            color: color-mix(in srgb, #344e41 70%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(
+                in oklab,
+                var(--color-foreground) 70%,
+                transparent
+              );
+            }
+          }
+          .text-foreground\/80 {
+            color: color-mix(in srgb, #344e41 80%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(
+                in oklab,
+                var(--color-foreground) 80%,
+                transparent
+              );
+            }
+          }
+          .text-info {
+            color: var(--color-info);
+          }
+          .text-muted-foreground {
+            color: var(--color-muted-foreground);
+          }
+          .text-orange-700 {
+            color: var(--color-orange-700);
+          }
+          .text-primary {
+            color: var(--color-primary);
+          }
+          .text-primary-foreground {
+            color: var(--color-primary-foreground);
+          }
+          .text-primary-foreground\/80 {
+            color: color-mix(in srgb, #ffffff 80%, transparent);
+            @supports (color: color-mix(in lab, red, red)) {
+              color: color-mix(
+                in oklab,
+                var(--color-primary-foreground) 80%,
+                transparent
+              );
+            }
+          }
+          .text-red-400 {
+            color: var(--color-red-400);
+          }
+          .text-secondary {
+            color: var(--color-secondary);
+          }
+          .text-success {
+            color: var(--color-success);
+          }
+          .text-warning {
+            color: var(--color-warning);
+          }
+          .uppercase {
+            text-transform: uppercase;
+          }
+          .italic {
+            font-style: italic;
+          }
+          .opacity-0 {
+            opacity: 0%;
+          }
+          .opacity-10 {
+            opacity: 10%;
+          }
+          .opacity-15 {
+            opacity: 15%;
+          }
+          .opacity-20 {
+            opacity: 20%;
+          }
+          .opacity-40 {
+            opacity: 40%;
+          }
+          .opacity-50 {
+            opacity: 50%;
+          }
+          .opacity-60 {
+            opacity: 60%;
+          }
+          .shadow-\[0_4px_12px_rgba\(58\,90\,64\,0\.03\)\] {
+            --tw-shadow: 0 4px 12px
+              var(--tw-shadow-color, rgba(58, 90, 64, 0.03));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-\[0_4px_12px_rgba\(58\,90\,64\,0\.15\)\] {
+            --tw-shadow: 0 4px 12px
+              var(--tw-shadow-color, rgba(58, 90, 64, 0.15));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-\[0_4px_20px_rgba\(58\,90\,64\,0\.04\)\] {
+            --tw-shadow: 0 4px 20px
+              var(--tw-shadow-color, rgba(58, 90, 64, 0.04));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-\[0_6px_18px_rgba\(0\,0\,0\,0\.05\)\] {
+            --tw-shadow: 0 6px 18px var(--tw-shadow-color, rgba(0, 0, 0, 0.05));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-\[0_8px_24px_rgba\(0\,0\,0\,0\.05\)\] {
+            --tw-shadow: 0 8px 24px var(--tw-shadow-color, rgba(0, 0, 0, 0.05));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-\[0_8px_30px_rgba\(58\,90\,64\,0\.04\)\] {
+            --tw-shadow: 0 8px 30px
+              var(--tw-shadow-color, rgba(58, 90, 64, 0.04));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-inner {
+            --tw-shadow: inset 0 2px 4px 0
+              var(--tw-shadow-color, rgb(0 0 0 / 0.05));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .shadow-sm {
+            --tw-shadow:
+              0 1px 3px 0 var(--tw-shadow-color, rgb(0 0 0 / 0.1)),
+              0 1px 2px -1px var(--tw-shadow-color, rgb(0 0 0 / 0.1));
+            box-shadow:
+              var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+              var(--tw-ring-offset-shadow), var(--tw-ring-shadow),
+              var(--tw-shadow);
+          }
+          .blur-\[18px\] {
+            --tw-blur: blur(18px);
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .blur-\[48px\] {
+            --tw-blur: blur(48px);
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .blur-\[60px\] {
+            --tw-blur: blur(60px);
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .blur-\[72px\] {
+            --tw-blur: blur(72px);
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .blur-\[100px\] {
+            --tw-blur: blur(100px);
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .blur-\[110px\] {
+            --tw-blur: blur(110px);
+            filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,)
+              var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,)
+              var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
+          }
+          .backdrop-blur-md {
+            --tw-backdrop-blur: blur(var(--blur-md));
+            -webkit-backdrop-filter: var(--tw-backdrop-blur,)
+              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
+              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
+              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
+              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+            backdrop-filter: var(--tw-backdrop-blur,)
+              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
+              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
+              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
+              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+          }
+          .backdrop-blur-sm {
+            --tw-backdrop-blur: blur(var(--blur-sm));
+            -webkit-backdrop-filter: var(--tw-backdrop-blur,)
+              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
+              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
+              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
+              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+            backdrop-filter: var(--tw-backdrop-blur,)
+              var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,)
+              var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,)
+              var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,)
+              var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
+          }
+          .transition-opacity {
+            transition-property: opacity;
+            transition-timing-function: var(
+              --tw-ease,
+              var(--default-transition-timing-function)
+            );
+            transition-duration: var(
+              --tw-duration,
+              var(--default-transition-duration)
+            );
+          }
+          .group-hover\:opacity-100 {
+            &:is(:where(.group):hover *) {
+              @media (hover: hover) {
+                opacity: 100%;
+              }
+            }
+          }
+          .hover\:scale-105 {
+            &:hover {
+              @media (hover: hover) {
+                --tw-scale-x: 105%;
+                --tw-scale-y: 105%;
+                --tw-scale-z: 105%;
+                scale: var(--tw-scale-x) var(--tw-scale-y);
+              }
+            }
+          }
+        }
+        @property --tw-translate-x {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0;
+        }
+        @property --tw-translate-y {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0;
+        }
+        @property --tw-translate-z {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0;
+        }
+        @property --tw-border-style {
+          syntax: "*";
+          inherits: false;
+          initial-value: solid;
+        }
+        @property --tw-leading {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-font-weight {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-tracking {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-shadow-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-shadow-alpha {
+          syntax: "<percentage>";
+          inherits: false;
+          initial-value: 100%;
+        }
+        @property --tw-inset-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-inset-shadow-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-inset-shadow-alpha {
+          syntax: "<percentage>";
+          inherits: false;
+          initial-value: 100%;
+        }
+        @property --tw-ring-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-ring-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-inset-ring-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-inset-ring-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-ring-inset {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-ring-offset-width {
+          syntax: "<length>";
+          inherits: false;
+          initial-value: 0px;
+        }
+        @property --tw-ring-offset-color {
+          syntax: "*";
+          inherits: false;
+          initial-value: #fff;
+        }
+        @property --tw-ring-offset-shadow {
+          syntax: "*";
+          inherits: false;
+          initial-value: 0 0 #0000;
+        }
+        @property --tw-blur {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-brightness {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-contrast {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-grayscale {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-hue-rotate {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-invert {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-opacity {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-saturate {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-sepia {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-drop-shadow {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-drop-shadow-color {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-drop-shadow-alpha {
+          syntax: "<percentage>";
+          inherits: false;
+          initial-value: 100%;
+        }
+        @property --tw-drop-shadow-size {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-blur {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-brightness {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-contrast {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-grayscale {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-hue-rotate {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-invert {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-opacity {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-saturate {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-backdrop-sepia {
+          syntax: "*";
+          inherits: false;
+        }
+        @property --tw-scale-x {
+          syntax: "*";
+          inherits: false;
+          initial-value: 1;
+        }
+        @property --tw-scale-y {
+          syntax: "*";
+          inherits: false;
+          initial-value: 1;
+        }
+        @property --tw-scale-z {
+          syntax: "*";
+          inherits: false;
+          initial-value: 1;
+        }
+        @layer properties {
+          @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or
+            ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+            *,
+            ::before,
+            ::after,
+            ::backdrop {
+              --tw-translate-x: 0;
+              --tw-translate-y: 0;
+              --tw-translate-z: 0;
+              --tw-border-style: solid;
+              --tw-leading: initial;
+              --tw-font-weight: initial;
+              --tw-tracking: initial;
+              --tw-shadow: 0 0 #0000;
+              --tw-shadow-color: initial;
+              --tw-shadow-alpha: 100%;
+              --tw-inset-shadow: 0 0 #0000;
+              --tw-inset-shadow-color: initial;
+              --tw-inset-shadow-alpha: 100%;
+              --tw-ring-color: initial;
+              --tw-ring-shadow: 0 0 #0000;
+              --tw-inset-ring-color: initial;
+              --tw-inset-ring-shadow: 0 0 #0000;
+              --tw-ring-inset: initial;
+              --tw-ring-offset-width: 0px;
+              --tw-ring-offset-color: #fff;
+              --tw-ring-offset-shadow: 0 0 #0000;
+              --tw-blur: initial;
+              --tw-brightness: initial;
+              --tw-contrast: initial;
+              --tw-grayscale: initial;
+              --tw-hue-rotate: initial;
+              --tw-invert: initial;
+              --tw-opacity: initial;
+              --tw-saturate: initial;
+              --tw-sepia: initial;
+              --tw-drop-shadow: initial;
+              --tw-drop-shadow-color: initial;
+              --tw-drop-shadow-alpha: 100%;
+              --tw-drop-shadow-size: initial;
+              --tw-backdrop-blur: initial;
+              --tw-backdrop-brightness: initial;
+              --tw-backdrop-contrast: initial;
+              --tw-backdrop-grayscale: initial;
+              --tw-backdrop-hue-rotate: initial;
+              --tw-backdrop-invert: initial;
+              --tw-backdrop-opacity: initial;
+              --tw-backdrop-saturate: initial;
+              --tw-backdrop-sepia: initial;
+              --tw-scale-x: 1;
+              --tw-scale-y: 1;
+              --tw-scale-z: 1;
+            }
+          }
+        }
+      </style>
+      <link
+        rel="preload"
+        as="image"
+        href="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/4"
+      />
+    </head>
+    <body>
+      <div
+        class="w-full min-h-[600px] relative overflow-hidden"
+        style="
+          background: linear-gradient(
+            180deg,
+            var(--color-background) 0%,
+            var(--color-background-light) 100%
+          );
+        "
+      >
+        <div
+          class="absolute top-10 left-0 w-[520px] h-[520px] rounded-full bg-accent-soft opacity-50 blur-[110px] -translate-x-1/3"
+        ></div>
+        <div
+          class="absolute top-[280px] right-0 w-[420px] h-[420px] rounded-full bg-leaf opacity-15 blur-[100px] translate-x-1/4"
+        ></div>
+        <div
+          class="absolute top-[520px] left-[120px] w-[120px] h-[180px] rounded-full bg-secondary opacity-10 blur-[48px]"
+        ></div>
+        <div class="relative z-10">
+          <div
+            class="h-[72px] bg-input shadow-sm px-12 flex items-center justify-between"
+          >
+            <div
+              class="text-2xl font-headings font-bold text-primary tracking-widest uppercase relative z-10"
+            >
+              <span data-file="/components/OrdersTopNav.jsx" data-idx="0"
+                >COCOON</span
+              >
+            </div>
+            <nav
+              class="flex items-center gap-10 text-base font-body font-medium relative z-10"
+            >
+              <a href="Product_list.html" class="text-foreground/70" data-media-type="banani-button"
+                ><span data-file="/components/OrdersTopNav.jsx" data-idx="1"
+                  >Dashboard</span
+                ></a
+              ><a
+                href="Orders.html"
+                class="text-primary font-bold"
+                data-media-type="banani-button"
+                ><span data-file="/components/OrdersTopNav.jsx" data-idx="2"
+                  >Orders</span
+                ></a
+              ><a href="Product_list.html" class="text-foreground/70" data-media-type="banani-button"
+                ><span data-file="/components/OrdersTopNav.jsx" data-idx="3"
+                  >Products</span
+                ></a
+              ><a href="Customer.html" class="text-foreground/70" data-media-type="banani-button"
+                ><span data-file="/components/OrdersTopNav.jsx" data-idx="4"
+                  >Customers</span
+                ></a
+              >
+            </nav>
+            <img
+              src="https://storage.googleapis.com/banani-avatars/avatar/female/25-35/East Asian/4"
+              class="w-10 h-10 rounded-full object-cover"
+            />
+          </div>
+          <div class="px-20 pt-8 pb-6 flex items-center justify-between">
+            <div class="flex flex-col gap-2">
+              <div class="text-sm font-body text-foreground/70">
+                <span data-file="/components/OrdersHeader.jsx" data-idx="0"
+                  >Orders / List</span
+                >
+              </div>
+              <h1 class="text-3xl font-headings text-foreground">
+                <span data-file="/components/OrdersHeader.jsx" data-idx="1"
+                  >Orders</span
+                >
+              </h1>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                class="h-12 px-5 rounded-xl bg-input text-foreground shadow-sm border border-border flex items-center gap-2 font-body text-sm font-medium"
+                data-media-type="banani-button"
+              >
+                <iconify-icon
+                  icon="lucide:sheet"
+                  class="block size-[16px]"
+                  style="font-size: 16px"
+                ></iconify-icon
+                ><span data-file="/components/OrdersHeader.jsx" data-idx="2"
+                  >Export Excel</span
+                ></button
+              ><button
+                class="h-12 px-6 rounded-xl bg-primary text-primary-foreground shadow-sm flex items-center gap-2 font-body text-sm font-medium"
+                data-media-type="banani-button"
+              >
+                <iconify-icon
+                  icon="lucide:plus"
+                  class="block size-[16px]"
+                  style="font-size: 16px"
+                ></iconify-icon
+                ><span data-file="/components/OrdersHeader.jsx" data-idx="3"
+                  >New Order</span
+                >
+              </button>
+            </div>
+          </div>
+          <div class="px-20 pb-6 flex items-center justify-between gap-5">
+            <div
+              class="h-11 flex-1 max-w-[520px] rounded-xl bg-input shadow-sm border border-border px-4 flex items-center gap-3"
+            >
+              <iconify-icon
+                icon="lucide:search"
+                class="block text-muted-foreground size-[18px]"
+                style="font-size: 18px"
+              ></iconify-icon>
+              <div class="text-sm font-body text-muted-foreground">
+                <span data-file="/components/OrdersFilterBar.jsx" data-idx="1"
+                  >Search by order ID, customer, or phone...</span
+                >
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div
+                class="h-11 px-4 rounded-xl bg-input shadow-sm flex items-center gap-3 text-sm font-body text-foreground border border-border"
+              >
+                <span
+                  ><span
+                    data-file="/components/OrdersFilterBar.jsx"
+                    data-idx="2"
+                    >Date Range</span
+                  ></span
+                ><iconify-icon
+                  icon="lucide:chevron-down"
+                  class="block text-muted-foreground size-[16px]"
+                  style="font-size: 16px"
+                ></iconify-icon>
+              </div>
+              <div
+                class="h-11 px-4 rounded-xl bg-input shadow-sm flex items-center gap-3 text-sm font-body text-foreground border border-border"
+              >
+                <span
+                  ><span
+                    data-file="/components/OrdersFilterBar.jsx"
+                    data-idx="3"
+                    >Delivery Status</span
+                  ></span
+                ><iconify-icon
+                  icon="lucide:chevron-down"
+                  class="block text-muted-foreground size-[16px]"
+                  style="font-size: 16px"
+                ></iconify-icon>
+              </div>
+              <div
+                class="h-11 px-4 rounded-xl bg-input shadow-sm flex items-center gap-3 text-sm font-body text-foreground border border-border"
+              >
+                <span
+                  ><span
+                    data-file="/components/OrdersFilterBar.jsx"
+                    data-idx="4"
+                    >Payment Status</span
+                  ></span
+                ><iconify-icon
+                  icon="lucide:chevron-down"
+                  class="block text-muted-foreground size-[16px]"
+                  style="font-size: 16px"
+                ></iconify-icon>
+              </div>
+              <div
+                class="h-11 px-4 rounded-xl bg-input shadow-sm flex items-center gap-3 text-sm font-body text-foreground border border-border"
+              >
+                <span
+                  ><span
+                    data-file="/components/OrdersFilterBar.jsx"
+                    data-idx="5"
+                    >Shipping Method</span
+                  ></span
+                ><iconify-icon
+                  icon="lucide:chevron-down"
+                  class="block text-muted-foreground size-[16px]"
+                  style="font-size: 16px"
+                ></iconify-icon>
+              </div>
+            </div>
+          </div>
+          <div class="px-20 pb-20 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-lg font-headings text-foreground">
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="60"
+                    >Order Queue</span
+                  >
+                </div>
+                <div class="text-sm font-body text-muted-foreground mt-1">
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="61"
+                    >Compact operational view for bulk handling and fast
+                    comparison</span
+                  >
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-3 text-sm font-body text-muted-foreground"
+              >
+                <div
+                  class="px-3 h-9 rounded-lg bg-input border border-border flex items-center"
+                >
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="62"
+                    >128 orders</span
+                  >
+                </div>
+                <div
+                  class="px-3 h-9 rounded-lg bg-input border border-border flex items-center gap-2"
+                >
+                  <iconify-icon
+                    icon="lucide:printer"
+                    class="block size-[14px]"
+                    style="font-size: 14px"
+                  ></iconify-icon
+                  ><span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="63"
+                    >Print Invoices</span
+                  >
+                </div>
+                <div
+                  class="px-3 h-9 rounded-lg bg-input border border-border flex items-center gap-2"
+                >
+                  <iconify-icon
+                    icon="lucide:truck"
+                    class="block size-[14px]"
+                    style="font-size: 14px"
+                  ></iconify-icon
+                  ><span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="64"
+                    >Mark Delivered</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-input rounded-xl shadow-[0_8px_24px_rgba(0,0,0,0.05)] overflow-hidden"
+            >
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border bg-background-light gap-3 text-xs font-body text-muted-foreground"
+              >
+                <div class="flex items-center justify-center">
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div>
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="65"
+                    >Order</span
+                  >
+                </div>
+                <div>
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="66"
+                    >Customer</span
+                  >
+                </div>
+                <div>
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="67"
+                    >Total</span
+                  >
+                </div>
+                <div>
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="68"
+                    >Shipping</span
+                  >
+                </div>
+                <div>
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="69"
+                    >Delivery / Payment</span
+                  >
+                </div>
+                <div class="text-center">
+                  <span
+                    data-file="/components/OrdersListSection.jsx"
+                    data-idx="70"
+                    >More</span
+                  >
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="0"
+                      >#ORD-1023</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="1"
+                      >12 Mar 2025 • 10:42 AM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="2"
+                        >Nguyen Ha My</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="3"
+                        >+84 912 345 678</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-warning-soft text-warning flex items-center justify-center shrink-0"
+                  >
+                    <iconify-icon
+                      icon="lucide:notebook-pen"
+                      class="block size-[14px]"
+                      style="font-size: 14px"
+                    ></iconify-icon>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="4"
+                      >1,250,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="5"
+                      >GHN</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-warning-soft text-warning"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="0"
+                      >Pending</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="5"
+                      >Paid</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="6"
+                      >#ORD-1022</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="7"
+                      >12 Mar 2025 • 09:15 AM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="8"
+                        >Tran Minh Chau</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="9"
+                        >+84 968 221 504</span
+                      >
+                    </div>
+                  </div>
+                  <div class="w-8 h-8"></div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="10"
+                      >740,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="11"
+                      >GHTK</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-accent-soft text-primary"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="1"
+                      >Packed</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-warning-soft text-warning"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="6"
+                      >COD</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="12"
+                      >#ORD-1021</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="13"
+                      >11 Mar 2025 • 06:30 PM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="14"
+                        >Le Bao Anh</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="15"
+                        >+84 977 410 220</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-warning-soft text-warning flex items-center justify-center shrink-0"
+                  >
+                    <iconify-icon
+                      icon="lucide:notebook-pen"
+                      class="block size-[14px]"
+                      style="font-size: 14px"
+                    ></iconify-icon>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="16"
+                      >2,180,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="17"
+                      >Shopee Express</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-info-soft text-info"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="2"
+                      >Shipped</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="5"
+                      >Paid</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="18"
+                      >#ORD-1020</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="19"
+                      >11 Mar 2025 • 02:12 PM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="20"
+                        >Pham Gia Linh</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="21"
+                        >+84 903 551 907</span
+                      >
+                    </div>
+                  </div>
+                  <div class="w-8 h-8"></div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="22"
+                      >510,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="23"
+                      >GHN</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="3"
+                      >Delivered</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="5"
+                      >Paid</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="24"
+                      >#ORD-1019</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="25"
+                      >10 Mar 2025 • 08:40 PM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="26"
+                        >Vo Thanh Nhan</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="27"
+                        >+84 938 008 440</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-warning-soft text-warning flex items-center justify-center shrink-0"
+                  >
+                    <iconify-icon
+                      icon="lucide:notebook-pen"
+                      class="block size-[14px]"
+                      style="font-size: 14px"
+                    ></iconify-icon>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="28"
+                      >890,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="29"
+                      >GHTK</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-warning-soft text-warning"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="0"
+                      >Pending</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-warning-soft text-warning"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="6"
+                      >COD</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="30"
+                      >#ORD-1018</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="31"
+                      >10 Mar 2025 • 03:06 PM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="32"
+                        >Hoang Thu Trang</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="33"
+                        >+84 905 611 220</span
+                      >
+                    </div>
+                  </div>
+                  <div class="w-8 h-8"></div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="34"
+                      >1,060,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="35"
+                      >GHN</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-accent-soft text-primary"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="1"
+                      >Packed</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="5"
+                      >Paid</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="36"
+                      >#ORD-1017</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="37"
+                      >09 Mar 2025 • 04:55 PM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="38"
+                        >Bui Minh Tam</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="39"
+                        >+84 979 100 321</span
+                      >
+                    </div>
+                  </div>
+                  <div class="w-8 h-8"></div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="40"
+                      >640,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="41"
+                      >Shopee Express</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-info-soft text-info"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="2"
+                      >Shipped</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="5"
+                      >Paid</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="42"
+                      >#ORD-1016</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="43"
+                      >09 Mar 2025 • 01:18 PM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="44"
+                        >Do Khanh Ly</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="45"
+                        >+84 933 765 212</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="w-8 h-8 rounded-lg bg-warning-soft text-warning flex items-center justify-center shrink-0"
+                  >
+                    <iconify-icon
+                      icon="lucide:notebook-pen"
+                      class="block size-[14px]"
+                      style="font-size: 14px"
+                    ></iconify-icon>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="46"
+                      >320,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="47"
+                      >GHN</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-danger-soft text-danger"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="4"
+                      >Canceled</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-danger-soft text-danger"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="7"
+                      >Refunded</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="48"
+                      >#ORD-1015</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="49"
+                      >08 Mar 2025 • 11:22 AM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="50"
+                        >Ly Gia Huy</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="51"
+                        >+84 976 287 100</span
+                      >
+                    </div>
+                  </div>
+                  <div class="w-8 h-8"></div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="52"
+                      >1,480,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="53"
+                      >GHTK</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="3"
+                      >Delivered</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-success-soft text-success"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="5"
+                      >Paid</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+              <div
+                class="grid grid-cols-[44px_1.15fr_1.2fr_0.9fr_0.9fr_0.8fr_52px] items-center px-4 py-3 border-b border-border gap-3 bg-input"
+              >
+                <div
+                  class="flex items-center justify-center text-muted-foreground"
+                >
+                  <iconify-icon
+                    icon="lucide:square"
+                    class="block size-[18px]"
+                    style="font-size: 18px"
+                  ></iconify-icon>
+                </div>
+                <div class="flex flex-col gap-1 min-w-0">
+                  <a href="Order_detail.html"
+                    class="text-sm font-body font-medium text-foreground"
+                    data-media-type="banani-button"
+                    ><span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="54"
+                      >#ORD-1014</span
+                    ></a
+                  >
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="55"
+                      >08 Mar 2025 • 09:10 AM</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-between gap-3 min-w-0">
+                  <div class="min-w-0">
+                    <div class="text-sm font-body font-medium text-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="56"
+                        >Tran Yen Nhi</span
+                      >
+                    </div>
+                    <div class="text-xs font-body text-muted-foreground">
+                      <span
+                        data-file="/components/OrdersListSection.jsx"
+                        data-idx="57"
+                        >+84 908 442 919</span
+                      >
+                    </div>
+                  </div>
+                  <div class="w-8 h-8"></div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-secondary">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="58"
+                      >585,000 ₫</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="14"
+                      >Order total</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <div class="text-sm font-body font-medium text-foreground">
+                    <span
+                      data-file="/components/OrdersListSection.jsx"
+                      data-idx="59"
+                      >GHN</span
+                    >
+                  </div>
+                  <div class="text-xs font-body text-muted-foreground">
+                    <span data-file="/components/OrderRow.jsx" data-idx="15"
+                      >Carrier</span
+                    >
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-warning-soft text-warning"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="0"
+                      >Pending</span
+                    >
+                  </div>
+                  <div
+                    class="inline-flex h-7 px-3 rounded-full items-center text-xs font-body font-medium bg-warning-soft text-warning"
+                  >
+                    <span data-file="/components/OrderRow.jsx" data-idx="6"
+                      >COD</span
+                    >
+                  </div>
+                </div>
+                <div class="flex items-center justify-center">
+                  <button
+                    class="w-9 h-9 rounded-lg bg-background-light border border-border text-foreground flex items-center justify-center"
+                    data-media-type="banani-button"
+                  >
+                    <iconify-icon
+                      icon="lucide:ellipsis"
+                      class="block size-[16px]"
+                      style="font-size: 16px"
+                    ></iconify-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="px-20 pb-8">
+            <div
+              class="flex items-center justify-between gap-4 px-6 py-4 rounded-[24px] bg-white/80 backdrop-blur-sm border border-white shadow-[0_4px_20px_rgba(58,90,64,0.04)]"
+            >
+              <div class="text-sm font-body text-foreground/60">
+                <span>Showing 1-10 of 128 orders</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <a href="Orders.html" class="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-sm font-body font-medium" data-media-type="banani-button">1</a>
+                <a href="Orders.html" class="w-10 h-10 rounded-lg bg-input border border-border text-foreground flex items-center justify-center text-sm font-body font-medium" data-media-type="banani-button">2</a>
+                <a href="Orders.html" class="w-10 h-10 rounded-lg bg-input border border-border text-foreground flex items-center justify-center text-sm font-body font-medium" data-media-type="banani-button">3</a>
+                <a href="Orders.html" class="h-10 px-4 rounded-lg bg-input border border-border text-foreground flex items-center gap-2 text-sm font-body font-medium" data-media-type="banani-button">
+                  <span>Next</span>
+                  <iconify-icon icon="lucide:chevron-right" class="block size-[14px]" style="font-size: 14px"></iconify-icon>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+  </html>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+</div>

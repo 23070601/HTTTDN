@@ -6,12 +6,19 @@ const { getPagination } = require('../../common/utils/paginate');
 
 async function list(req, res) {
   const { page, limit, offset } = getPagination(req.query);
+<<<<<<< HEAD
   const { segment, customer_type, city, search } = req.query;
+=======
+  const { segment, city, search } = req.query;
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
   let where = 'WHERE 1=1';
   const params = [];
   if (segment) { where += ' AND segment = ?'; params.push(segment); }
+<<<<<<< HEAD
   if (customer_type) { where += ' AND customer_type = ?'; params.push(customer_type); }
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   if (city)    { where += ' AND city = ?';    params.push(city); }
   if (search)  {
     where += ' AND (full_name LIKE ? OR email LIKE ? OR phone_number LIKE ?)';
@@ -30,6 +37,7 @@ async function list(req, res) {
   }
 }
 
+<<<<<<< HEAD
 // Search customers by phone or name (for autocomplete in order form)
 async function search(req, res) {
   try {
@@ -75,6 +83,8 @@ async function search(req, res) {
   }
 }
 
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 async function getOne(req, res) {
   try {
     const [rows] = await pool.query('SELECT * FROM customers WHERE customer_id = ?', [req.params.id]);
@@ -98,14 +108,23 @@ async function create(req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return R.badRequest(res, 'Validation failed', errors.array());
 
+<<<<<<< HEAD
   const { full_name, email, phone_number, customer_type = 'retail', gender, date_of_birth, address, city, segment = 'New' } = req.body;
+=======
+  const { full_name, email, phone_number, gender, date_of_birth, address, city, segment = 'New' } = req.body;
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   try {
     const [dup] = await pool.query('SELECT customer_id FROM customers WHERE email = ?', [email]);
     if (dup.length) return R.conflict(res, 'Email already registered.');
 
     const [result] = await pool.query(
+<<<<<<< HEAD
       'INSERT INTO customers (full_name, email, phone_number, customer_type, gender, date_of_birth, address, city, segment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [full_name, email, phone_number || null, customer_type, gender || null, date_of_birth || null, address || null, city || null, segment]
+=======
+      'INSERT INTO customers (full_name, email, phone_number, gender, date_of_birth, address, city, segment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [full_name, email, phone_number || null, gender || null, date_of_birth || null, address || null, city || null, segment]
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     );
     const [rows] = await pool.query('SELECT * FROM customers WHERE customer_id = ?', [result.insertId]);
     return R.created(res, rows[0]);
@@ -115,12 +134,19 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
+<<<<<<< HEAD
   const { full_name, phone_number, customer_type, gender, date_of_birth, address, city, segment } = req.body;
+=======
+  const { full_name, phone_number, gender, date_of_birth, address, city, segment } = req.body;
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   const fields = []; const params = [];
 
   if (full_name    !== undefined) { fields.push('full_name = ?');    params.push(full_name); }
   if (phone_number !== undefined) { fields.push('phone_number = ?'); params.push(phone_number); }
+<<<<<<< HEAD
   if (customer_type!== undefined) { fields.push('customer_type = ?');params.push(customer_type); }
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   if (gender       !== undefined) { fields.push('gender = ?');       params.push(gender); }
   if (date_of_birth!== undefined) { fields.push('date_of_birth = ?');params.push(date_of_birth); }
   if (address      !== undefined) { fields.push('address = ?');      params.push(address); }
@@ -224,4 +250,8 @@ async function redeemPoints(req, res) {
   }
 }
 
+<<<<<<< HEAD
 module.exports = { list, search, getOne, create, update, getOrders, getLoyaltyHistory, redeemPoints };
+=======
+module.exports = { list, getOne, create, update, getOrders, getLoyaltyHistory, redeemPoints };
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f

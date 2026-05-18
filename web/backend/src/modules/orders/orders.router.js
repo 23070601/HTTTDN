@@ -15,6 +15,7 @@ router.post(
   '/',
   authorize('sales', 'admin', 'manager'),
   [
+<<<<<<< HEAD
     body('customer_type').optional().isIn(['retail','dealer','guest','marketplace']),
     body('customer_id').optional().isInt({ gt: 0 }),
     body('dealer_id').optional().isInt({ gt: 0 }),
@@ -29,12 +30,21 @@ router.post(
     body('payment_method').optional().isString(),
     body('payment_confirmed').optional().isBoolean(),
     body('shipping_address').optional().isString(),
+=======
+    body('customer_id').isInt({ gt: 0 }),
+    body('sales_channel').isIn(['Website','Shopee','TikTok Shop','Lazada','In-store']),
+    body('items').isArray({ min: 1 }).withMessage('At least one item required'),
+    body('items.*.product_id').isInt({ gt: 0 }),
+    body('items.*.quantity').isInt({ gt: 0 }),
+    body('payment_method').optional().isIn(['COD','Momo','VNPay','Bank Transfer','Card']),
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     body('loyalty_discount').optional().isFloat({ min: 0 }),
     body('shipping_fee').optional().isFloat({ min: 0 }),
   ],
   controller.create
 );
 
+<<<<<<< HEAD
 // Update order before shipping or limited after shipping
 router.patch(
   '/:id',
@@ -65,11 +75,17 @@ router.delete(
   controller.remove
 );
 
+=======
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 // Update delivery status
 router.patch(
   '/:id/delivery-status',
   authorize('sales', 'admin', 'manager', 'warehouse'),
+<<<<<<< HEAD
   [body('delivery_status').isIn(['Pending','Confirmed','Processing','Shipping','Delivered','Cancelled'])],
+=======
+  [body('delivery_status').isIn(['Pending','Confirmed','Processing','Shipping','Delivered','Cancelled','Returned'])],
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   controller.updateDeliveryStatus
 );
 

@@ -37,6 +37,7 @@ async function create(req, res) {
 }
 
 async function update(req, res) {
+<<<<<<< HEAD
   const allowedFields = [
     'full_name',
     'email',
@@ -67,6 +68,14 @@ async function update(req, res) {
       values
     );
 
+=======
+  const { full_name, email, role, office, status } = req.body;
+  try {
+    await pool.query(
+      'UPDATE users SET full_name = ?, email = ?, role = ?, office = ?, status = ? WHERE user_id = ?',
+      [full_name, email, role, office, status, req.params.id]
+    );
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     return R.ok(res, null, 'User updated successfully');
   } catch (err) {
     return R.serverError(res, err);
@@ -75,12 +84,17 @@ async function update(req, res) {
 
 async function remove(req, res) {
   try {
+<<<<<<< HEAD
     await pool.query(
       'UPDATE users SET status = ? WHERE user_id = ?',
       ['inactive', req.params.id]
     );
 
     return R.ok(res, null, 'User deactivated successfully');
+=======
+    await pool.query('DELETE FROM users WHERE user_id = ?', [req.params.id]);
+    return R.ok(res, null, 'User deleted successfully');
+>>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   } catch (err) {
     return R.serverError(res, err);
   }
