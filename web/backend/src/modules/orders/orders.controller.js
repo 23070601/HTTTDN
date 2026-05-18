@@ -6,7 +6,6 @@
 //    stock deduction and audit logging automatically)
 //  - updateDeliveryStatus: triggers loyalty accrual when set
 //    to 'Delivered'
-<<<<<<< HEAD
 //
 //  FIX 3: Order locking after Processing — prevents edits to
 //         customer, payment method, items once order moves to
@@ -30,15 +29,12 @@
 //    Returns are now SEPARATE TRANSACTIONS (see returns.controller.js)
 //    No longer change order.status to 'Returned'
 //    Use POST /api/returns to create return_request entities
-=======
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 // ============================================================
 const { validationResult } = require('express-validator');
 const { pool } = require('../../config/db');
 const R = require('../../common/utils/response');
 const { getPagination } = require('../../common/utils/paginate');
 
-<<<<<<< HEAD
 const CUSTOMER_TYPES = new Set(['retail', 'dealer', 'guest', 'marketplace']);
 const SALES_CHANNELS = new Set(['in_store', 'online', 'dealer']);
 const PLATFORM_BY_CHANNEL = {
@@ -117,8 +113,6 @@ function normalizeText(value) {
   return typeof value === 'string' ? value.trim() : value;
 }
 
-=======
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 // ─── Helpers ──────────────────────────────────────────────────
 function generateOrderNumber() {
   const now = new Date();
@@ -130,38 +124,25 @@ function generateOrderNumber() {
 // ─── LIST ─────────────────────────────────────────────────────
 async function list(req, res) {
   const { page, limit, offset } = getPagination(req.query);
-<<<<<<< HEAD
   const { delivery_status, payment_status, sales_channel, platform, customer_type, customer_id, search, from, to } = req.query;
-=======
-  const { delivery_status, payment_status, sales_channel, customer_id, search, from, to } = req.query;
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
   let where = 'WHERE 1=1';
   const params = [];
   if (delivery_status) { where += ' AND o.delivery_status = ?'; params.push(delivery_status); }
   if (payment_status)  { where += ' AND o.payment_status = ?';  params.push(payment_status); }
   if (sales_channel)   { where += ' AND o.sales_channel = ?';   params.push(sales_channel); }
-<<<<<<< HEAD
   if (platform)        { where += ' AND o.platform = ?';        params.push(platform); }
   if (customer_type)   { where += ' AND o.customer_type = ?';    params.push(customer_type); }
-=======
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   if (customer_id)     { where += ' AND o.customer_id = ?';     params.push(customer_id); }
   if (from)            { where += ' AND DATE(o.ordered_at) >= ?'; params.push(from); }
   if (to)              { where += ' AND DATE(o.ordered_at) <= ?'; params.push(to); }
   if (search)          {
-<<<<<<< HEAD
     where += ' AND (o.order_number LIKE ? OR c.full_name LIKE ? OR c.phone_number LIKE ? OR d.dealer_name LIKE ? OR d.contact_person LIKE ?)';
     params.push(`%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`, `%${search}%`);
-=======
-    where += ' AND (o.order_number LIKE ? OR c.full_name LIKE ? OR c.phone_number LIKE ?)';
-    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   }
 
   try {
     const [[{ total }]] = await pool.query(
-<<<<<<< HEAD
       `SELECT COUNT(*) AS total FROM orders o
        LEFT JOIN customers c ON c.customer_id = o.customer_id
        LEFT JOIN dealers d ON d.dealer_id = o.dealer_id
@@ -188,18 +169,6 @@ async function list(req, res) {
        LEFT JOIN return_requests rr ON rr.order_id = o.order_id
        ${where}
        GROUP BY o.order_id
-=======
-      `SELECT COUNT(*) AS total FROM orders o LEFT JOIN customers c ON c.customer_id = o.customer_id ${where}`,
-      params
-    );
-    const [rows] = await pool.query(
-      `SELECT o.*, c.full_name AS customer_name, c.phone_number AS customer_phone,
-              u.full_name AS staff_name
-       FROM orders o
-       LEFT JOIN customers c ON c.customer_id = o.customer_id
-       LEFT JOIN users u ON u.user_id = o.user_id
-       ${where}
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
        ORDER BY o.ordered_at DESC
        LIMIT ? OFFSET ?`,
       [...params, limit, offset]
@@ -214,7 +183,6 @@ async function list(req, res) {
 async function getOne(req, res) {
   try {
     const [rows] = await pool.query(
-<<<<<<< HEAD
       `SELECT o.*, COALESCE(d.dealer_name, c.full_name) AS customer_name,
               c.phone_number AS customer_phone,
               c.email AS customer_email, c.loyalty_points_balance,
@@ -226,13 +194,6 @@ async function getOne(req, res) {
        FROM orders o
        LEFT JOIN customers c ON c.customer_id = o.customer_id
        LEFT JOIN dealers d ON d.dealer_id = o.dealer_id
-=======
-      `SELECT o.*, c.full_name AS customer_name, c.phone_number AS customer_phone,
-              c.email AS customer_email, c.loyalty_points_balance,
-              u.full_name AS staff_name
-       FROM orders o
-       LEFT JOIN customers c ON c.customer_id = o.customer_id
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
        LEFT JOIN users u ON u.user_id = o.user_id
        WHERE o.order_id = ?`,
       [req.params.id]
@@ -259,7 +220,6 @@ async function create(req, res) {
   if (!errors.isEmpty()) return R.badRequest(res, 'Validation failed', errors.array());
 
   const {
-<<<<<<< HEAD
     customer_id = null,
     dealer_id = null,
     customer_type = null,
@@ -270,11 +230,6 @@ async function create(req, res) {
     platform = null,
     payment_method  = null,
     payment_confirmed = false,
-=======
-    customer_id,
-    sales_channel,
-    payment_method  = null,
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     shipping_address = null,
     city             = null,
     shipping_fee     = 0,
@@ -287,7 +242,6 @@ async function create(req, res) {
   try {
     await conn.beginTransaction();
 
-<<<<<<< HEAD
     if (!SALES_CHANNELS.has(sales_channel)) {
       await conn.rollback();
       conn.release();
@@ -382,11 +336,6 @@ async function create(req, res) {
       conn.release();
       return R.badRequest(res, 'Customer information is required.');
     }
-=======
-    // 1. Validate customer exists
-    const [[customer]] = await conn.query('SELECT customer_id FROM customers WHERE customer_id = ?', [customer_id]);
-    if (!customer) { await conn.rollback(); conn.release(); return R.notFound(res, 'Customer not found.'); }
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
     // 2. Fetch product prices + stock
     const productIds = items.map(i => i.product_id);
@@ -418,7 +367,6 @@ async function create(req, res) {
     if (total_amount < 0) { await conn.rollback(); conn.release(); return R.badRequest(res, 'Total amount cannot be negative.'); }
 
     const order_number = generateOrderNumber();
-<<<<<<< HEAD
     
     // Determine payment method based on sales_channel
     let resolvedPaymentMethod = payment_method;
@@ -441,25 +389,15 @@ async function create(req, res) {
     
     const invoice_number = resolvedCustomerType === 'dealer' ? `INV-${order_number}` : null;
     const invoice_status = resolvedCustomerType === 'dealer' ? 'Generated' : 'Not Generated';
-=======
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
     // 4. Insert order
     const [orderResult] = await conn.query(
       `INSERT INTO orders
-<<<<<<< HEAD
         (customer_id, dealer_id, user_id, order_number, customer_type, sales_channel, platform, payment_method, payment_status, payment_confirmed,
          invoice_number, invoice_status, shipping_address, city, total_amount, shipping_fee, loyalty_discount, note)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` ,
       [resolvedCustomerId, resolvedDealerId || null, req.user.user_id, order_number, resolvedCustomerType, sales_channel, resolvedPlatform, resolvedPaymentMethod, payment_status, Boolean(payment_confirmed),
        invoice_number, invoice_status, shipping_address, city, total_amount, shipping_fee, loyalty_discount, note]
-=======
-         (customer_id, user_id, order_number, sales_channel, payment_method,
-          shipping_address, city, total_amount, shipping_fee, loyalty_discount, note)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [customer_id, req.user.user_id, order_number, sales_channel, payment_method,
-       shipping_address, city, total_amount, shipping_fee, loyalty_discount, note]
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     );
     const order_id = orderResult.insertId;
 
@@ -471,7 +409,6 @@ async function create(req, res) {
       );
     }
 
-<<<<<<< HEAD
     if (resolvedCustomerType === 'dealer') {
       await conn.query(
         `INSERT INTO debt_transactions (dealer_id, user_id, transaction_type, amount, note)
@@ -480,22 +417,15 @@ async function create(req, res) {
       );
     }
 
-=======
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     await conn.commit();
     conn.release();
 
     const [rows] = await pool.query(
-<<<<<<< HEAD
       `SELECT o.*, COALESCE(d.dealer_name, c.full_name) AS customer_name
        FROM orders o
        LEFT JOIN customers c ON c.customer_id = o.customer_id
        LEFT JOIN dealers d ON d.dealer_id = o.dealer_id
        WHERE o.order_id = ?`,
-=======
-      `SELECT o.*, c.full_name AS customer_name FROM orders o
-       JOIN customers c ON c.customer_id = o.customer_id WHERE o.order_id = ?`,
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
       [order_id]
     );
 
@@ -517,7 +447,6 @@ async function updateDeliveryStatus(req, res) {
   const { delivery_status } = req.body;
 
   try {
-<<<<<<< HEAD
     const [rows] = await pool.query('SELECT order_id, delivery_status, sales_channel FROM orders WHERE order_id = ?', [req.params.id]);
     if (!rows.length) return R.notFound(res, 'Order not found.');
 
@@ -538,16 +467,6 @@ async function updateDeliveryStatus(req, res) {
     const allowedNext = allowedByCurrent[current] || new Set();
     if (!allowedNext.has(delivery_status)) {
       return R.badRequest(res, `Invalid fulfillment transition from ${current} to ${delivery_status}.`);
-=======
-    const [rows] = await pool.query('SELECT order_id, delivery_status FROM orders WHERE order_id = ?', [req.params.id]);
-    if (!rows.length) return R.notFound(res, 'Order not found.');
-
-    // Business rule: can't un-cancel or re-deliver
-    const current = rows[0].delivery_status;
-    if (current === 'Cancelled') return R.badRequest(res, 'Cannot update a cancelled order.');
-    if (current === 'Delivered' && delivery_status !== 'Returned') {
-      return R.badRequest(res, 'Order already delivered. Only "Returned" is allowed.');
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     }
 
     await pool.query(
@@ -566,7 +485,6 @@ async function updateDeliveryStatus(req, res) {
 
 // ─── UPDATE PAYMENT STATUS ────────────────────────────────────
 async function updatePaymentStatus(req, res) {
-<<<<<<< HEAD
   return R.badRequest(res, 'Payment status is derived from payment method and cannot be edited directly.');
 }
 
@@ -959,25 +877,6 @@ async function remove(req, res) {
   } catch (err) {
     await conn.rollback();
     conn.release();
-=======
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) return R.badRequest(res, 'Validation failed', errors.array());
-
-  const { payment_status } = req.body;
-
-  try {
-    const [rows] = await pool.query('SELECT order_id FROM orders WHERE order_id = ?', [req.params.id]);
-    if (!rows.length) return R.notFound(res, 'Order not found.');
-
-    await pool.query(
-      'UPDATE orders SET payment_status = ?, updated_at = NOW() WHERE order_id = ?',
-      [payment_status, req.params.id]
-    );
-
-    const [updated] = await pool.query('SELECT * FROM orders WHERE order_id = ?', [req.params.id]);
-    return R.ok(res, updated[0], 'Payment status updated.');
-  } catch (err) {
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     return R.serverError(res, err);
   }
 }
@@ -1000,8 +899,4 @@ async function getItems(req, res) {
   }
 }
 
-<<<<<<< HEAD
 module.exports = { list, getOne, create, update, remove, updateDeliveryStatus, updatePaymentStatus, getItems };
-=======
-module.exports = { list, getOne, create, updateDeliveryStatus, updatePaymentStatus, getItems };
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
