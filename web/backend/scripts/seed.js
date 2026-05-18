@@ -29,7 +29,6 @@ const datetimeAgo = (daysMin, daysMax) => {
 
 // ─── Data constants ──────────────────────────────────────────
 const CITIES = ['Hà Nội', 'TP. Hồ Chí Minh', 'Đà Nẵng', 'Cần Thơ', 'Hải Phòng', 'Huế', 'Nha Trang', 'Vũng Tàu'];
-<<<<<<< HEAD
 const ORDER_CHANNELS = ['in_store', 'online', 'dealer', 'marketplace'];
 const PLATFORM_BY_CHANNEL = {
   in_store: 'physical_store',
@@ -39,10 +38,6 @@ const PLATFORM_BY_CHANNEL = {
 const MARKETPLACE_PLATFORMS = ['shopee', 'tiktok', 'lazada'];
 const PAYMENT_METHODS = ['COD', 'Momo', 'VNPay', 'Bank Transfer', 'Card'];
 const DEALER_PAYMENT_METHODS = ['Invoice', 'Credit Terms'];
-=======
-const CHANNELS = ['Website', 'Shopee', 'TikTok Shop', 'Lazada', 'In-store'];
-const PAYMENT_METHODS = ['COD', 'Momo', 'VNPay', 'Bank Transfer', 'Card'];
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 const DELIVERY_STATUSES = ['Pending', 'Confirmed', 'Processing', 'Shipping', 'Delivered', 'Cancelled'];
 const REGIONS = ['Miền Bắc', 'Miền Trung', 'Miền Nam'];
 
@@ -51,11 +46,7 @@ async function truncateAll(conn) {
   await conn.query('SET FOREIGN_KEY_CHECKS = 0');
   const tables = [
     'audit_logs', 'debt_transactions', 'stock_transactions',
-<<<<<<< HEAD
     'loyalty_transactions', 'return_requests', 'order_items', 'orders',
-=======
-    'loyalty_transactions', 'order_items', 'orders',
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     'promotions', 'dealers', 'raw_materials',
     'products', 'customers', 'users', 'categories',
   ];
@@ -224,7 +215,6 @@ async function seedPromotions(conn) {
 // ─── DEALERS ──────────────────────────────────────────────────
 async function seedDealers(conn) {
   const dealers = [
-<<<<<<< HEAD
     ['Chuỗi mỹ phẩm BeautyLand',     'Miền Nam',  'TP. Hồ Chí Minh', 'Nguyễn Thị Hà',    '0909111222', 'beautyland@email.com',    'Tier 1', 'Net 30',  850000000, 120000000, 500000000, 'Warning', 'Active'],
     ['Hệ thống Guardian VN',         'Miền Nam',  'TP. Hồ Chí Minh', 'Trần Minh Khoa',   '0908222333', 'guardian.vn@email.com',   'Tier 1', 'Net 30', 1200000000, 0,          800000000, 'Stable',  'Active'],
     ['Siêu thị Winmart Beauty',      'Miền Bắc',  'Hà Nội',          'Lê Thu Hương',     '0912333444', 'winmart.beauty@email.com', 'Tier 2', 'Net 45',  650000000,  80000000,  400000000, 'Stable',  'Active'],
@@ -233,26 +223,12 @@ async function seedDealers(conn) {
     ['Mỹ phẩm xanh Cần Thơ',         'Miền Nam',  'Cần Thơ',         'Nguyễn Lan Anh',   '0916666777', 'xanh.ct@email.com',        'Tier 3', 'Net 60',  180000000,  0,          150000000, 'Stable',  'Active'],
     ['Spa & Beauty Huế',             'Miền Trung','Huế',             'Bùi Thị Ngân',     '0917777888', 'spa.hue@email.com',        'Tier 3', 'Net 30',   95000000,   15000000,   80000000, 'Stable',  'Active'],
     ['Đại lý mỹ phẩm Hải Phòng',     'Miền Bắc',  'Hải Phòng',       'Đặng Văn Hùng',    '0918888999', 'mp.hp@email.com',          'Tier 2', 'Net 45',  140000000,  60000000,  100000000, 'Warning', 'Suspended'],
-=======
-    ['Chuỗi mỹ phẩm BeautyLand',     'Miền Nam',  'TP. Hồ Chí Minh', 'Nguyễn Thị Hà',    '0909111222', 'beautyland@email.com',    850000000, 120000000, 500000000, 'Warning', 'Active'],
-    ['Hệ thống Guardian VN',          'Miền Nam',  'TP. Hồ Chí Minh', 'Trần Minh Khoa',   '0908222333', 'guardian.vn@email.com',   1200000000, 0,          800000000, 'Stable',  'Active'],
-    ['Siêu thị Winmart Beauty',       'Miền Bắc',  'Hà Nội',          'Lê Thu Hương',     '0912333444', 'winmart.beauty@email.com', 650000000,  80000000,  400000000, 'Stable',  'Active'],
-    ['Chuỗi TheFaceShop HCM',         'Miền Nam',  'TP. Hồ Chí Minh', 'Phạm Anh Tuấn',    '0911444555', 'tfshop.hcm@email.com',    480000000,  200000000, 300000000, 'Overdue', 'Active'],
-    ['Nhà phân phối Đà Nẵng Beauty',  'Miền Trung','Đà Nẵng',         'Võ Quang Hải',     '0905555666', 'dn.beauty@email.com',     320000000,  45000000,  250000000, 'Stable',  'Active'],
-    ['Mỹ phẩm xanh Cần Thơ',         'Miền Nam',  'Cần Thơ',         'Nguyễn Lan Anh',   '0916666777', 'xanh.ct@email.com',       180000000,  0,          150000000, 'Stable',  'Active'],
-    ['Spa & Beauty Huế',              'Miền Trung','Huế',             'Bùi Thị Ngân',     '0917777888', 'spa.hue@email.com',       95000000,   15000000,   80000000, 'Stable',  'Active'],
-    ['Đại lý mỹ phẩm Hải Phòng',     'Miền Bắc',  'Hải Phòng',       'Đặng Văn Hùng',    '0918888999', 'mp.hp@email.com',         140000000,  60000000,  100000000, 'Warning', 'Suspended'],
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
   ];
 
   await conn.query(
     `INSERT INTO dealers
        (dealer_name, region, city, contact_person, phone_number, email,
-<<<<<<< HEAD
         wholesale_tier, payment_terms, total_revenue, debt_amount, credit_limit, debt_status, partner_status)
-=======
-        total_revenue, debt_amount, credit_limit, debt_status, partner_status)
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
      VALUES ?`,
     [dealers]
   );
@@ -282,10 +258,7 @@ async function seedCustomers(conn) {
       name,
       `customer${i}@email.com`,
       `09${pad(rndInt(0,99),2)}${pad(rndInt(0,9999999), 7)}`,
-<<<<<<< HEAD
       'retail',
-=======
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
       rnd(['female', 'male', 'other']),
       `${rndInt(1980, 2003)}-${pad(rndInt(1,12))}-${pad(rndInt(1,28))}`,
       `${rndInt(1,500)} Đường ${rnd(['Nguyễn Huệ','Lê Lợi','Trần Hưng Đạo','Điện Biên Phủ','Lý Thường Kiệt'])}`,
@@ -298,11 +271,7 @@ async function seedCustomers(conn) {
 
   await conn.query(
     `INSERT INTO customers
-<<<<<<< HEAD
        (full_name, email, phone_number, customer_type, gender, date_of_birth, address, city, segment,
-=======
-       (full_name, email, phone_number, gender, date_of_birth, address, city, segment,
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
         loyalty_points_balance, created_at)
      VALUES ?`,
     [customers]
@@ -312,27 +281,17 @@ async function seedCustomers(conn) {
 
 // ─── ORDERS + ORDER ITEMS ─────────────────────────────────────
 async function seedOrders(conn) {
-<<<<<<< HEAD
   const [productRows] = await conn.query('SELECT product_id, selling_price, cost_price, stock_quantity FROM products');
   const [customerRows] = await conn.query('SELECT customer_id FROM customers');
   const [userRows] = await conn.query("SELECT user_id FROM users WHERE role = 'sales'");
   const [dealerRows] = await conn.query('SELECT dealer_id, dealer_name, email, phone_number, region, city FROM dealers');
   const stockRemaining = Object.fromEntries(productRows.map(p => [p.product_id, Number(p.stock_quantity) || 0]));
-=======
-  // Disable triggers temporarily so we can insert historical data freely
-  await conn.query('SET @disable_triggers = 1');
-
-  const [productRows] = await conn.query('SELECT product_id, selling_price, cost_price FROM products');
-  const [customerRows] = await conn.query('SELECT customer_id FROM customers');
-  const [userRows] = await conn.query("SELECT user_id FROM users WHERE role = 'sales'");
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
 
   let orderCount = 0;
   let itemCount  = 0;
 
   // Generate 20 orders spread over last 180 days
   for (let i = 1; i <= 20; i++) {
-<<<<<<< HEAD
     const channel   = rnd(ORDER_CHANNELS);
     const staff     = rnd(userRows);
     const daysBack  = rndInt(0, 179);
@@ -387,36 +346,16 @@ async function seedOrders(conn) {
     }
 
     const shuffled = [...availableProducts].sort(() => Math.random() - 0.5).slice(0, Math.min(numItems, availableProducts.length));
-=======
-    const customer  = rnd(customerRows);
-    const staff     = rnd(userRows);
-    const channel   = rnd(CHANNELS);
-    const daysBack  = rndInt(0, 179);
-    const orderedAt = datetimeAgo(daysBack, daysBack);
-    const payMethod = rnd(PAYMENT_METHODS);
-    const city      = rnd(CITIES);
-    const numItems  = rndInt(1, 4);
-
-    // Pick random products (no duplicates per order)
-    const shuffled = [...productRows].sort(() => Math.random() - 0.5).slice(0, numItems);
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     const shippingFee = rndInt(0, 1) ? 0 : rndInt(15000, 35000);
 
     let subtotalSum = 0;
     const lineItems = shuffled.map(p => {
-<<<<<<< HEAD
       const maxQty   = Math.min(3, stockRemaining[p.product_id]);
       const qty      = rndInt(1, maxQty);
       const price    = parseFloat(p.selling_price);
       const subtotal = parseFloat((price * qty).toFixed(2));
       subtotalSum   += subtotal;
       stockRemaining[p.product_id] -= qty;
-=======
-      const qty      = rndInt(1, 3);
-      const price    = parseFloat(p.selling_price);
-      const subtotal = parseFloat((price * qty).toFixed(2));
-      subtotalSum   += subtotal;
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
       return { product_id: p.product_id, quantity: qty, unit_price: price, subtotal };
     });
 
@@ -426,7 +365,6 @@ async function seedOrders(conn) {
     // Determine delivery & payment status based on age
     let deliveryStatus, paymentStatus;
     if (daysBack > 14) {
-<<<<<<< HEAD
       deliveryStatus = rnd(['Processing', 'Shipping', 'Cancelled']);
       paymentStatus  = rnd(['Paid', 'Unpaid', 'Pending']);
     } else if (daysBack > 3) {
@@ -434,20 +372,10 @@ async function seedOrders(conn) {
       paymentStatus  = rndInt(0, 1) ? 'Paid' : 'Unpaid';
     } else {
       deliveryStatus = 'Pending';
-=======
-      deliveryStatus = rndInt(0, 10) > 1 ? 'Delivered' : rnd(['Cancelled', 'Returned']);
-      paymentStatus  = deliveryStatus === 'Delivered' ? (rndInt(0, 5) > 0 ? 'Paid' : 'Unpaid') : rnd(['Unpaid', 'Refunded']);
-    } else if (daysBack > 3) {
-      deliveryStatus = rnd(['Processing', 'Shipping', 'Confirmed', 'Delivered']);
-      paymentStatus  = rndInt(0, 1) ? 'Paid' : 'Unpaid';
-    } else {
-      deliveryStatus = rnd(['Pending', 'Confirmed', 'Processing']);
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
       paymentStatus  = rndInt(0, 1) ? 'Paid' : 'Unpaid';
     }
 
     const orderNumber = `ORD-${orderedAt.replace(/[-: ]/g, '').slice(0, 14)}-${pad(i, 4)}`;
-<<<<<<< HEAD
      const invoiceNumber = customerType === 'dealer' ? `INV-${orderedAt.replace(/[-: ]/g, '').slice(0, 14)}-${pad(i, 4)}` : null;
      const invoiceStatus = customerType === 'dealer' ? (paymentStatus === 'Paid' ? 'Paid' : 'Generated') : 'Not Generated';
 
@@ -458,16 +386,6 @@ async function seedOrders(conn) {
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [customer.customer_id, dealer ? dealer.dealer_id : null, staff.user_id, orderNumber, customerType, channel, platform, deliveryStatus, paymentStatus,
        payMethod, invoiceNumber, invoiceStatus, city, totalAmount, shippingFee, loyaltyDiscount, orderedAt, orderedAt]
-=======
-
-    const [orderResult] = await conn.query(
-      `INSERT INTO orders
-         (customer_id, user_id, order_number, sales_channel, delivery_status, payment_status,
-          payment_method, city, total_amount, shipping_fee, loyalty_discount, ordered_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [customer.customer_id, staff.user_id, orderNumber, channel, deliveryStatus, paymentStatus,
-       payMethod, city, totalAmount, shippingFee, loyaltyDiscount, orderedAt, orderedAt]
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     );
     const orderId = orderResult.insertId;
 
@@ -479,19 +397,6 @@ async function seedOrders(conn) {
       itemCount++;
     }
 
-<<<<<<< HEAD
-=======
-    // Update product sold_count manually (triggers disabled for seed)
-    for (const li of lineItems) {
-      if (deliveryStatus !== 'Cancelled' && deliveryStatus !== 'Returned') {
-        await conn.query(
-          'UPDATE products SET sold_count = sold_count + ? WHERE product_id = ?',
-          [li.quantity, li.product_id]
-        );
-      }
-    }
-
->>>>>>> 0d25791db56b5232ac735ca6ac681be7541f6d6f
     orderCount++;
   }
 
