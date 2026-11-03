@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cocoon SMS — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Lora:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#f5f1e8;--bg2:#faf7f1;--fg:#2c3e2d;--fg2:#4a5e4b;
+  --border:#e2dcd0;--border2:#ccc5b5;--surface:#f0ece2;--surface2:#e8e3d8;
+  --primary:#2d5016;--primary2:#3a6b1e;--primary-fg:#fff;
+  --accent:#7a9a3a;--accent-soft:#e8f0d0;
+  --gold:#b8860b;--gold-soft:#faf0d0;
+  --danger:#c0392b;--danger-soft:#fde8e6;
+  --warning:#d4820a;--warning-soft:#fef3e2;
+  --success:#2d6a2d;--success-soft:#e6f4e6;
+  --info:#1a5c8a;--info-soft:#e3f0fb;
+  --muted:#8a8278;--card:#faf7f1;--card-border:#e2dcd0;
+  --sidebar:#1e3010;--sidebar-border:rgba(255,255,255,.07);
+  --font:'DM Sans',sans-serif;--font-d:'Lora',serif;
+  --r:10px;--r-sm:6px;--r-lg:16px;
+  --sh:0 1px 3px rgba(0,0,0,.06);--sh-md:0 4px 12px rgba(0,0,0,.08);--sh-lg:0 12px 40px rgba(0,0,0,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--fg);font-size:14px;line-height:1.5;min-height:100vh;}
+a{color:var(--accent);text-decoration:none;}
+#app{display:flex;min-height:100vh;}
+#sidebar{width:230px;background:var(--sidebar);min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100;}
+#main{margin-left:230px;flex:1;display:flex;flex-direction:column;}
+#topbar{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--sh);}
+#content{flex:1;padding:24px;max-width:1400px;}
+.sb-head{padding:16px 14px 12px;border-bottom:1px solid var(--sidebar-border);display:flex;align-items:center;gap:9px;}
+.sb-logo{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#5a8a1e,#3a6010);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.sb-brand{font-family:var(--font-d);color:#e8f0d0;font-size:13px;font-weight:600;line-height:1.2;}
+.sb-sub{color:rgba(232,240,208,.35);font-size:10px;}
+.sb-nav{flex:1;overflow-y:auto;padding:6px;}
+.sb-sec{color:rgba(232,240,208,.3);font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:13px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r-sm);color:rgba(232,240,208,.5);cursor:pointer;font-size:13px;font-weight:500;margin-bottom:1px;transition:all .15s;position:relative;}
+.nav-item:hover{background:rgba(255,255,255,.06);color:rgba(232,240,208,.9);}
+.nav-item.active{background:rgba(122,154,58,.25);color:#c8e070;}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:#c8e070;border-radius:2px;}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:#c0392b;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:10px;min-width:16px;text-align:center;}
+.sb-foot{padding:8px;border-top:1px solid var(--sidebar-border);}
+.sb-user{display:flex;align-items:center;gap:8px;padding:8px;border-radius:var(--r-sm);cursor:pointer;}
+.sb-user:hover{background:rgba(255,255,255,.05);}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#5a8a1e,#3a6010);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#e8f0d0;flex-shrink:0;}
+.u-name{color:rgba(232,240,208,.85);font-size:12px;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.role-chip{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600;text-transform:uppercase;}
+.r-admin{background:#fde8e6;color:#c0392b;}.r-manager{background:#faf0d0;color:#b8860b;}
+.r-sales{background:#e6f4e6;color:#2d6a2d;}.r-warehouse{background:#e3f0fb;color:#1a5c8a;}
+.r-finance{background:#fef3e2;color:#d4820a;}
+.tb-title{font-family:var(--font-d);font-size:17px;color:var(--fg);flex:1;font-weight:600;}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r-sm);font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;}
+.btn-p{background:var(--primary);color:#fff;}.btn-p:hover{background:var(--primary2);}
+.btn-a{background:var(--accent);color:#fff;}.btn-a:hover{background:#6a8a30;}
+.btn-g{background:var(--surface);color:var(--fg);border:1px solid var(--border);}.btn-g:hover{background:var(--surface2);}
+.btn-d{background:var(--danger-soft);color:var(--danger);}.btn-d:hover{background:#f5d0ce;}
+.btn-sm{padding:5px 11px;font-size:12px;}.btn-xs{padding:3px 8px;font-size:11px;border-radius:4px;}
+.btn-icon{width:30px;height:30px;padding:0;justify-content:center;border-radius:var(--r-sm);background:var(--surface);border:1px solid var(--border);}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--r);box-shadow:var(--sh);}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-family:var(--font-d);font-size:14px;font-weight:600;}
+.card-bd{padding:18px;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:20px;}
+@media(max-width:1100px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px 17px;}
+.stat-icon{width:34px;height:34px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.si-g{background:var(--accent-soft);color:var(--accent);}
+.si-y{background:var(--gold-soft);color:var(--gold);}
+.si-r{background:var(--danger-soft);color:var(--danger);}
+.si-b{background:var(--info-soft);color:var(--info);}
+.stat-label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+.stat-val{font-family:var(--font-d);font-size:22px;margin-bottom:2px;line-height:1;}
+.stat-sub{font-size:11px;color:var(--success);}
+.stat-sub.w{color:var(--warning);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.mb4{margin-bottom:14px;}.mb6{margin-bottom:22px;}.mt4{margin-top:14px;}
+.chart-wrap{position:relative;height:210px;}
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 11px;border-bottom:1px solid var(--border);background:var(--surface);white-space:nowrap;}
+tbody td{padding:9px 11px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--surface);}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+.b-g{background:var(--success-soft);color:var(--success);}
+.b-r{background:var(--danger-soft);color:var(--danger);}
+.b-y{background:var(--warning-soft);color:var(--warning);}
+.b-b{background:var(--info-soft);color:var(--info);}
+.b-n{background:var(--surface2);color:var(--muted);}
+.b-gold{background:var(--gold-soft);color:var(--gold);}
+.b-a{background:var(--accent-soft);color:var(--accent);}
+.fg{margin-bottom:13px;}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.03em;}
+input,select,textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg2);color:var(--fg);font-family:var(--font);font-size:13px;outline:none;transition:border-color .15s,box-shadow .15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(122,154,58,.12);}
+textarea{resize:vertical;min-height:65px;}
+.img-upload-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:0;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--surface);}
+.img-upload-zone:hover,.img-upload-zone.drag-over{border-color:var(--accent);background:var(--accent-soft);}
+.img-upload-zone.uploading{border-color:var(--info);background:var(--info-soft);}
+.img-upload-zone.uploaded{border-style:solid;border-color:var(--success);padding:0;}
+.img-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.img-upload-placeholder{pointer-events:none;}
+.img-upload-placeholder .icon{font-size:32px;margin-bottom:8px;display:block;}
+.img-upload-placeholder .text{font-size:12px;color:var(--muted);line-height:1.5;}
+.img-preview{width:100%;height:200px;object-fit:contain;display:block;background:var(--surface2);}
+.img-actions{position:absolute;top:6px;right:6px;display:flex;gap:4px;}
+.img-action-btn{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;border:none;cursor:pointer;}
+.img-action-replace{background:rgba(0,0,0,.5);color:#fff;}
+.img-action-del{background:rgba(192,57,43,.8);color:#fff;}
+.prod-thumbnail{width:42px;height:42px;border-radius:var(--r-sm);object-fit:cover;border:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden;}
+.filter-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.sb-input{position:relative;flex:1;min-width:180px;}
+.sb-input svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--muted);width:13px;height:13px;}
+.sb-input input{padding-left:28px;}
+.fsel{width:auto;min-width:115px;flex-shrink:0;}
+.pager{display:flex;align-items:center;gap:5px;margin-top:13px;justify-content:flex-end;}
+.pg{width:28px;height:28px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;}
+.pg:hover{background:var(--surface);}
+.pg.on{background:var(--primary);color:#fff;border-color:var(--primary);}
+.pg-info{font-size:12px;color:var(--muted);margin-right:auto;}
+.modal-bd{position:fixed;inset:0;background:rgba(30,48,16,.4);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(2px);}
+.modal{background:var(--card);border-radius:var(--r-lg);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg);border:1px solid var(--border);}
+.modal.lg{max-width:800px;}
+.modal-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--card);z-index:1;}
+.modal-title{font-family:var(--font-d);font-size:15px;font-weight:600;}
+.modal-close{width:26px;height:26px;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);}
+.modal-body{padding:18px 20px;}
+.modal-ft{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:var(--surface);border-radius:0 0 var(--r-lg) var(--r-lg);}
+#toasts{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px;}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:var(--r);font-size:13px;font-weight:500;box-shadow:var(--sh-md);animation:tsIn .22s ease;max-width:340px;}
+.ts-s{background:var(--success);color:#fff;}
+.ts-e{background:var(--danger);color:#fff;}
+.ts-w{background:var(--warning);color:#fff;}
+.ts-i{background:var(--info);color:#fff;}
+@keyframes tsIn{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:none;}}
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.login-wrap{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:var(--sh-lg);}
+.login-logo{text-align:center;margin-bottom:24px;}
+.login-logo-mark{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 10px;}
+.login-logo h1{font-family:var(--font-d);font-size:20px;}
+.login-logo p{color:var(--muted);font-size:12px;margin-top:3px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.ii label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:2px;}
+.ii span{font-size:13px;}
+.alert{padding:10px 13px;border-radius:var(--r-sm);font-size:13px;border-left:3px solid;}
+.al-i{background:var(--info-soft);color:var(--info);border-color:var(--info);}
+.al-d{background:var(--danger-soft);color:var(--danger);border-color:var(--danger);}
+.al-s{background:var(--success-soft);color:var(--success);border-color:var(--success);}
+.al-w{background:var(--warning-soft);color:var(--warning);border-color:var(--warning);}
+.loading{display:flex;align-items:center;justify-content:center;padding:48px;color:var(--muted);}
+.spin{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.empty{text-align:center;padding:44px 20px;color:var(--muted);}
+.fw6{font-weight:600;}.text-muted{color:var(--muted);}.text-p{color:var(--primary);}
+.text-s{color:var(--success);}.text-d{color:var(--danger);}.text-w{color:var(--warning);}
+hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
+code{font-size:11px;background:var(--surface2);padding:1px 5px;border-radius:4px;font-family:monospace;}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.steps{display:flex;align-items:center;margin:14px 0;}
+.step{display:flex;align-items:center;gap:5px;flex:1;}
+.step-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--border2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;}
+.step-dot.done{background:var(--success);border-color:var(--success);color:#fff;}
+.step-dot.cur{background:var(--primary);border-color:var(--primary);color:#fff;}
+.step-lbl{font-size:10px;color:var(--muted);}
+.step-lbl.cur{color:var(--primary);font-weight:600;}
+.step-line{flex:1;height:2px;background:var(--border2);margin:0 4px;}
+.step-line.done{background:var(--success);}
+.pts-bar{background:var(--surface2);border-radius:20px;height:7px;overflow:hidden;margin:5px 0;}
+.pts-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:20px;transition:width .4s;}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-logo-mark">🌿</div>
+      <h1>Cocoon Vietnam</h1>
+      <p>Sales Management System — Internal</p>
+    </div>
+    <div id="l-err" class="alert al-d" style="display:none;margin-bottom:12px"></div>
+    <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="admin@cocoonvietnam.com" autocomplete="email"></div>
+    <div class="fg"><label>Mật khẩu</label><input type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="btn btn-p" style="width:100%;justify-content:center;padding:11px" id="l-btn" onclick="doLogin()">Đăng nhập</button>
+    <div style="margin-top:12px">
+      <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">API Base URL</label>
+      <input id="api-url" value="http://localhost:3000" style="font-size:12px">
+    </div>
+  </div>
+</div>
+<div id="app" style="display:none">
+  <nav id="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">🌿</div>
+      <div><div class="sb-brand">Cocoon SMS</div><div class="sb-sub">Internal Admin</div></div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-sec">Dashboard</div>
+      <div class="nav-item active" data-page="dashboard" data-roles="admin,manager,finance,sales,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Tổng quan
+      </div>
+      <div class="nav-item" data-page="analytics" data-roles="admin,manager,finance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Phân tích doanh thu
+      </div>
+      <div class="sb-sec">Bán hàng</div>
+      <div class="nav-item" data-page="orders" data-roles="admin,manager,sales,finance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Đơn hàng
+      </div>
+      <div class="nav-item" data-page="returns" data-roles="admin,manager,sales,finance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.77"/></svg>Hoàn hàng / Hoàn tiền
+        <span class="nav-badge" id="returns-badge" style="display:none">0</span>
+      </div>
+      <div class="nav-item" data-page="customers" data-roles="admin,manager,sales">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Khách hàng & CRM
+      </div>
+      <div class="nav-item" data-page="loyalty" data-roles="admin,manager,sales">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Loyalty & Điểm thưởng
+      </div>
+      <div class="sb-sec">Kho hàng</div>
+      <div class="nav-item" data-page="products" data-roles="admin,manager,sales,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Sản phẩm
+      </div>
+      <div class="nav-item" data-page="stock" data-roles="admin,manager,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>Nhập / Xuất kho
+      </div>
+      <div class="nav-item" data-page="inv-alerts" data-roles="admin,manager,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Cảnh báo tồn kho
+      </div>
+      <div class="nav-item" data-page="raw-materials" data-roles="admin,manager,warehouse">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>Nguyên liệu thô
+      </div>
+      <div class="sb-sec">Đại lý & Tài chính</div>
+      <div class="nav-item" data-page="dealers" data-roles="admin,manager,sales,finance">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Đại lý (B2B)
+      </div>
+      <div class="sb-sec" id="sec-admin" style="display:none">Quản trị</div>
+      <div class="nav-item" data-page="users" data-roles="admin,manager" style="display:none" id="nav-users">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>Người dùng
+      </div>
+      <div class="nav-item" data-page="audit-logs" data-roles="admin,manager" style="display:none" id="nav-audit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Audit Logs
+      </div>
+    </div>
+    <div class="sb-foot">
+      <div class="sb-user" onclick="showPage('profile')">
+        <div class="u-av" id="sb-av">?</div>
+        <div style="flex:1;min-width:0"><div class="u-name" id="sb-name">...</div><div id="sb-chip" class="role-chip" style="margin-top:2px"></div></div>
+      </div>
+      <button class="btn btn-d btn-sm" style="width:100%;justify-content:center;margin-top:6px" onclick="doLogout()">Đăng xuất</button>
+    </div>
+  </nav>
+  <div id="main">
+    <div id="topbar">
+      <div class="tb-title" id="page-title">Tổng quan</div>
+      <div class="tb-right" id="tb-actions"></div>
+    </div>
+    <div id="content"><div class="loading"><div class="spin"></div></div></div>
+  </div>
+</div>
+<div class="modal-bd" id="modal" style="display:none" onclick="closeMBg(event)">
+  <div class="modal" id="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-hd">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-ft" id="modal-ft" style="display:none"></div>
+  </div>
+</div>
+<div id="toasts"></div>
+<script>
+let API = 'http://localhost:3000';
+let token = localStorage.getItem('cocoon_admin_t');
+let me = null;
+let charts = {};
+const ROLE_PAGES = {
+  admin:['dashboard','analytics','orders','returns','customers','loyalty','products','stock','inv-alerts','raw-materials','dealers','users','audit-logs','profile'],
+  manager:['dashboard','analytics','orders','returns','customers','loyalty','products','stock','inv-alerts','raw-materials','dealers','users','audit-logs','profile'],
+  finance:['dashboard','analytics','orders','returns','dealers','profile'],
+  sales:['dashboard','orders','returns','customers','loyalty','products','dealers','profile'],
+  warehouse:['dashboard','products','stock','inv-alerts','raw-materials','profile'],
+};
+function getAPI(){ return document.getElementById('api-url').value || 'http://localhost:3000'; }
+async function apiFetch(path, opts) {
+  opts = opts || {};
+  const h = {'Content-Type':'application/json'};
+  if(token) h['Authorization'] = 'Bearer ' + token;
+  try {
+    const r = await fetch(getAPI() + '/api' + path, Object.assign({}, opts, {headers: Object.assign({}, h, opts.headers||{})}));
+    const d = await r.json();
+    if(r.status===401){doLogout();return null;}
+    return {ok:r.ok,status:r.status,data:d};
+  } catch(e){ toast('Lỗi kết nối server','e'); return null; }
+}
+function G(p,q){ q=q||{}; const qs=new URLSearchParams(q).toString(); return apiFetch(p+(qs?'?'+qs:'')); }
+function Po(p,b){ return apiFetch(p,{method:'POST',body:JSON.stringify(b)}); }
+function Pu(p,b){ return apiFetch(p,{method:'PUT',body:JSON.stringify(b)}); }
+function Pa(p,b){ return apiFetch(p,{method:'PATCH',body:JSON.stringify(b)}); }
+function D(p){ return apiFetch(p,{method:'DELETE'}); }
+async function uploadFile(path, formData) {
+  const h = {};
+  if(token) h['Authorization'] = 'Bearer ' + token;
+  try {
+    const r = await fetch(getAPI() + '/api' + path, {method:'POST', headers:h, body:formData});
+    const d = await r.json();
+    return {ok:r.ok, status:r.status, data:d};
+  } catch(e){ toast('Upload thất bại','e'); return null; }
+}
+function toast(msg,type){
+  type = type || 's';
+  const cls={s:'ts-s',e:'ts-e',w:'ts-w',i:'ts-i'}[type]||'ts-i';
+  const el=document.createElement('div');
+  el.className='toast '+cls;el.textContent=msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(function(){el.remove();},3500);
+}
+function N(n,d){ d=d||0; return n==null?'—':Number(n).toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function VND(n){ return N(n)+' ₫'; }
+function FD(d){ return d?new Date(d).toLocaleDateString('vi-VN'):'—'; }
+function FDT(d){ return d?new Date(d).toLocaleString('vi-VN'):'—'; }
+function INI(n){ return n?n.split(' ').slice(-2).map(function(w){return w[0];}).join('').toUpperCase():'?'; }
+function dBadge(s){const m={Pending:'b-y',Processing:'b-b',Shipping:'b-b',Shipped:'b-b',Delivered:'b-g',Cancelled:'b-r',Returned:'b-n'};return '<span class="badge '+(m[s]||'b-n')+'">'+(s||'—')+'</span>';}
+function pBadge(s){const m={Paid:'b-g',Unpaid:'b-y',Pending:'b-y',Refunded:'b-r',Credit:'b-b'};return '<span class="badge '+(m[s]||'b-n')+'">'+(s||'—')+'</span>';}
+function sBadge(s){const m={Available:'b-g','Low Stock':'b-y','Out of Stock':'b-r',Discontinued:'b-n',active:'b-g',inactive:'b-n',Active:'b-g',Inactive:'b-n',Stable:'b-g',Warning:'b-y',Critical:'b-r',Settled:'b-g',Overdue:'b-r',pending:'b-y',approved:'b-b',processing:'b-a',completed:'b-g',rejected:'b-r'};return '<span class="badge '+(m[s]||'b-n')+'">'+(s||'—')+'</span>';}
+function segBadge(s){const m={VIP:'b-gold',Loyal:'b-g',Regular:'b-b',New:'b-a',Whale:'b-gold',Wholesale:'b-n','At-risk':'b-y',Churned:'b-r'};return '<span class="badge '+(m[s]||'b-n')+'">'+(s||'—')+'</span>';}
+function roleChip(r){const m={admin:'r-admin',manager:'r-manager',sales:'r-sales',warehouse:'r-warehouse',finance:'r-finance'};return '<span class="role-chip '+(m[r]||'')+'">'+r+'</span>';}
+function setContent(h){document.getElementById('content').innerHTML=h;}
+function setActions(h){document.getElementById('tb-actions').innerHTML=h;}
+function openModal(title,body,footer,large){
+  footer = footer || '';
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=body;
+  const ft=document.getElementById('modal-ft');
+  ft.innerHTML=footer;ft.style.display=footer?'flex':'none';
+  document.getElementById('modal-box').className='modal'+(large?' lg':'');
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+function closeMBg(e){if(e.target===document.getElementById('modal'))closeModal();}
+function pgHTML(pag,fn){
+  if(!pag||pag.pages<=1) return '';
+  const page=pag.page, pages=pag.pages, total=pag.total;
+  let s='<span class="pg-info">'+total+' kết quả</span>';
+  for(let i=1;i<=pages;i++){
+    if(i===1||i===pages||Math.abs(i-page)<=2) s+='<button class="pg '+(i===page?'on':'')+'" onclick="'+fn+'('+i+')">'+i+'</button>';
+    else if(Math.abs(i-page)===3) s+='<span style="color:var(--muted);font-size:12px">…</span>';
+  }
+  return '<div class="pager">'+s+'</div>';
+}
+function killCharts(){Object.keys(charts).forEach(function(k){try{charts[k].destroy();}catch(e){}});charts={};}
+function prodImgUrl(p){
+  if(!p || !p.tags) return null;
+  if(p.tags.indexOf('img:')===0) return p.tags.slice(4).split('|')[0];
+  return null;
+}
+function pEmoji(p){
+  const n=((p && (p.product_name||p.name))||'').toLowerCase();
+  if(n.indexOf('cà phê')>=0||n.indexOf('coffee')>=0) return '☕';
+  if(n.indexOf('serum')>=0) return '💧';
+  if(n.indexOf('kem')>=0) return '🧴';
+  if(n.indexOf('son')>=0) return '💄';
+  if(n.indexOf('tóc')>=0||n.indexOf('dầu gội')>=0) return '💆';
+  if(n.indexOf('dừa')>=0) return '🥥';
+  if(n.indexOf('bưởi')>=0) return '🍊';
+  if(n.indexOf('nghệ')>=0) return '✨';
+  return '🌿';
+}
+function renderUploadZone(containerId, currentImgUrl) {
+  currentImgUrl = currentImgUrl || '';
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = buildUploadZoneHTML(currentImgUrl);
+  const zone = el.querySelector('.img-upload-zone');
+  if (!zone) return;
+  zone.addEventListener('dragover', function(e){ e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', function(){ zone.classList.remove('drag-over'); });
+  zone.addEventListener('drop', function(e){
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) handleImageFile(containerId, file);
+  });
+  const inp = el.querySelector('input[type=file]');
+  if (inp) inp.addEventListener('change', function(e){
+    if (e.target.files[0]) handleImageFile(containerId, e.target.files[0]);
+  });
+}
+function buildUploadZoneHTML(imgUrl) {
+  imgUrl = imgUrl || '';
+  if (imgUrl) {
+    return '<div class="img-upload-zone uploaded" style="height:200px">' +
+        '<img src="' + imgUrl + '" class="img-preview" id="img-preview-el" onerror="this.style.display=\'none\'">' +
+        '<div class="img-actions">' +
+          '<button class="img-action-btn img-action-replace" type="button" onclick="document.getElementById(\'img-file-inp\').click()">✏️ Thay ảnh</button>' +
+          '<button class="img-action-btn img-action-del" type="button" onclick="clearUploadZone(\'img-zone-wrap\')">🗑</button>' +
+        '</div>' +
+        '<input type="file" id="img-file-inp" accept="image/*" style="display:none" onchange="handleImageFileById(\'img-zone-wrap\',this)">' +
+        '<input type="hidden" id="img-url-stored" value="' + imgUrl + '">' +
+      '</div>';
+  }
+  return '<div class="img-upload-zone" style="height:200px;flex-direction:column;gap:4px">' +
+      '<input type="file" id="img-file-inp" accept="image/*" title="Chọn ảnh sản phẩm">' +
+      '<div class="img-upload-placeholder">' +
+        '<span class="icon">📷</span>' +
+        '<div class="text"><strong>Click để chọn ảnh</strong> hoặc kéo thả vào đây<br>' +
+        '<span style="color:var(--muted);font-size:11px">JPG, PNG, WEBP ≤ 5MB</span></div>' +
+      '</div>' +
+      '<input type="hidden" id="img-url-stored" value="">' +
+    '</div>';
+}
+function clearUploadZone(containerId) {
+  const stored = document.getElementById('img-url-stored');
+  if (stored) stored.value = '';
+  renderUploadZone(containerId, '');
+  toast('Đã xoá ảnh','i');
+}
+async function handleImageFile(containerId, file) {
+  if (!file.type.indexOf('image/')===0) { toast('Chỉ chấp nhận file ảnh','w'); return; }
+  if (file.size > 5*1024*1024) { toast('Ảnh tối đa 5MB','w'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const zone = document.querySelector('#' + containerId + ' .img-upload-zone');
+    if (zone) {
+      zone.classList.add('uploading');
+      zone.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:200px;object-fit:contain;opacity:.55">' +
+        '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.9);padding:6px 12px;border-radius:20px;color:var(--info);font-size:12px;font-weight:600">⏫ Đang tải lên...</div>';
+    }
+  };
+  reader.readAsDataURL(file);
+  const formData = new FormData();
+  formData.append('image', file);
+  const r = await uploadFile('/uploads/product-image', formData);
+  if (r && r.ok) {
+    const url = r.data.data.url;
+    const wrap = document.getElementById(containerId);
+    if (wrap) wrap.innerHTML = buildUploadZoneHTML(url);
+    toast('Ảnh đã tải lên thành công ✅');
+  } else {
+    toast((r && r.data && r.data.message) || 'Upload thất bại — kiểm tra backend đã cài multer chưa','e');
+    renderUploadZone(containerId, '');
+  }
+}
+function handleImageFileById(containerId, inputEl) {
+  if (inputEl.files[0]) handleImageFile(containerId, inputEl.files[0]);
+}
+function applyManualImgUrl(url) {
+  if (!url) return;
+  const stored = document.getElementById('img-url-stored');
+  if (stored) stored.value = url;
+  const wrap = document.getElementById('img-zone-wrap');
+  if (wrap) wrap.innerHTML = buildUploadZoneHTML(url);
+}
+async function doLogin(){
+  const email=document.getElementById('l-email').value;
+  const pw=document.getElementById('l-pw').value;
+  const errEl=document.getElementById('l-err');
+  const btn=document.getElementById('l-btn');
+  errEl.style.display='none';btn.textContent='...';btn.disabled=true;
+  const r=await Po('/auth/login',{email:email,password:pw});
+  btn.textContent='Đăng nhập';btn.disabled=false;
+  if(!r||!r.ok){errEl.textContent=(r&&r.data&&r.data.message)||'Đăng nhập thất bại';errEl.style.display='block';return;}
+  token=r.data.data.access_token;me=r.data.data.user;
+  if(!ROLE_PAGES[me.role]){errEl.textContent='Vai trò "'+me.role+'" không vào được hệ thống nội bộ.';errEl.style.display='block';token=null;me=null;return;}
+  localStorage.setItem('cocoon_admin_t',token);
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  initApp();
+}
+function doLogout(){if(token)Po('/auth/logout',{}).catch(function(){});token=null;me=null;localStorage.removeItem('cocoon_admin_t');location.reload();}
+async function initApp(){
+  if(!me){const r=await G('/auth/me');if(!r||!r.ok||!ROLE_PAGES[r.data && r.data.data && r.data.data.role]){doLogout();return;}me=r.data.data;}
+  document.getElementById('sb-av').textContent=INI(me.full_name);
+  document.getElementById('sb-name').textContent=me.full_name;
+  document.getElementById('sb-chip').outerHTML='<div id="sb-chip">'+roleChip(me.role)+'</div>';
+  const allowed=ROLE_PAGES[me.role]||[];
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(el){
+    const roles=(el.dataset.roles||'').split(',');
+    el.style.display=roles.indexOf(me.role)>=0?'flex':'none';
+  });
+  if(['admin','manager'].indexOf(me.role)>=0){
+    document.getElementById('sec-admin').style.display='block';
+    document.getElementById('nav-users').style.display='flex';
+    document.getElementById('nav-audit').style.display='flex';
+  }
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(el){
+    el.addEventListener('click',function(){
+      if(allowed.indexOf(el.dataset.page)<0){toast('Không có quyền','e');return;}
+      showPage(el.dataset.page);
+    });
+  });
+  loadReturnsBadge();
+  showPage('dashboard');
+}
+async function loadReturnsBadge(){
+  const r=await G('/returns',{status:'pending',limit:1});
+  const cnt=(r && r.data && r.data.pagination && r.data.pagination.total)||0;
+  const el=document.getElementById('returns-badge');
+  if(cnt>0){el.textContent=cnt;el.style.display='flex';}else el.style.display='none';
+}
+function showPage(page){
+  const allowed=ROLE_PAGES[me && me.role]||[];
+  if(allowed.indexOf(page)<0){toast('Không có quyền','e');return;}
+  document.querySelectorAll('.nav-item[data-page]').forEach(function(el){el.classList.toggle('active',el.dataset.page===page);});
+  killCharts();setActions('');
+  const titles={dashboard:'Tổng quan',analytics:'Phân tích doanh thu',orders:'Đơn hàng',returns:'Hoàn hàng / Hoàn tiền',customers:'Khách hàng & CRM',loyalty:'Loyalty & Điểm thưởng',products:'Sản phẩm',stock:'Nhập / Xuất kho','inv-alerts':'Cảnh báo tồn kho','raw-materials':'Nguyên liệu thô',dealers:'Đại lý (B2B)',users:'Người dùng','audit-logs':'Audit Logs',profile:'Hồ sơ'};
+  document.getElementById('page-title').textContent=titles[page]||page;
+  setContent('<div class="loading"><div class="spin"></div></div>');
+  const map={dashboard:pgDashboard,analytics:pgAnalytics,orders:pgOrders,returns:pgReturns,customers:pgCustomers,loyalty:pgLoyalty,products:pgProducts,stock:pgStock,'inv-alerts':pgInvAlerts,'raw-materials':pgRawMaterials,dealers:pgDealers,users:pgUsers,'audit-logs':pgAuditLogs,profile:pgProfile};
+  if(map[page])map[page]();
+}
+async function pgDashboard(){
+  const r=await G('/analytics/dashboard');
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi tải dashboard</div>');return;}
+  const d=r.data.data;
+  setContent(
+    '<div class="stats-row">' +
+      '<div class="stat"><div class="stat-icon si-g"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>' +
+        '<div class="stat-label">Doanh thu hôm nay</div><div class="stat-val">'+VND(d.revenue_today)+'</div><div class="stat-sub">'+d.orders_today+' đơn hàng</div></div>' +
+      '<div class="stat"><div class="stat-icon si-y"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>' +
+        '<div class="stat-label">Doanh thu tháng</div><div class="stat-val">'+VND(d.revenue_month)+'</div><div class="stat-sub">'+d.orders_month+' đơn</div></div>' +
+      '<div class="stat"><div class="stat-icon si-b"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>' +
+        '<div class="stat-label">Tổng khách hàng</div><div class="stat-val">'+N(d.total_customers)+'</div><div class="stat-sub">+'+d.new_customers_today+' hôm nay</div></div>' +
+      '<div class="stat"><div class="stat-icon si-r"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg></div>' +
+        '<div class="stat-label">Đơn chờ</div><div class="stat-val">'+N(d.pending_orders)+'</div><div class="stat-sub w">'+d.low_stock_products+' sp sắp hết</div></div>' +
+    '</div>' +
+    '<div class="g2 mb6">' +
+      '<div class="card"><div class="card-hd"><span class="card-title">Doanh thu 12 tháng</span></div><div class="card-bd"><div class="chart-wrap"><canvas id="ch-rev"></canvas></div></div></div>' +
+      '<div class="card"><div class="card-hd"><span class="card-title">Theo kênh bán</span></div><div class="card-bd"><div class="chart-wrap"><canvas id="ch-ch"></canvas></div></div></div>' +
+    '</div>' +
+    '<div class="g2">' +
+      '<div class="card"><div class="card-hd"><span class="card-title">Đơn hàng gần nhất</span></div><div class="card-bd" id="d-ord"></div></div>' +
+      '<div class="card"><div class="card-hd"><span class="card-title">Sản phẩm sắp hết kho</span></div><div class="card-bd" id="d-ls"></div></div>' +
+    '</div>'
+  );
+  const proms=await Promise.all([G('/analytics/revenue/monthly',{months:12}),G('/analytics/revenue/by-channel')]);
+  const rv=proms[0], ch=proms[1];
+  if(rv && rv.ok){const rows=rv.data.data;charts.r=new Chart(document.getElementById('ch-rev'),{type:'line',data:{labels:rows.map(function(r){return r.month;}),datasets:[{data:rows.map(function(r){return r.revenue;}),borderColor:'#3a6b1e',backgroundColor:'rgba(58,107,30,.08)',fill:true,tension:.4,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return N(v/1e6)+'M';}}}}}});}
+  if(ch && ch.ok){const rows=ch.data.data;charts.c=new Chart(document.getElementById('ch-ch'),{type:'doughnut',data:{labels:rows.map(function(r){return r.sales_channel;}),datasets:[{data:rows.map(function(r){return r.revenue;}),backgroundColor:['#2d5016','#3a6b1e','#7a9a3a','#b8d870','#b8860b','#c0392b']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});}
+  const proms2=await Promise.all([G('/orders',{limit:6}),G('/analytics/inventory/low-stock')]);
+  const ord=proms2[0], ls=proms2[1];
+  if(ord && ord.ok)document.getElementById('d-ord').innerHTML='<div class="tbl-wrap"><table><thead><tr><th>Đơn hàng</th><th>Kênh</th><th>Tổng</th><th>TT</th></tr></thead><tbody>'+ord.data.data.map(function(o){return '<tr><td><a href="#" onclick="openOrderModal('+o.order_id+')" class="fw6">'+o.order_number+'</a><div style="font-size:11px;color:var(--muted)">'+(o.customer_name||'—')+'</div></td><td><span class="badge b-n">'+o.sales_channel+'</span></td><td class="fw6">'+VND(o.total_amount)+'</td><td>'+dBadge(o.delivery_status)+'</td></tr>';}).join('')+'</tbody></table></div>';
+  if(ls && ls.ok){const rows = Array.isArray(ls.data.data)
+    ? ls.data.data
+    : Array.isArray(ls.data.data?.rows)
+        ? ls.data.data.rows
+        : Array.isArray(ls.data.data?.items)
+            ? ls.data.data.items
+            : [];document.getElementById('d-ls').innerHTML=rows.length===0?'<div class="empty">✅ Không có cảnh báo</div>':'<div class="tbl-wrap"><table><thead><tr><th>Sản phẩm</th><th>Tồn kho</th></tr></thead><tbody>'+rows.slice(0,7).map(function(p){return '<tr><td class="truncate" style="max-width:200px">'+p.product_name+'</td><td class="fw6 text-d">'+N(p.stock_quantity)+'</td></tr>';}).join('')+'</tbody></table></div>';}
+  setActions('<div style="font-size:12px;color:var(--muted)">Công nợ đại lý: <strong class="text-w">'+VND(d.total_dealer_debt)+'</strong> · '+d.overdue_dealers+' quá hạn</div>');
+}
+async function pgAnalytics(){
+  setContent('<div class="g2 mb6"><div class="card"><div class="card-hd"><span class="card-title">Doanh thu & Đơn hàng / tháng</span></div><div class="card-bd"><div class="chart-wrap"><canvas id="a-rev"></canvas></div></div></div><div class="card"><div class="card-hd"><span class="card-title">Top sản phẩm</span></div><div class="card-bd"><div class="chart-wrap"><canvas id="a-pr"></canvas></div></div></div></div><div class="card"><div class="card-hd"><span class="card-title">Chi tiết</span></div><div class="card-bd" id="a-tbl"><div class="loading"><div class="spin"></div></div></div></div>');
+  const proms=await Promise.all([G('/analytics/revenue/monthly',{months:12}),G('/analytics/revenue/by-product',{limit:10})]);
+  const rv=proms[0], pr=proms[1];
+  if(rv && rv.ok){const rows=rv.data.data;charts.ar=new Chart(document.getElementById('a-rev'),{type:'bar',data:{labels:rows.map(function(r){return r.month;}),datasets:[{label:'Doanh thu',data:rows.map(function(r){return r.revenue;}),backgroundColor:'rgba(45,80,22,.75)',yAxisID:'y'},{label:'Đơn hàng',data:rows.map(function(r){return r.orders;}),type:'line',borderColor:'#b8860b',backgroundColor:'transparent',yAxisID:'y1',tension:.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{ticks:{callback:function(v){return N(v/1e6)+'M';}}},y1:{position:'right',grid:{drawOnChartArea:false}}}}});}
+  if(pr && pr.ok){const rows=pr.data.data||[];charts.ap=new Chart(document.getElementById('a-pr'),{type:'bar',data:{labels:rows.slice(0,8).map(function(r){return (r.product_name||'?').slice(0,15);}),datasets:[{data:rows.slice(0,8).map(function(r){return r.revenue;}),backgroundColor:['#2d5016','#3a6b1e','#7a9a3a','#b8d870','#b8860b','#c0392b','#1a5c8a','#d4820a']}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:function(v){return N(v/1e6)+'M';}}}}}});
+  document.getElementById('a-tbl').innerHTML='<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Sản phẩm</th><th>SKU</th><th>SL bán</th><th>Doanh thu</th></tr></thead><tbody>'+rows.map(function(p,i){return '<tr><td class="text-muted">'+(i+1)+'</td><td>'+p.product_name+'</td><td><code>'+(p.sku||'—')+'</code></td><td>'+N(p.qty_sold)+'</td><td class="fw6">'+VND(p.revenue)+'</td></tr>';}).join('')+'</tbody></table></div>';}
+}
+let ordPage=1,ordF={};
+async function pgOrders(page){
+  ordPage=page||1;
+  const r=await G('/orders',Object.assign({page:ordPage,limit:20},ordF));
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data=r.data.data, pagination=r.data.pagination;
+  const chMap={online:'🌐 Online',in_store:'🏪 Tại cửa hàng',dealer:'🤝 Đại lý',marketplace:'🛒 Marketplace'};
+  setContent(
+    '<div class="filter-bar">' +
+      '<div class="sb-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>' +
+        '<input placeholder="Mã đơn, tên khách..." oninput="ordF.search=this.value;pgOrders()" value="'+(ordF.search||'')+'"></div>' +
+      '<select class="fsel" onchange="ordF.delivery_status=this.value;pgOrders()"><option value="">Tất cả TT giao</option>' +
+        ['Pending','Processing','Shipping','Delivered','Cancelled'].map(function(s){return '<option '+(ordF.delivery_status===s?'selected':'')+'>'+s+'</option>';}).join('') + '</select>' +
+      '<select class="fsel" onchange="ordF.payment_status=this.value;pgOrders()"><option value="">Tất cả TT TT</option>' +
+        ['Paid','Unpaid','Pending','Refunded'].map(function(s){return '<option '+(ordF.payment_status===s?'selected':'')+'>'+s+'</option>';}).join('') + '</select>' +
+      '<select class="fsel" onchange="ordF.sales_channel=this.value;pgOrders()"><option value="">Tất cả kênh</option>' +
+        ['online','in_store','dealer','marketplace'].map(function(s){return '<option value="'+s+'" '+(ordF.sales_channel===s?'selected':'')+'>'+chMap[s]+'</option>';}).join('') + '</select>' +
+    '</div>' +
+    '<div class="card"><div class="tbl-wrap"><table>' +
+      '<thead><tr><th>Mã đơn</th><th>Kênh</th><th>Khách hàng</th><th>Tổng tiền</th><th>Thanh toán</th><th>Giao hàng</th><th>Ngày đặt</th><th></th></tr></thead>' +
+      '<tbody>' + data.map(function(o){return '<tr>' +
+        '<td class="fw6">'+o.order_number+'</td>' +
+        '<td><span class="badge b-n">'+(chMap[o.sales_channel]||o.sales_channel)+'</span></td>' +
+        '<td>'+(o.customer_name||'<span class="text-muted">—</span>')+'</td>' +
+        '<td class="fw6">'+VND(o.total_amount)+'</td>' +
+        '<td>'+pBadge(o.payment_status)+'</td>' +
+        '<td>'+dBadge(o.delivery_status)+'</td>' +
+        '<td class="text-muted">'+FD(o.ordered_at)+'</td>' +
+        '<td><button class="btn btn-g btn-xs" onclick="openOrderModal('+o.order_id+')">Xem</button></td>' +
+      '</tr>';}).join('') + '</tbody>' +
+    '</table></div>'+pgHTML(pagination,'pgOrders')+'</div>'
+  );
+  if(['admin','manager','sales'].indexOf(me && me.role)>=0)
+    setActions('<button class="btn btn-p btn-sm" onclick="openCreateOrderModal()">+ Tạo đơn hàng</button>');
+}
+async function openOrderModal(id){
+  const r=await G('/orders/'+id);
+  if(!r||!r.ok){toast('Lỗi','e');return;}
+  const o=r.data.data;
+  const canEdit=['admin','manager','sales','warehouse'].indexOf(me && me.role)>=0;
+  const channelLabels={online:'🌐 Online',in_store:'🏪 Tại cửa hàng',dealer:'🤝 Đại lý',marketplace:'🛒 Marketplace'};
+  openModal('#'+o.order_number,
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">' +
+      '<div style="flex:1"><div style="font-family:var(--font-d);font-size:17px">'+o.order_number+'</div>' +
+        '<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">'+dBadge(o.delivery_status)+' '+pBadge(o.payment_status)+' <span class="badge b-n">'+(channelLabels[o.sales_channel]||o.sales_channel)+'</span></div>' +
+      '</div>' +
+      (o.delivery_status==='Delivered'&&canEdit?'<button class="btn btn-a btn-sm" onclick="openCreateReturnModal('+o.order_id+',\''+o.order_number+'\')">+ Tạo hoàn hàng</button>':'') +
+    '</div>' +
+    '<div class="info-grid mb4">' +
+      '<div class="ii"><label>Khách hàng</label><span>'+(o.customer_name||'Khách vãng lai')+'</span></div>' +
+      '<div class="ii"><label>Platform</label><span>'+(o.platform||'—')+'</span></div>' +
+      '<div class="ii"><label>Nhân viên</label><span>'+(o.staff_name||'—')+'</span></div>' +
+      '<div class="ii"><label>Ngày đặt</label><span>'+FDT(o.ordered_at)+'</span></div>' +
+      '<div class="ii"><label>Phí ship</label><span>'+VND(o.shipping_fee)+'</span></div>' +
+      '<div class="ii"><label>Giảm loyalty</label><span>'+VND(o.loyalty_discount)+'</span></div>' +
+      '<div class="ii"><label>Tổng tiền</label><span class="fw6 text-p" style="font-size:15px">'+VND(o.total_amount)+'</span></div>' +
+      '<div class="ii"><label>Địa chỉ</label><span>'+(o.shipping_address||'—')+'</span></div>' +
+    '</div>' +
+    '<div style="font-family:var(--font-d);font-size:13px;margin-bottom:8px">Sản phẩm trong đơn</div>' +
+    '<div class="tbl-wrap"><table><thead><tr><th>Sản phẩm</th><th>SKU</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>' +
+    '<tbody>'+(o.items||[]).map(function(i){return '<tr><td>'+i.product_name+'</td><td><code>'+i.sku+'</code></td><td>'+i.quantity+'</td><td>'+VND(i.unit_price)+'</td><td class="fw6">'+VND(i.subtotal)+'</td></tr>';}).join('')+'</tbody></table></div>' +
+    (o.note?'<div class="alert al-i mt4">Ghi chú: '+o.note+'</div>':''),
+  canEdit?'<select id="ds-sel" style="width:auto">'+['Pending','Processing','Shipping','Delivered','Cancelled'].map(function(s){return '<option '+(o.delivery_status===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select>'+
+    '<button class="btn btn-p btn-sm" onclick="updateDelivery('+o.order_id+')">Cập nhật giao hàng</button>'+
+    '<button class="btn btn-g btn-sm" onclick="closeModal()">Đóng</button>':
+  '<button class="btn btn-g btn-sm" onclick="closeModal()">Đóng</button>');
+}
+async function updateDelivery(id){
+  const s=document.getElementById('ds-sel').value;
+  const r=await Pa('/orders/'+id+'/delivery-status',{delivery_status:s});
+  if(r && r.ok){toast('Cập nhật thành công');closeModal();pgOrders(ordPage);}
+  else toast((r&&r.data&&r.data.message)||'Thất bại','e');
+}
+async function openCreateOrderModal(){
+  const proms=await Promise.all([G('/customers',{limit:100}),G('/products',{limit:200,status:'Available'})]);
+  const custs=(proms[0]&&proms[0].data&&proms[0].data.data)||[];
+  const prods=(proms[1]&&proms[1].data&&proms[1].data.data)||[];
+  window._oi=[];
+  openModal('Tạo đơn hàng mới',
+    '<div class="fg"><label>Khách hàng</label><select id="oc-c"><option value="">— Khách vãng lai —</option>'+
+      custs.map(function(c){return '<option value="'+c.customer_id+'">'+c.full_name+' '+(c.phone_number?'·'+c.phone_number:'')+'</option>';}).join('')+'</select></div>'+
+    '<div class="g2"><div class="fg"><label>Kênh bán *</label><select id="oc-ch"><option value="in_store">🏪 Tại cửa hàng</option><option value="online">🌐 Online</option><option value="dealer">🤝 Đại lý</option></select></div>'+
+    '<div class="fg"><label>Thanh toán</label><select id="oc-pm">'+['Cash','Card','Bank Transfer','Momo','VNPay','COD','Credit Terms'].map(function(s){return '<option>'+s+'</option>';}).join('')+'</select></div></div>'+
+    '<div class="fg"><label>Địa chỉ giao hàng</label><input id="oc-addr"></div>'+
+    '<div class="fg"><label>Thêm sản phẩm</label><div style="display:flex;gap:6px;margin-bottom:6px">'+
+      '<select id="oc-p" style="flex:1"><option value="">Chọn sản phẩm</option>'+prods.map(function(p){return '<option value="'+p.product_id+'" data-price="'+p.selling_price+'" data-name="'+p.product_name+'">'+p.product_name+' (còn '+p.stock_quantity+')</option>';}).join('')+'</select>'+
+      '<input type="number" id="oc-q" value="1" min="1" style="width:60px"><button class="btn btn-a btn-sm" onclick="addOI()">+</button></div>'+
+      '<div id="oc-list" style="border:1px solid var(--border);border-radius:var(--r-sm);min-height:32px"></div></div>'+
+    '<div class="fg"><label>Ghi chú</label><textarea id="oc-n" rows="2"></textarea></div>',
+    '<div id="oc-tot" class="fw6 text-p" style="flex:1"></div>'+
+    '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button>'+
+    '<button class="btn btn-p btn-sm" onclick="submitCreateOrder()">Tạo đơn</button>');
+  renderOI();
+}
+function addOI(){const sel=document.getElementById('oc-p');if(!sel.value)return;const opt=sel.options[sel.selectedIndex];const qty=parseInt(document.getElementById('oc-q').value)||1;const id=parseInt(sel.value);const ex=window._oi.findIndex(function(i){return i.id===id;});if(ex>=0)window._oi[ex].qty+=qty;else window._oi.push({id:id,name:opt.dataset.name,price:parseFloat(opt.dataset.price),qty:qty});renderOI();}
+function removeOI(i){window._oi.splice(i,1);renderOI();}
+function renderOI(){const el=document.getElementById('oc-list');if(!el)return;el.innerHTML=!window._oi||!window._oi.length?'<div style="padding:8px;text-align:center;color:var(--muted);font-size:12px">Chưa có sản phẩm</div>':window._oi.map(function(item,i){return '<div style="display:flex;align-items:center;gap:7px;padding:7px 10px;border-bottom:1px solid var(--border)"><span style="flex:1;font-size:12px">'+item.name+'</span><span class="text-muted">×'+item.qty+'</span><span class="fw6">'+VND(item.price*item.qty)+'</span><button class="btn btn-d btn-xs" onclick="removeOI('+i+')">✕</button></div>';}).join('');const tot=(window._oi||[]).reduce(function(s,i){return s+i.price*i.qty;},0);const el2=document.getElementById('oc-tot');if(el2)el2.textContent='Tổng: '+VND(tot);}
+async function submitCreateOrder(){
+  if(!window._oi||!window._oi.length){toast('Thêm ít nhất 1 sản phẩm','w');return;}
+  const body={customer_id:parseInt(document.getElementById('oc-c').value)||null,sales_channel:document.getElementById('oc-ch').value,payment_method:document.getElementById('oc-pm').value,shipping_address:document.getElementById('oc-addr').value||null,note:document.getElementById('oc-n').value||null,items:window._oi.map(function(i){return {product_id:i.id,quantity:i.qty,unit_price:i.price};})};
+  const r=await Po('/orders',body);
+  if(r && r.ok){toast('Tạo đơn thành công: '+r.data.data.order_number);closeModal();pgOrders();}
+  else toast((r&&r.data&&r.data.message)||'Thất bại','e');
+}
+let retPage=1,retF={};
+async function pgReturns(page){
+  retPage=page||1;
+  const r=await G('/returns',Object.assign({page:retPage,limit:20},retF));
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data = r.data.data.data || [];
+  const pagination = r.data.data.pagination || {};
+  setContent(
+    '<div class="alert al-i mb4">Quy trình: <strong>pending → approved → processing → completed</strong></div>'+
+    '<div class="filter-bar"><select class="fsel" onchange="retF.status=this.value;pgReturns()"><option value="">Tất cả TT</option>'+
+      ['pending','approved','processing','completed','rejected'].map(function(s){return '<option '+(retF.status===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Mã</th><th>Đơn gốc</th><th>Khách hàng</th><th>Loại</th><th>Hoàn tiền</th><th>TT</th><th>Ngày</th><th></th></tr></thead>'+
+    '<tbody>'+(data.length===0?'<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">Không có yêu cầu</td></tr>':
+      data.map(function(rt){return '<tr>'+
+        '<td class="fw6">#RET-'+rt.return_id+'</td>'+
+        '<td style="font-size:12px">'+(rt.order_number||rt.order_id)+'</td>'+
+        '<td>'+(rt.customer_name||'—')+'</td>'+
+        '<td><span class="badge b-n">'+(rt.return_type==='full'?'Toàn bộ':'Một phần')+'</span></td>'+
+        '<td class="'+(rt.refund_amount?'fw6 text-s':'')+'">'+(rt.refund_amount?VND(rt.refund_amount):'—')+'</td>'+
+        '<td>'+sBadge(rt.status)+'</td>'+
+        '<td class="text-muted">'+FD(rt.created_at)+'</td>'+
+        '<td><button class="btn btn-g btn-xs" onclick="openReturnModal('+rt.return_id+')">Xem</button></td>'+
+      '</tr>';}).join(''))+'</tbody></table></div>'+pgHTML(pagination,'pgReturns')+'</div>'
+  );
+}
+async function openReturnModal(id){
+  const r=await G('/returns/'+id);
+  if(!r||!r.ok){toast('Lỗi','e');return;}
+  const rt=r.data.data;
+  const steps=['pending','approved','processing','completed'];const ci=steps.indexOf(rt.status);
+  const labels={pending:'Chờ duyệt',approved:'Đã duyệt',processing:'Đang xử lý',completed:'Hoàn tất'};
+  const stepsHTML='<div class="steps">'+steps.map(function(s,i){return '<div class="step"><div class="step-dot '+(i<ci?'done':(i===ci&&s!=='rejected'?'cur':''))+'">'+(i<ci?'✓':(i+1))+'</div><div class="step-lbl '+(i===ci?'cur':'')+'">'+labels[s]+'</div></div>'+(i<steps.length-1?'<div class="step-line '+(i<ci?'done':'')+'"></div>':'');}).join('')+'</div>';
+  const canApprove=['admin','manager','finance'].indexOf(me && me.role)>=0&&rt.status==='pending';
+  const canProcess=['admin','manager','warehouse'].indexOf(me && me.role)>=0&&rt.status==='approved';
+  const canComplete=['admin','manager','warehouse'].indexOf(me && me.role)>=0&&rt.status==='processing';
+  const canReject=canApprove;
+  openModal('Hoàn hàng #RET-'+rt.return_id,
+    (rt.status==='rejected'?'<div class="alert al-d mb4">Đã từ chối'+(rt.note?' — '+rt.note:'')+'</div>':'')+
+    stepsHTML+
+    '<div class="info-grid mb4">'+
+      '<div class="ii"><label>Đơn hàng gốc</label><span class="fw6">'+(rt.order_number||rt.order_id)+'</span></div>'+
+      '<div class="ii"><label>Khách hàng</label><span>'+(rt.customer_name||'—')+'</span></div>'+
+      '<div class="ii"><label>Loại hoàn</label><span>'+(rt.return_type==='full'?'Toàn bộ':'Một phần')+'</span></div>'+
+      '<div class="ii"><label>Tổng đơn gốc</label><span>'+VND(rt.total_amount)+'</span></div>'+
+      '<div class="ii"><label>Số tiền hoàn</label><span class="'+(rt.refund_amount?'fw6 text-s':'')+'">'+(rt.refund_amount?VND(rt.refund_amount):'Chưa xác định')+'</span></div>'+
+      '<div class="ii"><label>Kênh</label><span>'+(rt.sales_channel||'—')+'</span></div>'+
+    '</div>'+
+    '<div class="fg"><label>Lý do</label><div style="padding:9px 11px;background:var(--surface);border-radius:var(--r-sm);font-size:13px">'+(rt.reason||'—')+'</div></div>'+
+    (canApprove?'<hr><div class="fg"><label>Số tiền hoàn (₫) *</label><input type="number" id="ref-amt" min="0" max="'+rt.total_amount+'" value="'+rt.total_amount+'"><div style="font-size:11px;color:var(--muted);margin-top:3px">Tối đa: '+VND(rt.total_amount)+'</div></div>':'')+
+    (canReject?'<div class="fg"><label>Lý do từ chối</label><input id="rej-reason"></div>':''),
+  (canReject?'<button class="btn btn-d btn-sm" onclick="rejectReturn('+rt.return_id+')">Từ chối</button>':'')+
+   (canApprove?'<button class="btn btn-a btn-sm" onclick="approveReturn('+rt.return_id+')">✓ Duyệt hoàn tiền</button>':'')+
+   (canProcess?'<button class="btn btn-a btn-sm" onclick="processReturn('+rt.return_id+')">Bắt đầu xử lý</button>':'')+
+   (canComplete?'<button class="btn btn-p btn-sm" onclick="completeReturn('+rt.return_id+')">Hoàn tất & Nhập kho</button>':'')+
+   '<button class="btn btn-g btn-sm" onclick="closeModal()">Đóng</button>');
+}
+async function approveReturn(id){const amt=parseFloat(document.getElementById('ref-amt').value);if(!amt||amt<=0){toast('Nhập số tiền hợp lệ','w');return;}const r=await Pa('/returns/'+id+'/approve',{refund_amount:amt});if(r && r.ok){toast('Đã duyệt');closeModal();pgReturns(retPage);loadReturnsBadge();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function processReturn(id){const r=await Pa('/returns/'+id+'/process',{});if(r && r.ok){toast('Đang xử lý');closeModal();pgReturns(retPage);}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function completeReturn(id){if(!confirm('Xác nhận hoàn tất? Hệ thống sẽ nhập lại hàng vào kho.'))return;const r=await Pa('/returns/'+id+'/complete',{});if(r && r.ok){toast('Hoàn tất!');closeModal();pgReturns(retPage);}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function rejectReturn(id){const reason=document.getElementById('rej-reason').value||'';const r=await Pa('/returns/'+id+'/reject',{reason:reason});if(r && r.ok){toast('Đã từ chối');closeModal();pgReturns(retPage);loadReturnsBadge();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function openCreateReturnModal(orderId,orderNumber){closeModal();await new Promise(function(r){setTimeout(r,80);});openModal('Tạo hoàn hàng — '+orderNumber,
+  '<div class="alert al-w mb4">Chỉ tạo cho đơn đã giao thành công (Delivered). Cần manager/finance duyệt.</div>'+
+  '<div class="fg"><label>Loại hoàn *</label><select id="rt-type"><option value="full">Hoàn toàn bộ</option><option value="partial">Hoàn một phần</option></select></div>'+
+  '<div class="fg"><label>Kênh</label><select id="rt-ch">'+['online','in_store','dealer','marketplace'].map(function(s){return '<option value="'+s+'">'+s+'</option>';}).join('')+'</select></div>'+
+  '<div class="fg"><label>Lý do *</label><textarea id="rt-reason" rows="3" placeholder="Mô tả lý do..."></textarea></div>',
+  '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button>'+
+  '<button class="btn btn-p btn-sm" onclick="submitCreateReturn('+orderId+')">Gửi yêu cầu</button>');}
+async function submitCreateReturn(orderId){const reason=document.getElementById('rt-reason').value.trim();if(!reason){toast('Nhập lý do','w');return;}const r=await Po('/returns',{order_id:orderId,sales_channel:document.getElementById('rt-ch').value,return_type:document.getElementById('rt-type').value,reason:reason});if(r && r.ok){toast('Tạo hoàn hàng thành công');closeModal();loadReturnsBadge();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+let custPage=1,custF={};
+async function pgCustomers(page){
+  custPage=page||1;
+  const r=await G('/customers',Object.assign({page:custPage,limit:20},custF));
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data=r.data.data, pagination=r.data.pagination;
+  setContent(
+    '<div class="filter-bar"><div class="sb-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'+
+      '<input placeholder="Tên, email, SĐT..." oninput="custF.search=this.value;pgCustomers()" value="'+(custF.search||'')+'"></div>'+
+      '<select class="fsel" onchange="custF.segment=this.value;pgCustomers()"><option value="">Tất cả phân khúc</option>'+
+      ['Whale','VIP','Loyal','Regular','New','At-risk','Wholesale','Churned'].map(function(s){return '<option '+(custF.segment===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Khách hàng</th><th>Email</th><th>SĐT</th><th>Loại</th><th>Phân khúc</th><th>Loyalty</th><th>Ngày tạo</th><th></th></tr></thead>'+
+    '<tbody>'+data.map(function(c){return '<tr>'+
+      '<td><div style="display:flex;align-items:center;gap:7px"><div class="u-av" style="width:26px;height:26px;font-size:10px;background:var(--accent)">'+INI(c.full_name)+'</div><span class="fw6">'+c.full_name+'</span></div></td>'+
+      '<td class="text-muted">'+(c.email||'—')+'</td>'+
+      '<td>'+(c.phone_number||'—')+'</td>'+
+      '<td><span class="badge b-n">'+(c.customer_type||'retail')+'</span></td>'+
+      '<td>'+segBadge(c.segment)+'</td>'+
+      '<td class="fw6 text-p">'+N(c.loyalty_points_balance)+' pts</td>'+
+      '<td class="text-muted">'+FD(c.created_at)+'</td>'+
+      '<td><button class="btn btn-g btn-xs" onclick="openCustModal('+c.customer_id+')">Xem</button></td>'+
+    '</tr>';}).join('')+'</tbody></table></div>'+pgHTML(pagination,'pgCustomers')+'</div>'
+  );
+  setActions('<button class="btn btn-p btn-sm" onclick="openAddCustModal()">+ Thêm khách hàng</button>');
+}
+async function openCustModal(id){
+  const proms=await Promise.all([G('/customers/'+id),G('/customers/'+id+'/loyalty',{limit:10})]);
+  const cr=proms[0], lr=proms[1];
+  if(!cr||!cr.ok)return;
+  const c=cr.data.data, s=c.stats||{}, lhist=(lr&&lr.data&&lr.data.data)||[];
+  openModal(c.full_name,
+    '<div class="g3 mb4">'+
+      '<div class="stat card-sm"><div class="stat-label">Tổng đơn</div><div class="stat-val" style="font-size:18px">'+N(s.total_orders)+'</div></div>'+
+      '<div class="stat card-sm"><div class="stat-label">Chi tiêu</div><div class="stat-val" style="font-size:16px">'+VND(s.total_spent)+'</div></div>'+
+      '<div class="stat card-sm"><div class="stat-label">Loyalty</div><div class="stat-val" style="font-size:18px">'+N(c.loyalty_points_balance)+'</div></div>'+
+    '</div>'+
+    '<div class="info-grid mb4">'+
+      '<div class="ii"><label>Email</label><span>'+(c.email||'—')+'</span></div>'+
+      '<div class="ii"><label>SĐT</label><span>'+(c.phone_number||'—')+'</span></div>'+
+      '<div class="ii"><label>Phân khúc</label><span>'+segBadge(c.segment)+'</span></div>'+
+      '<div class="ii"><label>Loại KH</label><span>'+(c.customer_type||'retail')+'</span></div>'+
+      '<div class="ii"><label>Thành phố</label><span>'+(c.city||'—')+'</span></div>'+
+      '<div class="ii"><label>Đơn cuối</label><span>'+FD(s.last_order_at)+'</span></div>'+
+    '</div><hr>'+
+    '<div style="font-family:var(--font-d);font-size:13px;margin-bottom:8px">Đổi điểm thủ công</div>'+
+    '<div style="display:flex;gap:7px"><input type="number" id="red-pts" placeholder="Số điểm" min="1" max="'+c.loyalty_points_balance+'" style="flex:1">'+
+    '<input id="red-desc" placeholder="Lý do" style="flex:2"><button class="btn btn-a btn-sm" onclick="submitRedeem('+c.customer_id+')">Đổi</button></div>'+
+    (lhist.length?'<hr><div style="font-size:12px;font-weight:600;margin-bottom:7px">Lịch sử điểm</div><div class="tbl-wrap"><table><thead><tr><th>Loại</th><th>Điểm</th><th>Mô tả</th><th>Ngày</th></tr></thead><tbody>'+
+      lhist.map(function(l){return '<tr><td>'+(l.action_type==='earn'?'<span class="badge b-g">+Tích</span>':'<span class="badge b-r">−Đổi</span>')+'</td>'+
+        '<td class="'+(l.action_type==='earn'?'text-s':'text-d')+' fw6">'+(l.action_type==='earn'?'+':'')+N(l.points_amount)+'</td>'+
+        '<td class="text-muted">'+(l.description||'—')+'</td><td class="text-muted">'+FD(l.created_at)+'</td></tr>';}).join('')+'</tbody></table></div>':''),
+  '<button class="btn btn-g btn-sm" onclick="closeModal()">Đóng</button>'+
+  '<button class="btn btn-p btn-sm" onclick=\'submitEditCust('+c.customer_id+','+JSON.stringify(c).replace(/'/g,"&apos;")+')\'>Sửa thông tin</button>');
+}
+async function submitRedeem(custId){const pts=parseInt(document.getElementById('red-pts').value);const desc=document.getElementById('red-desc').value||'Đổi điểm thủ công';if(!pts||pts<=0){toast('Nhập số điểm','w');return;}const r=await Po('/customers/'+custId+'/redeem-points',{points:pts,description:desc});if(r && r.ok){toast('Đã đổi '+pts+' điểm');closeModal();pgCustomers(custPage);}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+function submitEditCust(id,c){
+  openModal('Sửa: '+c.full_name,
+    '<div class="g2"><div class="fg"><label>Họ tên</label><input id="ce-n" value="'+(c.full_name||'')+'"></div>'+
+    '<div class="fg"><label>SĐT</label><input id="ce-p" value="'+(c.phone_number||'')+'"></div>'+
+    '<div class="fg"><label>Thành phố</label><input id="ce-ci" value="'+(c.city||'')+'"></div>'+
+    '<div class="fg"><label>Phân khúc</label><select id="ce-seg">'+['New','Regular','Loyal','VIP','Whale','Wholesale','At-risk','Churned'].map(function(s){return '<option '+(c.segment===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div></div>'+
+    '<div class="fg"><label>Địa chỉ</label><input id="ce-a" value="'+(c.address||'')+'"></div>',
+  '<button class="btn btn-g btn-sm" onclick="openCustModal('+id+')">← Quay lại</button>'+
+   '<button class="btn btn-p btn-sm" onclick="saveEditCust('+id+')">Lưu</button>');
+}
+async function saveEditCust(id){const body={full_name:document.getElementById('ce-n').value,phone_number:document.getElementById('ce-p').value,city:document.getElementById('ce-ci').value,segment:document.getElementById('ce-seg').value,address:document.getElementById('ce-a').value};const r=await Pu('/customers/'+id,body);if(r && r.ok){toast('Cập nhật thành công');closeModal();pgCustomers(custPage);}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function openAddCustModal(){openModal('Thêm khách hàng',
+  '<div class="g2"><div class="fg" style="grid-column:1/-1"><label>Họ tên *</label><input id="nc-n"></div><div class="fg"><label>Email *</label><input type="email" id="nc-e"></div><div class="fg"><label>SĐT</label><input id="nc-p"></div><div class="fg"><label>Giới tính</label><select id="nc-g"><option value="Female">Nữ</option><option value="Male">Nam</option><option value="Other">Khác</option></select></div><div class="fg"><label>Thành phố</label><input id="nc-ci"></div><div class="fg"><label>Phân khúc</label><select id="nc-s">'+['New','Regular','Loyal','VIP','Wholesale'].map(function(s){return '<option>'+s+'</option>';}).join('')+'</select></div></div><div class="fg"><label>Địa chỉ</label><input id="nc-a"></div>',
+  '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-p btn-sm" onclick="submitAddCust()">Lưu</button>');}
+async function submitAddCust(){const body={full_name:document.getElementById('nc-n').value,email:document.getElementById('nc-e').value,phone_number:document.getElementById('nc-p').value,gender:document.getElementById('nc-g').value,city:document.getElementById('nc-ci').value,segment:document.getElementById('nc-s').value,address:document.getElementById('nc-a').value};if(!body.full_name||!body.email){toast('Điền đủ họ tên và email','w');return;}const r=await Po('/customers',body);if(r && r.ok){toast('Thêm thành công');closeModal();pgCustomers();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function pgLoyalty(){
+  const proms=await Promise.all([G('/analytics/customers/segments'),G('/analytics/customers/top',{limit:15})]);
+  const segs=(proms[0]&&proms[0].data&&proms[0].data.data)||[];
+  const tops=(proms[1]&&proms[1].data&&proms[1].data.data)||[];
+  const tierRows=[{t:'Whale 🐋',min:10000,p:'1 pt / 10.000₫',d:'Ưu tiên tối đa · Quà hàng tháng'},{t:'VIP 👑',min:5000,p:'1 pt / 8.000₫',d:'CSKH ưu tiên · Quà sinh nhật · Freeship'},{t:'Loyal 💚',min:3000,p:'1 pt / 10.000₫',d:'Giảm 5% · Freeship > 300K'},{t:'Regular',min:200,p:'1 pt / 10.000₫',d:'Tích điểm đổi voucher'},{t:'New 🌱',min:0,p:'1 pt / 10.000₫',d:'Chào mừng thành viên'}];
+  setContent(
+    '<div class="g2 mb6">'+
+      '<div class="card"><div class="card-hd"><span class="card-title">Phân khúc khách hàng</span></div><div class="card-bd"><div class="chart-wrap"><canvas id="loy-seg"></canvas></div></div></div>'+
+      '<div class="card"><div class="card-hd"><span class="card-title">Quy tắc tích điểm</span></div><div class="card-bd">'+
+        '<div class="alert al-i mb4">Trigger <code>trg_loyalty_accrual</code> tự động khi đơn → Delivered</div>'+
+        tierRows.map(function(t){return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="min-width:80px;font-size:12px;font-weight:600">'+t.t+'<br><span style="font-weight:400;color:var(--muted)">≥'+N(t.min)+'pts</span></div><div style="flex:1;font-size:12px;color:var(--muted)">'+t.d+'</div><div style="font-size:11px;color:var(--accent)">'+t.p+'</div></div>';}).join('')+
+      '</div></div>'+
+    '</div>'+
+    '<div class="card"><div class="card-hd"><span class="card-title">Top khách hàng theo điểm</span></div><div class="card-bd">'+
+      '<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Khách hàng</th><th>Phân khúc</th><th>Điểm hiện có</th><th>Tổng chi tiêu</th><th></th></tr></thead>'+
+      '<tbody>'+tops.map(function(c,i){return '<tr><td class="text-muted fw6">'+(i+1)+'</td><td class="fw6">'+c.full_name+'</td>'+
+        '<td>'+segBadge(c.segment)+'</td>'+
+        '<td><div class="fw6 text-p">'+N(c.loyalty_points_balance)+' pts</div><div class="pts-bar" style="width:100px"><div class="pts-fill" style="width:'+Math.min(100,(c.loyalty_points_balance/10000)*100)+'%"></div></div></td>'+
+        '<td class="fw6">'+VND(c.total_spent)+'</td>'+
+        '<td><button class="btn btn-g btn-xs" onclick="openCustModal('+c.customer_id+')">Xem</button></td></tr>';}).join('')+'</tbody></table></div>'+
+    '</div></div>'
+  );
+  if(segs.length){charts.ls=new Chart(document.getElementById('loy-seg'),{type:'doughnut',data:{labels:segs.map(function(s){return s.segment;}),datasets:[{data:segs.map(function(s){return s.count;}),backgroundColor:['#1e3010','#b8860b','#2d5016','#1a5c8a','#7a9a3a','#c0392b','#d4820a','#888']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right'}}}});}
+}
+let prodPage=1,prodF={};
+async function pgProducts(page){
+  prodPage=page||1;
+  const r=await G('/products',Object.assign({page:prodPage,limit:20},prodF));
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data=r.data.data, pagination=r.data.pagination;
+  setContent(
+    '<div class="filter-bar"><div class="sb-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'+
+      '<input placeholder="Tên, SKU, thành phần..." oninput="prodF.search=this.value;pgProducts()" value="'+(prodF.search||'')+'"></div>'+
+      '<select class="fsel" onchange="prodF.status=this.value;pgProducts()"><option value="">Tất cả TT</option>'+
+      ['Available','Low Stock','Out of Stock','Discontinued'].map(function(s){return '<option '+(prodF.status===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="card"><div class="tbl-wrap"><table>'+
+      '<thead><tr><th style="width:48px">Ảnh</th><th>Sản phẩm</th><th>SKU</th><th>Danh mục</th><th>Giá bán</th><th>Giá vốn</th><th>Tồn</th><th>Đã bán</th><th>TT</th><th>Hiện</th><th></th></tr></thead>'+
+      '<tbody>'+data.map(function(p){
+        const imgUrl=prodImgUrl(p);
+        return '<tr>'+
+        '<td><div class="prod-thumbnail">'+(imgUrl?'<img src="'+imgUrl+'" style="width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display=\'none\'">':'<span style="font-size:16px">'+pEmoji(p)+'</span>')+'</div></td>'+
+        '<td><div class="fw6 truncate" style="max-width:160px">'+p.product_name+'</div>'+(p.ingredients?'<div style="font-size:10px;color:var(--muted);max-width:160px" class="truncate">🌿 '+p.ingredients+'</div>':'')+'</td>'+
+        '<td><code>'+p.sku+'</code></td>'+
+        '<td class="text-muted">'+(p.category_name||'—')+'</td>'+
+        '<td class="fw6">'+VND(p.selling_price)+'</td>'+
+        '<td class="text-muted">'+VND(p.cost_price)+'</td>'+
+        '<td class="'+(p.stock_quantity<=20?'text-d fw6':'')+'">'+N(p.stock_quantity)+'</td>'+
+        '<td class="text-muted">'+N(p.sold_count)+'</td>'+
+        '<td>'+sBadge(p.status)+'</td>'+
+        '<td><span class="badge '+(p.visibility==='Visible'?'b-g':'b-n')+'">'+p.visibility+'</span></td>'+
+        '<td><div style="display:flex;gap:3px"><button class="btn btn-g btn-xs" onclick="openEditProdModal('+p.product_id+')">✏️</button>'+
+          (['admin'].indexOf(me && me.role)>=0?'<button class="btn btn-d btn-xs" onclick="deleteProd('+p.product_id+',\''+p.product_name.replace(/'/g,"\\'")+'\')">🗑</button>':'')+
+        '</div></td>'+
+      '</tr>';}).join('')+'</tbody>'+
+    '</table></div>'+pgHTML(pagination,'pgProducts')+'</div>'
+  );
+  if(['admin','manager'].indexOf(me && me.role)>=0)
+    setActions('<button class="btn btn-p btn-sm" onclick="openAddProdModal()">+ Thêm sản phẩm</button>');
+}
+async function buildProdForm(prod){
+  const catR = await G('/categories');
+  const cats = (catR && catR.data && catR.data.data) || [];
+  let tagsVal = '';
+  if (prod && prod.tags) {
+    if (prod.tags.indexOf('img:')===0) {
+      const parts = prod.tags.split('|');
+      tagsVal = parts.length>1 ? parts.slice(1).join('|') : '';
+    } else {
+      tagsVal = prod.tags;
+    }
+  }
+  return (
+    '<div style="display:grid;grid-template-columns:170px 1fr;gap:16px;align-items:start">'+
+      '<div>'+
+        '<label style="font-size:11px;font-weight:600;color:var(--fg2);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:6px">Ảnh sản phẩm</label>'+
+        '<div id="img-zone-wrap"></div>'+
+        '<div style="margin-top:6px"><label style="font-size:10px;color:var(--muted);display:block;margin-bottom:3px">Hoặc nhập URL ảnh</label>'+
+        '<input id="img-url-manual" placeholder="https://..." style="font-size:11px" oninput="applyManualImgUrl(this.value)"></div>'+
+      '</div>'+
+      '<div><div class="g2">'+
+        '<div class="fg" style="grid-column:1/-1"><label>Tên sản phẩm *</label><input id="pf-n" value="'+(prod?prod.product_name||'':'')+'"></div>'+
+        '<div class="fg"><label>SKU *</label><input id="pf-s" value="'+(prod?prod.sku||'':'')+'" '+(prod?'readonly style="background:var(--surface2);color:var(--muted)"':'')+'></div>'+
+        '<div class="fg"><label>Danh mục *</label><select id="pf-c">'+cats.map(function(c){return '<option value="'+c.category_id+'" '+(prod&&prod.category_id==c.category_id?'selected':'')+'>'+c.category_name+'</option>';}).join('')+'</select></div>'+
+        '<div class="fg"><label>Giá vốn (₫)</label><input type="number" id="pf-cp" min="0" value="'+(prod?prod.cost_price||0:0)+'"></div>'+
+        '<div class="fg"><label>Giá bán (₫) *</label><input type="number" id="pf-sp" min="0" value="'+(prod?prod.selling_price||'':'')+'"></div>'+
+        '<div class="fg"><label>Trạng thái</label><select id="pf-st">'+['Available','Low Stock','Out of Stock','Discontinued'].map(function(s){return '<option '+(prod&&prod.status===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+        '<div class="fg"><label>Hiển thị</label><select id="pf-vi">'+['Visible','Hidden'].map(function(s){return '<option '+(prod&&prod.visibility===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+      '</div></div>'+
+    '</div>'+
+    '<div class="fg"><label>Thành phần (Ingredients)</label><textarea id="pf-ing" rows="2" placeholder="Caffeine, Vitamin C, Cà phê Đắk Lắk...">'+(prod?prod.ingredients||'':'')+'</textarea></div>'+
+    '<div class="fg"><label>Mô tả</label><textarea id="pf-desc" rows="2">'+(prod?prod.description||'':'')+'</textarea></div>'+
+    '<div class="fg"><label>Tags (từ khoá tìm kiếm)</label><input id="pf-tags" placeholder="dưỡng ẩm, cà phê, skincare..." value="'+tagsVal+'"></div>'
+  );
+}
+function getProdFormData(){
+  const imgUrl = (document.getElementById('img-url-stored')||{}).value || '';
+  const tags   = (document.getElementById('pf-tags').value||'').trim();
+  let finalTags = null;
+  if (imgUrl && tags) finalTags = 'img:'+imgUrl+'|'+tags;
+  else if (imgUrl)    finalTags = 'img:'+imgUrl;
+  else if (tags)      finalTags = tags;
+  return {
+    product_name: document.getElementById('pf-n').value,
+    sku:          document.getElementById('pf-s').value,
+    category_id:  parseInt(document.getElementById('pf-c').value),
+    cost_price:   parseFloat(document.getElementById('pf-cp').value) || 0,
+    selling_price:parseFloat(document.getElementById('pf-sp').value),
+    status:       document.getElementById('pf-st').value,
+    visibility:   document.getElementById('pf-vi').value,
+    ingredients:  document.getElementById('pf-ing').value || null,
+    description:  document.getElementById('pf-desc').value || null,
+    tags:         finalTags,
+  };
+}
+async function openAddProdModal(){
+  const formHTML = await buildProdForm(null);
+  openModal('Thêm sản phẩm mới',
+    '<div class="alert al-i mb4">📷 Ảnh sản phẩm được upload lên server thực qua multer, lưu URL trong DB.</div>'+formHTML,
+    '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button>'+
+    '<button class="btn btn-p btn-sm" onclick="submitAddProd()">Thêm sản phẩm</button>', true);
+  setTimeout(function(){ renderUploadZone('img-zone-wrap',''); }, 50);
+}
+async function submitAddProd(){
+  const body = getProdFormData();
+  if (!body.product_name || !body.sku || !body.category_id || !body.selling_price) { toast('Điền đủ các trường bắt buộc (*)','w'); return; }
+  const r = await Po('/products', body);
+  if (r && r.ok) { toast('Thêm sản phẩm thành công'); closeModal(); pgProducts(); }
+  else toast((r&&r.data&&r.data.message) || 'Thất bại','e');
+}
+async function openEditProdModal(id){
+  const pr = await G('/products/'+id);
+  if (!pr || !pr.ok) { toast('Lỗi tải sản phẩm','e'); return; }
+  const p = pr.data.data;
+  const formHTML = await buildProdForm(p);
+  openModal('Chỉnh sửa: '+p.product_name,
+    '<div class="alert al-i mb4">Tồn kho hiện tại: <strong>'+N(p.stock_quantity)+'</strong> — Dùng trang <strong>Nhập/Xuất kho</strong> để thay đổi số lượng.</div>'+formHTML,
+    '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button>'+
+    '<button class="btn btn-p btn-sm" onclick="submitEditProd('+id+')">Lưu thay đổi</button>', true);
+  const imgUrl = prodImgUrl(p);
+  setTimeout(function(){ renderUploadZone('img-zone-wrap', imgUrl||''); }, 50);
+}
+async function submitEditProd(id){
+  const body = getProdFormData();
+  if (!body.product_name || !body.category_id || !body.selling_price) { toast('Điền đủ các trường bắt buộc','w'); return; }
+  const r = await Pu('/products/'+id, body);
+  if (r && r.ok) { toast('Cập nhật thành công'); closeModal(); pgProducts(prodPage); }
+  else toast((r&&r.data&&r.data.message) || 'Thất bại','e');
+}
+async function deleteProd(id, name){
+  if (!confirm('Ngưng bán "'+name+'"?\nSản phẩm sẽ bị ẩn và không thể đặt hàng.')) return;
+  const r = await D('/products/'+id);
+  if (r && r.ok) { toast('Đã ngưng bán'); pgProducts(prodPage); }
+  else toast((r&&r.data&&r.data.message) || 'Thất bại','e');
+}
+let siPage=1,siF={};
+async function pgStock(page){
+  siPage=page||1;
+  const r=await G('/inventory/transactions',Object.assign({page:siPage,limit:20},siF));
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data=r.data.data, pagination=r.data.pagination;
+  const tc={'Stock In':'b-g','Stock Out':'b-r',Adjustment:'b-y',Return:'b-b'};
+  setContent(
+    '<div class="filter-bar"><select class="fsel" onchange="siF.transaction_type=this.value;pgStock()"><option value="">Tất cả loại</option>'+
+      ['Stock In','Stock Out','Adjustment','Return'].map(function(s){return '<option '+(siF.transaction_type===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select>'+
+      '<select class="fsel" onchange="siF.warehouse=this.value;pgStock()"><option value="">Tất cả kho</option><option value="HCM Warehouse">HCM Warehouse</option><option value="HN Warehouse">HN Warehouse</option></select></div>'+
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Sản phẩm</th><th>SKU</th><th>Loại GD</th><th>Số lượng</th><th>Kho</th><th>Nhân viên</th><th>Ghi chú</th><th>Thời gian</th></tr></thead>'+
+    '<tbody>'+data.map(function(t){return '<tr><td class="fw6">'+t.product_name+'</td><td><code>'+t.sku+'</code></td>'+
+      '<td><span class="badge '+(tc[t.transaction_type]||'b-n')+'">'+t.transaction_type+'</span></td>'+
+      '<td class="'+(['Stock In','Return'].indexOf(t.transaction_type)>=0?'text-s':'text-d')+' fw6">'+(['Stock In','Return'].indexOf(t.transaction_type)>=0?'+':'-')+N(t.quantity)+'</td>'+
+      '<td class="text-muted">'+(t.warehouse||'—')+'</td><td>'+(t.staff_name||'—')+'</td>'+
+      '<td class="text-muted truncate" style="max-width:130px">'+(t.note||'—')+'</td><td class="text-muted">'+FDT(t.created_at)+'</td></tr>';}).join('')+'</tbody></table></div>'+pgHTML(pagination,'pgStock')+'</div>'
+  );
+  setActions('<button class="btn btn-p btn-sm" onclick="openStockModal()">+ Nhập / Điều chỉnh</button>');
+}
+async function openStockModal(){
+  const pr=await G('/products',{limit:200});
+  const prods=(pr&&pr.data&&pr.data.data)||[];
+  openModal('Nhập kho / Điều chỉnh',
+    '<div class="fg"><label>Sản phẩm *</label><select id="si-p"><option value="">Chọn sản phẩm</option>'+prods.map(function(p){return '<option value="'+p.product_id+'">'+p.product_name+' · '+p.sku+' (tồn: '+p.stock_quantity+')</option>';}).join('')+'</select></div>'+
+    '<div class="g2"><div class="fg"><label>Số lượng *</label><input type="number" id="si-q" min="1" value="1"></div><div class="fg"><label>Kho</label><select id="si-w"><option value="HCM Warehouse">HCM Warehouse</option><option value="HN Warehouse">HN Warehouse</option></select></div></div>'+
+    '<div class="fg"><label>Loại giao dịch</label><select id="si-t"><option value="Stock In">Stock In — Nhập từ sản xuất/NCC</option><option value="Adjustment">Adjustment — Kiểm kê điều chỉnh</option><option value="Return">Return — Nhập hàng hoàn</option></select></div>'+
+    '<div class="fg"><label>Mã tham chiếu</label><input id="si-ref" placeholder="PO-2024-001"></div><div class="fg"><label>Ghi chú</label><textarea id="si-n" rows="2"></textarea></div>',
+    '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-p btn-sm" onclick="submitStockIn()">Xác nhận</button>');
+}
+async function submitStockIn(){const body={product_id:parseInt(document.getElementById('si-p').value),quantity:parseInt(document.getElementById('si-q').value),warehouse:document.getElementById('si-w').value,transaction_type:document.getElementById('si-t').value,reference_id:document.getElementById('si-ref').value||null,note:document.getElementById('si-n').value||null};if(!body.product_id||!body.quantity){toast('Chọn sản phẩm và nhập số lượng','w');return;}const r=await Po('/inventory/stock-in',body);if(r && r.ok){toast('Nhập kho thành công');closeModal();pgStock();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function pgInvAlerts(){
+  const r=await G('/analytics/inventory/low-stock');
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data=r.data.data||[];
+  setContent(
+    '<div class="alert al-w mb4">⚠️ Sản phẩm tồn kho ≤ 20 đơn vị. Cần nhập bổ sung sớm.</div>'+
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Ảnh</th><th>Sản phẩm</th><th>SKU</th><th>Danh mục</th><th>Tồn kho</th><th>Đã bán</th><th>TT</th><th></th></tr></thead>'+
+    '<tbody>'+(data.length===0?'<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">✅ Không có cảnh báo</td></tr>':
+      data.map(function(p){const imgUrl=prodImgUrl(p);return '<tr>'+
+        '<td><div class="prod-thumbnail">'+(imgUrl?'<img src="'+imgUrl+'" style="width:100%;height:100%;object-fit:cover" loading="lazy">':'<span style="font-size:16px">'+pEmoji(p)+'</span>')+'</div></td>'+
+        '<td class="fw6">'+p.product_name+'</td><td><code>'+p.sku+'</code></td><td class="text-muted">'+(p.category_name||'—')+'</td>'+
+        '<td class="'+(p.stock_quantity===0?'text-d':'text-w')+' fw6">'+N(p.stock_quantity)+'</td><td>'+N(p.sold_count)+'</td><td>'+sBadge(p.status)+'</td>'+
+        '<td><button class="btn btn-a btn-xs" onclick="openStockModal()">+ Nhập kho</button></td></tr>';}).join(''))+'</tbody></table></div></div>'
+  );
+}
+let rmPage=1,rmF={};
+async function pgRawMaterials(page){
+  rmPage=page||1;
+  const r=await G('/raw-materials',Object.assign({page:rmPage,limit:20},rmF));
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi tải nguyên liệu</div>');return;}
+  const data=r.data.data, pagination=r.data.pagination;
+  setContent(
+    '<div class="filter-bar"><div class="sb-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'+
+      '<input placeholder="Tên nguyên liệu, NCC, xuất xứ..." oninput="rmF.search=this.value;pgRawMaterials()" value="'+(rmF.search||'')+'"></div>'+
+      '<select class="fsel" onchange="rmF.status=this.value;pgRawMaterials()"><option value="">Tất cả TT</option><option value="Stable">Stable — Đủ hàng</option><option value="Warning">Warning — Cần theo dõi</option><option value="Critical">Critical — Sắp hết</option></select></div>'+
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Nguyên liệu</th><th>Xuất xứ</th><th>Nhà cung cấp</th><th>Tồn kho</th><th>Đơn vị</th><th>Nhập kho</th><th>Hết hạn</th><th>TT</th><th></th></tr></thead>'+
+    '<tbody>'+(data.length===0?'<tr><td colspan="9" style="text-align:center;padding:36px;color:var(--muted)"><div style="font-size:28px;margin-bottom:8px">🌿</div>Chưa có nguyên liệu. Thêm để theo dõi.</td></tr>':
+      data.map(function(m){
+        const expiring = m.expiry_date && new Date(m.expiry_date) < new Date(Date.now()+90*24*3600*1000);
+        return '<tr><td class="fw6">'+m.material_name+'</td><td class="text-muted">'+(m.origin||'—')+'</td><td>'+(m.supplier_name||'—')+'</td>'+
+        '<td class="'+(m.status==='Critical'?'text-d fw6':(m.status==='Warning'?'text-w fw6':'fw6'))+'">'+N(m.quantity,2)+'</td>'+
+        '<td class="text-muted">'+(m.unit||'—')+'</td><td class="text-muted">'+FD(m.import_date)+'</td>'+
+        '<td class="'+(expiring?'text-d fw6':'')+'">'+FD(m.expiry_date)+(expiring?' ⚠️':'')+'</td>'+
+        '<td>'+sBadge(m.status)+'</td><td><button class="btn btn-g btn-xs" onclick="openEditRMModal('+m.material_id+')">✏️</button></td></tr>';
+      }).join(''))+'</tbody></table></div>'+pgHTML(pagination,'pgRawMaterials')+'</div>'
+  );
+  if(['admin','manager','warehouse'].indexOf(me && me.role)>=0)
+    setActions('<button class="btn btn-p btn-sm" onclick="openAddRMModal()">+ Thêm nguyên liệu</button>');
+}
+function rmFormHTML(m){return (
+  '<div class="g2">'+
+    '<div class="fg" style="grid-column:1/-1"><label>Tên nguyên liệu *</label><input id="rm-n" value="'+(m?m.material_name||'':'')+'" placeholder="Cà phê Đắk Lắk, Nghệ Hưng Yên..."></div>'+
+    '<div class="fg"><label>Xuất xứ *</label><input id="rm-o" value="'+(m?m.origin||'':'')+'" placeholder="Đắk Lắk, Hưng Yên..."></div>'+
+    '<div class="fg"><label>Nhà cung cấp *</label><input id="rm-s" value="'+(m?m.supplier_name||'':'')+'"></div>'+
+    '<div class="fg"><label>Số lượng tồn</label><input type="number" id="rm-q" min="0" step="0.001" value="'+(m?m.quantity||0:0)+'"></div>'+
+    '<div class="fg"><label>Đơn vị</label><select id="rm-u">'+['kg','g','L','ml','tấn','thùng','lít','cái'].map(function(u){return '<option '+(m&&m.unit===u?'selected':'')+'>'+u+'</option>';}).join('')+'</select></div>'+
+    '<div class="fg"><label>Ngày nhập kho</label><input type="date" id="rm-id" value="'+(m&&m.import_date?m.import_date.slice(0,10):'')+'"></div>'+
+    '<div class="fg"><label>Ngày hết hạn</label><input type="date" id="rm-ed" value="'+(m&&m.expiry_date?m.expiry_date.slice(0,10):'')+'"></div>'+
+    '<div class="fg"><label>Trạng thái</label><select id="rm-st">'+['Stable','Warning','Critical'].map(function(s){return '<option '+(m&&m.status===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+  '</div>'+
+  '<div class="alert al-i"><strong>Hướng dẫn trạng thái:</strong><br>• <strong>Stable</strong>: Đủ ≥ 3 tháng &nbsp;• <strong>Warning</strong>: 1–3 tháng &nbsp;• <strong>Critical</strong>: &lt; 1 tháng</div>'
+);}
+async function openAddRMModal(){openModal('Thêm nguyên liệu thô',rmFormHTML(null),'<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-p btn-sm" onclick="submitAddRM()">Thêm</button>');}
+async function submitAddRM(){const body={material_name:document.getElementById('rm-n').value,origin:document.getElementById('rm-o').value,supplier_name:document.getElementById('rm-s').value,quantity:parseFloat(document.getElementById('rm-q').value)||0,unit:document.getElementById('rm-u').value,status:document.getElementById('rm-st').value,import_date:document.getElementById('rm-id').value||null,expiry_date:document.getElementById('rm-ed').value||null};if(!body.material_name||!body.origin||!body.supplier_name){toast('Điền đủ trường bắt buộc','w');return;}const r=await Po('/raw-materials',body);if(r && r.ok){toast('Thêm thành công');closeModal();pgRawMaterials();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function openEditRMModal(id){const r=await G('/raw-materials/'+id);if(!r||!r.ok){toast('Lỗi','e');return;}openModal('Chỉnh sửa: '+r.data.data.material_name,rmFormHTML(r.data.data),'<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-p btn-sm" onclick="submitEditRM('+id+')">Lưu</button>');}
+async function submitEditRM(id){const body={material_name:document.getElementById('rm-n').value,origin:document.getElementById('rm-o').value,supplier_name:document.getElementById('rm-s').value,quantity:parseFloat(document.getElementById('rm-q').value)||0,unit:document.getElementById('rm-u').value,status:document.getElementById('rm-st').value,import_date:document.getElementById('rm-id').value||null,expiry_date:document.getElementById('rm-ed').value||null};const r=await Pu('/raw-materials/'+id,body);if(r && r.ok){toast('Cập nhật thành công');closeModal();pgRawMaterials(rmPage);}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+let dealPage=1,dealF={};
+async function pgDealers(page){
+  dealPage=page||1;
+  const r=await G('/dealers',Object.assign({page:dealPage,limit:20},dealF));
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data=r.data.data, pagination=r.data.pagination;
+  setContent(
+    '<div class="filter-bar"><div class="sb-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'+
+      '<input placeholder="Tên đại lý, liên hệ..." oninput="dealF.search=this.value;pgDealers()" value="'+(dealF.search||'')+'"></div>'+
+      '<select class="fsel" onchange="dealF.partner_status=this.value;pgDealers()"><option value="">Tất cả</option>'+['Active','Inactive','Suspended'].map(function(s){return '<option '+(dealF.partner_status===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select>'+
+      '<select class="fsel" onchange="dealF.debt_status=this.value;pgDealers()"><option value="">Tất cả nợ</option>'+['Stable','Warning','Overdue'].map(function(s){return '<option '+(dealF.debt_status===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Đại lý</th><th>Khu vực</th><th>Liên hệ</th><th>Tier</th><th>Hạn mức</th><th>Công nợ</th><th>TT nợ</th><th>Đối tác</th></tr></thead>'+
+    '<tbody>'+data.map(function(d){return '<tr><td class="fw6">'+d.dealer_name+'</td>'+
+      '<td class="text-muted">'+(d.region||'—')+(d.city?' · '+d.city:'')+'</td>'+
+      '<td>'+(d.contact_person||'—')+(d.phone_number?'<br><span style="font-size:11px;color:var(--muted)">'+d.phone_number+'</span>':'')+'</td>'+
+      '<td><span class="badge b-b">'+(d.wholesale_tier||'Tier 1')+'</span></td>'+
+      '<td>'+VND(d.credit_limit)+'</td>'+
+      '<td class="'+(d.debt_status==='Overdue'?'text-d fw6':'')+'">'+VND(d.debt_amount)+'</td>'+
+      '<td>'+sBadge(d.debt_status)+'</td><td>'+sBadge(d.partner_status)+'</td></tr>';}).join('')+'</tbody></table></div>'+pgHTML(pagination,'pgDealers')+'</div>'
+  );
+  if(['admin','manager','finance'].indexOf(me && me.role)>=0)
+    setActions('<button class="btn btn-p btn-sm" onclick="openAddDealerModal()">+ Thêm đại lý</button>');
+}
+async function openAddDealerModal(){openModal('Thêm đại lý mới',
+  '<div class="g2"><div class="fg" style="grid-column:1/-1"><label>Tên đại lý *</label><input id="nd-n"></div><div class="fg"><label>Khu vực</label><input id="nd-r" placeholder="Miền Nam"></div><div class="fg"><label>Thành phố</label><input id="nd-ci" placeholder="TP.HCM"></div><div class="fg"><label>Người liên hệ</label><input id="nd-c"></div><div class="fg"><label>SĐT</label><input id="nd-p"></div><div class="fg"><label>Email</label><input type="email" id="nd-e"></div><div class="fg"><label>Tier</label><select id="nd-tier"><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select></div><div class="fg"><label>Hạn mức tín dụng (₫)</label><input type="number" id="nd-cr" min="0" value="50000000"></div></div>',
+  '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-p btn-sm" onclick="submitAddDealer()">Lưu</button>');}
+async function submitAddDealer(){const body={dealer_name:document.getElementById('nd-n').value,region:document.getElementById('nd-r').value,city:document.getElementById('nd-ci').value,contact_person:document.getElementById('nd-c').value,phone_number:document.getElementById('nd-p').value,email:document.getElementById('nd-e').value,wholesale_tier:document.getElementById('nd-tier').value,credit_limit:parseFloat(document.getElementById('nd-cr').value)||0};if(!body.dealer_name){toast('Điền tên đại lý','w');return;}const r=await Po('/dealers',body);if(r && r.ok){toast('Thêm thành công');closeModal();pgDealers();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+async function pgUsers(){
+  const r=await G('/users');if(!r||!r.ok){setContent('<div class="alert al-d">Cần quyền admin/manager</div>');return;}
+  const data=r.data.data||[];
+  setContent(
+    '<div class="alert al-i mb4">🔐 Chỉ <code>admin</code> mới có thể tạo/sửa tài khoản nhân viên.</div>'+
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Nhân viên</th><th>Email</th><th>Vai trò</th><th>Văn phòng</th><th>TT</th><th>Đăng nhập cuối</th><th></th></tr></thead>'+
+    '<tbody>'+data.map(function(u){return '<tr><td><div style="display:flex;align-items:center;gap:7px"><div class="u-av" style="width:26px;height:26px;font-size:10px">'+INI(u.full_name)+'</div><span class="fw6">'+u.full_name+'</span></div></td>'+
+      '<td class="text-muted">'+u.email+'</td><td>'+roleChip(u.role)+'</td><td class="text-muted">'+(u.office||'—')+'</td><td>'+sBadge(u.status)+'</td>'+
+      '<td class="text-muted">'+FDT(u.last_login_at)+'</td><td>'+(me && me.role==='admin'?'<button class="btn btn-g btn-xs" onclick=\'openEditUserModal('+JSON.stringify(u).replace(/'/g,"&apos;")+')\'>Sửa</button>':'—')+'</td></tr>';}).join('')+'</tbody></table></div></div>'
+  );
+  if(me && me.role==='admin')setActions('<button class="btn btn-p btn-sm" onclick="openAddUserModal()">+ Thêm nhân viên</button>');
+}
+async function openAddUserModal(){openModal('Thêm nhân viên nội bộ',
+  '<div class="alert al-i mb4">Dành cho: <code>sales</code> · <code>warehouse</code> · <code>finance</code> · <code>manager</code> · <code>admin</code></div>'+
+  '<div class="g2"><div class="fg" style="grid-column:1/-1"><label>Họ tên *</label><input id="nu-n"></div><div class="fg"><label>Email *</label><input type="email" id="nu-e"></div><div class="fg"><label>Mật khẩu *</label><input type="password" id="nu-p" placeholder="Ít nhất 6 ký tự"></div><div class="fg"><label>Vai trò *</label><select id="nu-r"><option value="sales">Sales</option><option value="warehouse">Warehouse</option><option value="finance">Finance</option><option value="manager">Manager</option><option value="admin">Admin</option></select></div><div class="fg"><label>Văn phòng</label><input id="nu-o" placeholder="HCM / HN"></div></div>',
+  '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-p btn-sm" onclick="submitAddUser()">Tạo</button>');}
+async function submitAddUser(){const body={full_name:document.getElementById('nu-n').value,email:document.getElementById('nu-e').value,password:document.getElementById('nu-p').value,role:document.getElementById('nu-r').value,office:document.getElementById('nu-o').value};if(!body.full_name||!body.email||!body.password){toast('Điền đủ thông tin','w');return;}const r=await Po('/users',body);if(r && r.ok){toast('Tạo tài khoản thành công');closeModal();pgUsers();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+function openEditUserModal(u){openModal('Sửa: '+u.full_name,
+  '<div class="g2"><div class="fg"><label>Vai trò</label><select id="eu-r">'+['sales','warehouse','finance','manager','admin'].map(function(s){return '<option '+(u.role===s?'selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'+
+  '<div class="fg"><label>Trạng thái</label><select id="eu-s"><option value="active" '+(u.status==='active'?'selected':'')+'>Active</option><option value="inactive" '+(u.status==='inactive'?'selected':'')+'>Inactive</option></select></div></div>',
+  '<button class="btn btn-g btn-sm" onclick="closeModal()">Hủy</button><button class="btn btn-p btn-sm" onclick="submitEditUser('+u.user_id+')">Lưu</button>');}
+async function submitEditUser(id){const r=await Pu('/users/'+id,{role:document.getElementById('eu-r').value,status:document.getElementById('eu-s').value});if(r && r.ok){toast('Cập nhật thành công');closeModal();pgUsers();}else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+let auditPage=1;
+async function pgAuditLogs(page){
+  auditPage=page||1;
+  const r=await G('/analytics/audit-logs',{page:auditPage,limit:30});
+  if(!r||!r.ok){setContent('<div class="alert al-d">Lỗi</div>');return;}
+  const data=r.data.data, pagination=r.data.pagination;
+  const rc={Normal:'b-n',Low:'b-b',Medium:'b-y',High:'b-r',Critical:'b-r'};
+  setContent(
+    '<div class="card"><div class="tbl-wrap"><table><thead><tr><th>Thời gian</th><th>Nhân viên</th><th>Hành động</th><th>Module</th><th>Rủi ro</th><th>Chi tiết</th></tr></thead>'+
+    '<tbody>'+data.map(function(l){return '<tr><td class="text-muted" style="font-size:11px;white-space:nowrap">'+FDT(l.created_at)+'</td>'+
+      '<td>'+(l.full_name||'System')+'</td><td class="fw6">'+l.action+'</td><td><span class="badge b-a">'+l.module+'</span></td>'+
+      '<td><span class="badge '+(rc[l.risk_level]||'b-n')+'">'+l.risk_level+'</span></td>'+
+      '<td class="text-muted truncate" style="max-width:220px;font-size:11px">'+(l.details||'—')+'</td></tr>';}).join('')+'</tbody></table></div>'+pgHTML(pagination,'pgAuditLogs')+'</div>'
+  );
+}
+async function pgProfile(){
+  const r=await G('/auth/me');if(!r||!r.ok)return;
+  const u=r.data.data;
+  const allowed=ROLE_PAGES[u.role]||[];
+  setContent(
+    '<div style="max-width:560px"><div class="card mb6"><div class="card-bd">'+
+      '<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px"><div class="u-av" style="width:52px;height:52px;font-size:18px">'+INI(u.full_name)+'</div>'+
+      '<div><div style="font-family:var(--font-d);font-size:17px">'+u.full_name+'</div>'+
+        '<div style="margin-top:5px;display:flex;gap:6px;align-items:center">'+roleChip(u.role)+' '+sBadge(u.status)+' '+(u.office?'<span class="badge b-n">'+u.office+'</span>':'')+'</div></div></div>'+
+      '<div class="info-grid"><div class="ii"><label>Email</label><span>'+u.email+'</span></div>'+
+        '<div class="ii"><label>Đăng nhập cuối</label><span>'+FDT(u.last_login_at)+'</span></div>'+
+        '<div class="ii"><label>Tạo tài khoản</label><span>'+FD(u.created_at)+'</span></div>'+
+        '<div class="ii"><label>Văn phòng</label><span>'+(u.office||'—')+'</span></div></div><hr>'+
+      '<div style="font-size:11px;color:var(--muted);margin-bottom:6px">Quyền truy cập — <strong>'+u.role+'</strong>:</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:4px">'+allowed.map(function(p){return '<span class="badge b-a">'+p+'</span>';}).join('')+'</div>'+
+    '</div></div>'+
+    '<div class="card"><div class="card-hd"><span class="card-title">Đổi mật khẩu</span></div><div class="card-bd">'+
+      '<div class="fg"><label>Mật khẩu mới</label><input type="password" id="np-pw"></div>'+
+      '<div class="fg"><label>Xác nhận</label><input type="password" id="np-cpw"></div>'+
+      '<button class="btn btn-p btn-sm" onclick="changePW('+u.user_id+')">Cập nhật mật khẩu</button>'+
+    '</div></div></div>'
+  );
+}
+async function changePW(id){const pw=document.getElementById('np-pw').value;const cpw=document.getElementById('np-cpw').value;if(!pw||pw.length<6){toast('Mật khẩu ít nhất 6 ký tự','w');return;}if(pw!==cpw){toast('Mật khẩu không khớp','w');return;}const r=await Pu('/users/'+id,{password:pw});if(r && r.ok)toast('Đổi mật khẩu thành công');else toast((r&&r.data&&r.data.message)||'Thất bại','e');}
+document.getElementById('l-pw').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+if(token){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  initApp();
+}
+</script>
+</body>
+</html>

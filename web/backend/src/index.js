@@ -25,6 +25,7 @@ const dealersRouter      = require('./modules/dealers/dealers.router');
 const promotionsRouter   = require('./modules/promotions/promotions.router');
 const analyticsRouter    = require('./modules/analytics/analytics.router');
 const returnsRouter      = require('./modules/returns/returns.router');
+const uploadsRouter      = require('./modules/uploads/uploads.router');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +39,14 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' })); // allow larger JSON for base64 fallback
+
+// ─── Static file serving for uploaded images ─────────────────
+const path = require('path');
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads'), {
+  maxAge: '7d',
+  etag:   true,
+}));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // ─── Rate limiting ──────────────────────────────────────────
@@ -71,6 +80,7 @@ app.use(`${API}/raw-materials`, rawMaterialsRouter);
 app.use(`${API}/dealers`,       dealersRouter);
 app.use(`${API}/promotions`,    promotionsRouter);
 app.use(`${API}/analytics`,     analyticsRouter);
+app.use(`${API}/uploads`,       uploadsRouter);
 
 // ─── 404 handler ────────────────────────────────────────────
 app.use((req, res) => {

@@ -59,7 +59,8 @@ CREATE TABLE users (
     CONSTRAINT CK_users_status  CHECK (status IN ('active','inactive'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
+    ALTER TABLE users
+    ADD COLUMN customer_id BIGINT NULL;
 -- ============================================================
 -- 3. CUSTOMERS
 -- ============================================================

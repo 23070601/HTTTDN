@@ -11,6 +11,7 @@ const { pool } = require('../../config/db');
 const R = require('../../common/utils/response');
 const { getPagination } = require('../../common/utils/paginate');
 
+
 const RETURN_TYPES = new Set(['partial', 'full']);
 const RETURN_STATUSES = new Set(['pending', 'approved', 'processing', 'completed', 'rejected']);
 
@@ -42,7 +43,7 @@ const CHANNEL_RETURN_RULES = {
 async function logReturnAudit(conn, { userId, action, riskLevel = 'Normal', details }) {
   await conn.query(
     `INSERT INTO audit_logs (user_id, action, module, risk_level, details)
-     VALUES (?, ?, 'Returns', ?, ?)`,
+     VALUES (?, ?, 'Orders', ?, ?)`,
     [userId || null, action, riskLevel, details]
   );
 }
@@ -53,6 +54,9 @@ function buildReturnChangeDetails(returnId, changes) {
     changes,
   });
 }
+
+console.log("AUDIT MODULE =", 'Returns');
+
 
 // ─── LIST RETURNS ─────────────────────────────────────────────
 async function list(req, res) {

@@ -5,6 +5,38 @@ const { body }   = require('express-validator');
 const controller = require('./orders.controller');
 const { authenticate, authorize } = require('../../common/middleware/auth');
 
+// ──────────────────────────────────────────────────────────────
+// PUBLIC STOREFRONT ROUTES  (no token required — placed BEFORE authenticate)
+// ──────────────────────────────────────────────────────────────
+
+// POST /api/orders/guest — Storefront checkout (guest + registered customer)
+router.post(
+  '/guest',
+  [
+    body('items').isArray({ min: 1 }).withMessage('At least one item required'),
+    body('items.*.product_id').isInt({ gt: 0 }),
+    body('items.*.quantity').isInt({ gt: 0 }),
+    body('payment_method').notEmpty().isIn(['COD', 'Bank Transfer', 'Card', 'Momo', 'VNPay'])
+      .withMessage('Invalid payment method for online channel'),
+    body('shipping_address').notEmpty().withMessage('Shipping address required'),
+    // Registered customer path
+    body('customer_id').optional().isInt({ gt: 0 }),
+    // Guest path
+    body('customer_name').optional().isString(),
+    body('customer_email').optional().isEmail(),
+    body('customer_phone').optional().isString(),
+    // Optional
+    body('city').optional().isString(),
+    body('shipping_fee').optional().isFloat({ min: 0 }),
+    body('loyalty_points_used').optional().isInt({ min: 0 }),
+    body('note').optional().isString(),
+  ],
+  controller.createGuestOrder
+);
+
+// POST /api/orders/track — Public order tracking by order_number + email OR phone
+router.post('/track', controller.trackOrder);
+
 router.use(authenticate);
 
 router.get('/',    controller.list);

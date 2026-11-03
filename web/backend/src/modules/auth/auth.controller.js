@@ -17,7 +17,7 @@ async function login(req, res) {
 
   try {
     const [rows] = await pool.query(
-      'SELECT user_id, full_name, email, password_hash, role, status, office FROM users WHERE email = ?',
+      'SELECT user_id, customer_id, full_name, email, password_hash, role, status, office FROM users WHERE email = ?',
       [email]
     );
 
@@ -34,6 +34,7 @@ async function login(req, res) {
 
     const payload = {
       user_id:   user.user_id,
+      customer_id: user.customer_id,
       email:     user.email,
       role:      user.role,
       full_name: user.full_name,
@@ -51,7 +52,7 @@ async function login(req, res) {
     return R.ok(res, {
       access_token,
       refresh_token,
-      user: { user_id: user.user_id, full_name: user.full_name, email: user.email, role: user.role, office: user.office },
+      user: { user_id: user.user_id, customer_id: user.customer_id, full_name: user.full_name, email: user.email, role: user.role, office: user.office },
     }, 'Login successful');
 
   } catch (err) {
@@ -82,7 +83,7 @@ async function refresh(req, res) {
 async function me(req, res) {
   try {
     const [rows] = await pool.query(
-      'SELECT user_id, full_name, email, role, status, office, last_login_at, created_at FROM users WHERE user_id = ?',
+      'SELECT user_id, customer_id, full_name, email, role, status, office, last_login_at, created_at FROM users WHERE user_id = ?',
       [req.user.user_id]
     );
     if (!rows.length) return R.notFound(res, 'User not found.');
@@ -107,4 +108,114 @@ async function logout(req, res) {
   }
 }
 
-module.exports = { login, refresh, me, logout };
+async function register(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return R.badRequest(res, 'Validation failed', errors.array());
+  }
+
+  const { full_name, email, password, phone_number, gender, city } = req.body;
+
+  const conn = await pool.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    // Check duplicate
+    const [[dup]] = await conn.query(
+      'SELECT user_id FROM users WHERE email = ?',
+      [email]
+    );
+
+    if (dup) {
+      await conn.rollback();
+      return R.conflict(res, 'Email already registered.');
+    }
+
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Create customer
+    const [custResult] = await conn.query(
+      `INSERT INTO customers
+       (full_name, email, phone_number, customer_type, gender, city)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        full_name,
+        email,
+        phone_number || null,
+        'retail',
+        gender || null,
+        city || null
+      ]
+    );
+
+    const customer_id = custResult.insertId;
+
+    // Create user
+    const [userResult] = await conn.query(
+      `INSERT INTO users
+       (full_name, email, password_hash, role, status, customer_id)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        full_name,
+        email,
+        password_hash,
+        'customer',
+        'active',
+        customer_id
+      ]
+    );
+
+    const user_id = userResult.insertId;
+
+    await conn.commit();
+
+    // JWT
+    const payload = {
+      user_id,
+      customer_id,
+      email,
+      role: 'customer',
+      full_name
+    };
+
+    const access_token = jwt.sign(payload, jwtCfg.secret, {
+      expiresIn: jwtCfg.expiresIn
+    });
+
+    const refresh_token = jwt.sign(payload, jwtCfg.refreshSecret, {
+      expiresIn: jwtCfg.refreshExpires
+    });
+
+    return R.created(res, {
+      access_token,
+      refresh_token,
+      user: {
+        user_id,
+        customer_id,
+        full_name,
+        email,
+        role: 'customer'
+      }
+    }, 'Register successful');
+
+  } catch (err) {
+
+  await conn.rollback();
+
+  // Duplicate email
+  if (err.code === 'ER_DUP_ENTRY') {
+    return R.conflict(
+      res,
+      'Email đã được đăng ký. Vui lòng dùng email khác.'
+    );
+  }
+
+  return R.serverError(res, err);
+} finally {
+    conn.release();
+  }
+}
+
+module.exports = { login, register, refresh, me, logout };

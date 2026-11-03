@@ -6,6 +6,16 @@ const { pool }   = require('../../config/db');
 const R = require('../../common/utils/response');
 const { authenticate, authorize } = require('../../common/middleware/auth');
 
+// ──────────────────────────────────────────────────────────────
+// PUBLIC STOREFRONT ROUTE (no token required)
+// ──────────────────────────────────────────────────────────────
+router.get('/public', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM categories ORDER BY category_name');
+    return R.ok(res, rows);
+  } catch (err) { return R.serverError(res, err); }
+});
+
 router.use(authenticate);
 
 router.get('/', async (req, res) => {

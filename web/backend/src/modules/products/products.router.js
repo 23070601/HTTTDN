@@ -5,6 +5,16 @@ const { body }   = require('express-validator');
 const controller = require('./products.controller');
 const { authenticate, authorize } = require('../../common/middleware/auth');
 
+// ──────────────────────────────────────────────────────────────
+// PUBLIC STOREFRONT ROUTES (no token required)
+// ──────────────────────────────────────────────────────────────
+// GET /api/products/public/list  — product catalog for storefront
+// GET /api/products/public/detail/:id — product detail for storefront
+// NOTE: Must be registered BEFORE router.use(authenticate) so these
+//       paths are matched without a Bearer token.
+router.get('/public/list',       controller.list);
+router.get('/public/detail/:id', controller.getOne);
+
 router.use(authenticate);
 
 // Public reads for all authenticated roles

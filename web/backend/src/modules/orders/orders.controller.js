@@ -899,4 +899,252 @@ async function getItems(req, res) {
   }
 }
 
-module.exports = { list, getOne, create, update, remove, updateDeliveryStatus, updatePaymentStatus, getItems };
+module.exports = { list, getOne, create, createGuestOrder, trackOrder, update, remove, updateDeliveryStatus, updatePaymentStatus, getItems };
+
+// ──────────────────────────────────────────────────────────────
+//  POST /api/orders/guest  (Public — Storefront checkout)
+//  Works for both guest (no account) and registered customer.
+//  sales_channel is always 'online', platform always 'website'.
+// ──────────────────────────────────────────────────────────────
+async function createGuestOrder(req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return R.badRequest(res, 'Validation failed', errors.array());
+
+  const {
+    // Registered customer (optional — from JWT or body)
+    customer_id       = null,
+    // Guest info (when no account)
+    customer_name     = null,
+    customer_email    = null,
+    customer_phone    = null,
+    // Order fields
+    payment_method,
+    shipping_address,
+    city              = null,
+    shipping_fee      = 0,
+    loyalty_points_used = 0,
+    note              = null,
+    items,
+  } = req.body;
+
+  // Validate payment method for online channel
+  const allowedOnlinePayments = PAYMENT_METHODS_BY_CHANNEL.online;
+  if (!allowedOnlinePayments.includes(payment_method)) {
+    return R.badRequest(res,
+      `Invalid payment_method "${payment_method}" for online orders. Allowed: ${allowedOnlinePayments.join(', ')}`);
+  }
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // ── Resolve customer ──────────────────────────────────────
+    let resolvedCustomerId = customer_id ? parseInt(customer_id) : null;
+    let resolvedCustomerType = 'retail';
+
+    if (resolvedCustomerId) {
+      // Registered customer provided explicitly
+      const [[cust]] = await conn.query(
+        'SELECT customer_id, customer_type FROM customers WHERE customer_id = ?',
+        [resolvedCustomerId]
+      );
+      if (!cust) {
+        await conn.rollback(); conn.release();
+        return R.badRequest(res, `Customer ${resolvedCustomerId} not found.`);
+      }
+      resolvedCustomerType = cust.customer_type === 'dealer' ? 'retail' : (cust.customer_type || 'retail');
+    } else if (customer_email) {
+      // Try to find existing customer by email
+      const [[existing]] = await conn.query(
+        'SELECT customer_id, customer_type FROM customers WHERE email = ? LIMIT 1',
+        [customer_email]
+      );
+      if (existing) {
+        resolvedCustomerId  = existing.customer_id;
+        resolvedCustomerType = existing.customer_type || 'retail';
+      } else {
+        // Create guest customer record
+        if (!customer_name) {
+          await conn.rollback(); conn.release();
+          return R.badRequest(res, 'customer_name is required for guest checkout.');
+        }
+        const [cr] = await conn.query(
+          `INSERT INTO customers (full_name, email, phone_number, customer_type, segment)
+           VALUES (?, ?, ?, 'guest', 'New')`,
+          [customer_name, customer_email, customer_phone || null]
+        );
+        resolvedCustomerId  = cr.insertId;
+        resolvedCustomerType = 'guest';
+      }
+    }
+    // If neither customer_id nor customer_email: anonymous order (no customer record)
+
+    // ── Validate & price items ────────────────────────────────
+    let subtotal = 0;
+    const resolvedItems = [];
+    for (const item of items) {
+      const [[product]] = await conn.query(
+        'SELECT product_id, product_name, selling_price, stock_quantity, sku, status FROM products WHERE product_id = ?',
+        [item.product_id]
+      );
+      if (!product) {
+        await conn.rollback(); conn.release();
+        return R.badRequest(res, `Product ID ${item.product_id} not found.`);
+      }
+      if (product.status === 'Discontinued') {
+        await conn.rollback(); conn.release();
+        return R.badRequest(res, `Product "${product.product_name}" is discontinued and cannot be ordered.`);
+      }
+      if (product.stock_quantity < item.quantity) {
+        await conn.rollback(); conn.release();
+        return R.badRequest(res,
+          `Insufficient stock for "${product.product_name}". Available: ${product.stock_quantity}, requested: ${item.quantity}.`);
+      }
+      const unit_price = parseFloat(item.unit_price) > 0 ? parseFloat(item.unit_price) : product.selling_price;
+      subtotal += unit_price * item.quantity;
+      resolvedItems.push({ ...product, quantity: item.quantity, unit_price });
+    }
+
+    // ── Loyalty discount ─────────────────────────────────────
+    let loyalty_discount = 0;
+    const ptsToUse = parseInt(loyalty_points_used) || 0;
+    if (ptsToUse > 0 && resolvedCustomerId) {
+      const [[cust]] = await conn.query(
+        'SELECT loyalty_points_balance FROM customers WHERE customer_id = ?',
+        [resolvedCustomerId]
+      );
+      if (!cust || cust.loyalty_points_balance < ptsToUse) {
+        await conn.rollback(); conn.release();
+        return R.badRequest(res,
+          `Insufficient loyalty points. Balance: ${cust ? cust.loyalty_points_balance : 0}, requested: ${ptsToUse}`);
+      }
+      loyalty_discount = ptsToUse * 100; // 1 pt = 100₫
+      loyalty_discount = Math.min(loyalty_discount, subtotal); // cap at subtotal
+    }
+
+    const fee         = parseFloat(shipping_fee) || 0;
+    const total_amount = Math.max(0, subtotal + fee - loyalty_discount);
+    const order_number = generateOrderNumber();
+    const payment_status = derivePaymentStatus(payment_method, 'online', resolvedCustomerType, false);
+
+    // ── Insert order ─────────────────────────────────────────
+    const [orderResult] = await conn.query(
+      `INSERT INTO orders
+         (customer_id, user_id, order_number, customer_type, sales_channel, platform,
+          payment_method, payment_status, payment_confirmed,
+          shipping_address, city, shipping_fee, loyalty_discount, total_amount,
+          delivery_status, note)
+       VALUES (?, NULL, ?, ?, 'online', 'website', ?, ?, FALSE, ?, ?, ?, ?, ?, 'Pending', ?)`,
+      [
+        resolvedCustomerId,
+        order_number, resolvedCustomerType,
+        payment_method, payment_status,
+        shipping_address, city || null,
+        fee, loyalty_discount, total_amount,
+        note || null,
+      ]
+    );
+    const order_id = orderResult.insertId;
+
+    // ── Insert order_items (trigger handles stock deduction) ──
+    for (const item of resolvedItems) {
+      await conn.query(
+        `INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal)
+         VALUES (?, ?, ?, ?, ?)`,
+        [order_id, item.product_id, item.quantity, item.unit_price, item.unit_price * item.quantity]
+      );
+    }
+
+    // ── Deduct loyalty points ─────────────────────────────────
+    if (ptsToUse > 0 && resolvedCustomerId && loyalty_discount > 0) {
+      // Guard against going negative (let trigger handle it)
+      await conn.query(
+        `INSERT INTO loyalty_transactions (customer_id, order_id, action_type, points_amount, description)
+         VALUES (?, ?, 'redeem', ?, ?)`,
+        [resolvedCustomerId, order_id, -ptsToUse, `Redeem for order ${order_number}`]
+      );
+      await conn.query(
+        'UPDATE customers SET loyalty_points_balance = loyalty_points_balance - ? WHERE customer_id = ?',
+        [ptsToUse, resolvedCustomerId]
+      );
+    }
+
+    // ── Audit log ─────────────────────────────────────────────
+    await conn.query(
+      `INSERT INTO audit_logs (user_id, action, module, risk_level, details)
+       VALUES (NULL, 'Guest/customer online order placed', 'Orders', 'Normal', ?)`,
+      [JSON.stringify({ order_id, order_number, customer_id: resolvedCustomerId, total_amount })]
+    );
+
+    await conn.commit();
+    conn.release();
+
+    return R.created(res, {
+      order_id,
+      order_number,
+      total_amount,
+      payment_status,
+      delivery_status: 'Pending',
+      customer_id: resolvedCustomerId,
+      items_count: resolvedItems.length,
+    }, 'Order placed successfully.');
+
+  } catch (err) {
+    await conn.rollback();
+    conn.release();
+    return R.serverError(res, err);
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+//  POST /api/orders/track  (Public — guest order tracking)
+//  Body: { order_number, email? } OR { order_number, phone? }
+// ──────────────────────────────────────────────────────────────
+async function trackOrder(req, res) {
+  const { order_number, email, phone } = req.body;
+
+  if (!order_number) return R.badRequest(res, 'order_number is required.');
+  if (!email && !phone) return R.badRequest(res, 'Provide email or phone to verify identity.');
+
+  try {
+    const [[order]] = await pool.query(
+      `SELECT o.order_id, o.order_number, o.delivery_status, o.payment_status,
+              o.payment_method, o.total_amount, o.shipping_fee, o.loyalty_discount,
+              o.shipping_address, o.city, o.note, o.ordered_at,
+              c.full_name AS customer_name,
+              c.email     AS customer_email,
+              c.phone_number AS customer_phone
+       FROM orders o
+       LEFT JOIN customers c ON c.customer_id = o.customer_id
+       WHERE o.order_number = ?`,
+      [order_number]
+    );
+
+    if (!order) return R.notFound(res, 'Order not found. Please check the order number.');
+
+    // Identity verification
+    const emailMatch = email && order.customer_email &&
+      order.customer_email.toLowerCase() === email.toLowerCase().trim();
+    const phoneMatch = phone && order.customer_phone &&
+      order.customer_phone.replace(/\D/g, '') === phone.replace(/\D/g, '');
+
+    if (!emailMatch && !phoneMatch) {
+      return R.unauthorized(res, 'Email or phone does not match this order.');
+    }
+
+    // Get items
+    const [items] = await pool.query(
+      `SELECT oi.quantity, oi.unit_price, oi.subtotal,
+              p.product_name, p.sku
+       FROM order_items oi
+       JOIN products p ON p.product_id = oi.product_id
+       WHERE oi.order_id = ?`,
+      [order.order_id]
+    );
+
+    return R.ok(res, { ...order, items });
+
+  } catch (err) {
+    return R.serverError(res, err);
+  }
+}
